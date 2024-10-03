@@ -7,7 +7,8 @@
   "description": "A set of functions to help convert DataTables server-side AJAX calls into ANSI SQL",
   "type": "module",
 
-  "main": "index.js",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
 
   "scripts": {
     "start:dev": "npx tsc -w --project tsconfig.json",
@@ -26,5 +27,12 @@
   ],
   "bugs": {
     "url": "https://github.com/tonyfischetti/dtajax2sql/issues"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.8",
+    "@types/node": "^22.7.4",
+    "mocha": "^10.7.3",
+    "shx": "^0.3.4",
+    "typescript": "^5.6.2"
   }
 }
