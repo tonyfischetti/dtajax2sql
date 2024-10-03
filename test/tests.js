@@ -1,18 +1,13 @@
 
-import { getLimitSql,
-         getOffsetSql,
-         // getSBEqualsSql,
-         // getSBContainsSql,
-         // getSBStartsWithSql,
-         // getSBEndsWithSql,
-         getSBCriterionSql,
-         getSearchBuilderSql,
-         getWhereClause,
-         // dtajax2sql 
-} from '../dist/main.js';
-
 import assert from 'assert';
 
+import {
+  getLimitSql,
+  getOffsetSql,
+  getSBCriterionSql,
+  getSearchBuilderSql,
+  getWhereClause,
+} from '../dist/getSqlFragments.js';
 
 
 

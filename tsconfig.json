@@ -3,11 +3,11 @@
   "include":    ["./src/**/*"],
   "exclude":    ["node_modules"],
   "compilerOptions": {
-    "typeRoots":        ["./node_modules/@types", "./src/types"],
+    "typeRoots":        ["./node_modules/@types"],
     "rootDir":          "src",
     "outDir":           "dist",
-    "declarationDir":   "dist/types",
-    "tsBuildInfoFile":  "dist/tsconfig.tsbuildinfo"
+    "declaration":      true,
+    "tsBuildInfoFile":  "build/tsconfig.tsbuildinfo"
   }
 }
 

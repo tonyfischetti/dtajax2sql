@@ -1,8 +1,8 @@
 
-type TableName    = string;
-type SQLFragment  = string;
-type WhereClause  = SQLFragment;
-type SelectClause = SQLFragment;
+export type TableName    = string;
+export type SQLFragment  = string;
+export type SelectClause = SQLFragment;
+export type WhereClause  = SQLFragment;
 
 
 /**
@@ -19,7 +19,7 @@ type SelectClause = SQLFragment;
   }
  */
 
-interface ColumnObj {
+export interface ColumnObj {
   data: string;
   name: string;
   searchable: 'true' | 'false';
@@ -37,7 +37,7 @@ interface ColumnObj {
     regex: 'false'
   },
   */
-interface GlobalSearch {
+export interface GlobalSearch {
   value: string;
   regex: 'true' | 'false';
 }
@@ -60,7 +60,7 @@ interface GlobalSearch {
 
  */
 
-interface SBCriterion {
+export interface SBCriterion {
   condition: '=' | '!=' | 'starts' | '!starts' | 'ends' |
              '!ends' | 'contains' | '!contains' |
              'null' | '!null' | '<' | '<=' | '>' | '>=' |
@@ -100,7 +100,7 @@ interface SBCriterion {
   }
 */
 
-interface SearchBuilder {
+export interface SearchBuilder {
   criteria: Array<SBCriterion> | Array<SearchBuilder>
   logic: 'AND' | 'OR'
 }
@@ -153,7 +153,7 @@ interface SearchBuilder {
   }
  */
 
-interface DTAJAXParams {
+export interface DTAJAXParams {
   draw: string;
   columns: Array<ColumnObj>;
   start: string;

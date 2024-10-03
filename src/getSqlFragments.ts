@@ -1,24 +1,20 @@
 
-//  TODO  sql injection protection
+import {
+  SQLFragment,
+  SelectClause,
+  WhereClause,
+  SBCriterion,
+  SearchBuilder,
+  DTAJAXParams
+} from "./types.js";
+
+import { negateClause,
+         parseNumberHelper } from "./utils.js";
 
 
-export const getSelectClause = (params: DTAJAXParams): SelectClause => {
-  return `SELECT ${params.columns.map(i => i.data).join(", ")}`;
-};
-
-
-
-
-const negateClause = (clause: WhereClause): WhereClause => {
-  return `(NOT ${clause})`;
-};
-
-const parseNumberHelper = (str: string): number => {
-  const num = parseInt(str, 10);
-  if (isNaN(num)) throw new Error("couldn't parse number");
-  return num;
-};
-
+/***********************************************************
+ * helpers
+ */
 const getLorOhelper = (params: DTAJAXParams,
                        thekey: "length" | "start",
                        sqlKey: string): SQLFragment => {
@@ -28,6 +24,10 @@ const getLorOhelper = (params: DTAJAXParams,
   return `${sqlKey} ${num}`;
 };
 
+
+/***********************************************************
+ * LIMIT and OFFSET
+ */
 export const getLimitSql = (params: DTAJAXParams): SQLFragment => {
   return getLorOhelper(params, "length", "LIMIT");
 };
@@ -37,8 +37,25 @@ export const getOffsetSql = (params: DTAJAXParams): SQLFragment => {
 };
 
 
+/***********************************************************
+ * SELECT clause
+ */
+export const getSelectClause = (params: DTAJAXParams): SelectClause => {
+  return `SELECT ${params.columns.map(i => i.data).join(", ")}`;
+};
 
 
+/***********************************************************
+ * Global Search handler
+ */
+export const getGlobalSearchSql = (params: DTAJAXParams): SQLFragment => {
+  //  TODO  check if missing the keys
+return `(CONCAT(${params.columns.map(i => i.data).join(", ")}) LIKE '%${params.search.value}%')`;
+};
+
+/***********************************************************
+ * Search Builder and helpers
+ */
 export const getSBEqualsSql = (crit: SBCriterion): WhereClause => {
   if (crit.type === "string")
     return `(${crit.origData} = '${crit.value1}')`;
@@ -77,7 +94,7 @@ export const getSBBetweenSql = (crit: SBCriterion): WhereClause => {
 export const getSBNotBetweenSql = (crit: SBCriterion): WhereClause => {
   const v1 = parseNumberHelper(crit.value1 ?? "");
   const v2 = parseNumberHelper(crit.value2 ?? "");
-  return `((${crit.origData} < ${v1}) OR (${crit.origData} > ${v2}))`;
+return `((${crit.origData} < ${v1}) OR (${crit.origData} > ${v2}))`;
 };
 
 export const getSBLessThanSql = (crit: SBCriterion, orEqualTo=false): WhereClause => {
@@ -89,8 +106,6 @@ export const getSBGreaterThanSql = (crit: SBCriterion, orEqualTo=false): WhereCl
   const v1 = parseNumberHelper(crit.value1 ?? "");
   return `(${crit.origData} >${orEqualTo ? "=" : ""} ${v1})`;
 };
-
-
 
 export const getSBCriterionSql = (crit: SBCriterion): SQLFragment => {
   //  TODO  no error checking
@@ -112,7 +127,6 @@ export const getSBCriterionSql = (crit: SBCriterion): SQLFragment => {
   if (crit.condition === ">=")         return getSBGreaterThanSql(crit, true);
   throw new Error("unrecognized condition");
 };
-
 
 export const getSearchBuilderSql = (params: SearchBuilder): SQLFragment => {
   if (!(params.criteria)) throw new Error("no criteria?");
@@ -142,15 +156,9 @@ export const getSearchBuilderSql = (params: SearchBuilder): SQLFragment => {
 };
 
 
-export const getGlobalSearchSql = (params: DTAJAXParams): SQLFragment => {
-  //  TODO  check if missing the keys
-  return `(CONCAT(${params.columns.map(i => i.data).join(", ")}) LIKE '%${params.search.value}%')`;
-};
-
-
-
-
-
+/***********************************************************
+ * WHERE clause
+ */
 export const getWhereClause = (params: DTAJAXParams): WhereClause => {
   const fromSearchBuilder = ('searchBuilder' in params) ? 
                               getSearchBuilderSql(params.searchBuilder) :
@@ -160,28 +168,3 @@ export const getWhereClause = (params: DTAJAXParams): WhereClause => {
                               "True";
   return `WHERE (${ [fromSearchBuilder, fromGlobalSearch].join(" AND ") })`;
 };
-
-
-
-
-
-
-export const dtajax2sql = (params: DTAJAXParams, tblName: TableName) => {
-  //  TODO  error checking...
-  // if (!("columns" in params))
-  //   throw new Error("params don't include a 'columns' property");
-  const selectClause = getSelectClause(params);
-  const fromClause = `FROM ${tblName}`;
-  const limit = getLimitSql(params);
-  const offset = getOffsetSql(params);
-  const whereClause = getWhereClause(params);
-  console.log(`where clause: <${whereClause}>`);
-  const q = `${selectClause} ${fromClause} ${whereClause} ${limit} ${offset}`;
-  return q;
-};
-
-
-// @ts-ignore
-// console.log(dtajax2sql(ex_simple1, "default"));
-
-export default dtajax2sql;

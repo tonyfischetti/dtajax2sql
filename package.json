@@ -6,15 +6,15 @@
   "version": "0.0.1",
   "description": "A set of functions to help convert DataTables server-side AJAX calls into ANSI SQL",
   "type": "module",
-
-  "main": "dist/main.js",
-  "types": "dist/main.d.ts",
-
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [ "index.js", "index.d.ts" ],
   "scripts": {
     "start:dev": "npx tsc -w --project tsconfig.json",
-    "build": "npx shx rm -rf dist && npx tsc --project tsconfig.json",
-    "run": "node ./dist/main.js",
-    "test": "mocha"
+    "build": "npx shx rm -f index.js index.d.ts && npx shx rm -rf build && npx shx rm -rf dist && npx tsc --project tsconfig.json",
+    "bundle": "rollup -c",
+    "test": "mocha",
+    "check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm"
   },
   "repository": {
     "type": "git",
@@ -29,9 +29,12 @@
     "url": "https://github.com/tonyfischetti/dtajax2sql/issues"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.16.4",
     "@types/mocha": "^10.0.8",
     "@types/node": "^22.7.4",
     "mocha": "^10.7.3",
+    "rollup": "^4.24.0",
+    "rollup-plugin-dts": "^6.1.1",
     "shx": "^0.3.4",
     "typescript": "^5.6.2"
   }
