@@ -1,0 +1,30 @@
+{
+  "name": "dtajax2sql",
+  "author": "Tony Fischetti <tony.fischetti@gmail.com>",
+  "license": "GPL-3.0-or-later",
+  "homepage": "https://github.com/tonyfischetti/dtajax2sql#readme",
+  "version": "0.0.1",
+  "description": "A set of functions to help convert DataTables server-side AJAX calls into ANSI SQL",
+  "type": "module",
+
+  "main": "index.js",
+
+  "scripts": {
+    "start:dev": "npx tsc -w --project tsconfig.json",
+    "build": "npx shx rm -rf dist && npx tsc --project tsconfig.json",
+    "run": "node ./dist/main.js",
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tonyfischetti/dtajax2sql.git"
+  },
+  "keywords": [
+    "DataTables",
+    "ajax",
+    "sql"
+  ],
+  "bugs": {
+    "url": "https://github.com/tonyfischetti/dtajax2sql/issues"
+  }
+}
