@@ -75,7 +75,7 @@ export const getGlobalSearchSql = (params: DTAJAXParams,
  * Search Builder and helpers
  */
 export const getSBEqualsSql = (crit: SBCriterion): WhereClause => {
-  if (crit.type === "string")
+  if (crit.type.match(/^string/))
     return `(${escapeID(crit.origData)} = '${crit.value1}')`;
   //  TODO  is this really an ELSE condition? Is "string" or "num" exhaustive?
   const num = parseNumberHelper(crit.value1 ?? "");
@@ -85,8 +85,6 @@ export const getSBEqualsSql = (crit: SBCriterion): WhereClause => {
 //  NOTE  in SQLite, you can search for a number using a string
 //        but let's have different tests for other DBs (eventually)
 export const getSBEmpty = (crit: SBCriterion): WhereClause => {
-  // if (crit.type === "string")
-  // if (crit.type === "num")
   return `((${escapeID(crit.origData)} IS NULL) OR (${escapeID(crit.origData)} = ''))`;
 };
 
