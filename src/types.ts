@@ -3,6 +3,7 @@ export type TableName    = string;
 export type SQLFragment  = string;
 export type SelectClause = SQLFragment;
 export type WhereClause  = SQLFragment;
+export type SQLQuery     = string;
 
 
 /**
@@ -22,8 +23,8 @@ export type WhereClause  = SQLFragment;
 export interface ColumnObj {
   data: string;
   name: string;
-  searchable: 'true' | 'false';
-  orderable: 'true' | 'false';
+  searchable?: 'true' | 'false';
+  orderable?: 'true' | 'false';
   // also has "search" property
 }
 
@@ -161,5 +162,29 @@ export interface DTAJAXParams {
   search: GlobalSearch;
   searchBuilder: SearchBuilder;
   _: string;
+}
+
+
+export interface WhitespaceOpts {
+  removeLeadingWhitespace: boolean;
+  removeTrailingWhitespace: boolean;
+}
+
+export interface ConfigOpts {
+  globalSearch: WhitespaceOpts;
+  allowedFields: Array<string> | undefined;
+  //  TODO  really?
+  // searchBuilder: WhitespaceOpts;
+  //  TODO  there's more. think about it
+}
+
+export interface EscapedLIKE {
+  str: string;
+  escape: string | undefined;
+}
+
+export interface Result {
+  query: SQLQuery;
+  countQuery: SQLQuery;
 }
 

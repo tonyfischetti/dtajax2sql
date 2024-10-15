@@ -5,11 +5,15 @@ import {
   WhereClause,
   SBCriterion,
   SearchBuilder,
-  DTAJAXParams
+  DTAJAXParams,
+  ConfigOpts,
+  WhitespaceOpts
 } from "./types.js";
 
+import { escapeForLIKE,
+         escapeID }           from "./sanitization.js";
 import { negateClause,
-         parseNumberHelper } from "./utils.js";
+         parseNumberHelper }  from "./utils.js";
 
 
 /***********************************************************
@@ -26,6 +30,20 @@ const getLorOhelper = (params: DTAJAXParams,
 
 
 /***********************************************************
+ * SELECT clause
+ */
+export const getSelectClause = (params: DTAJAXParams): SelectClause => {
+  if (params.columns === undefined) throw new Error("malformed input");
+  const columns = params.columns.
+                    filter(i => i.data !== "").
+                    map(i => i.data).
+                    map(escapeID).
+                    filter(i => i !== "");
+  return `SELECT ${columns.join(", ")}`;
+};
+
+
+/***********************************************************
  * LIMIT and OFFSET
  */
 export const getLimitSql = (params: DTAJAXParams): SQLFragment => {
@@ -38,30 +56,30 @@ export const getOffsetSql = (params: DTAJAXParams): SQLFragment => {
 
 
 /***********************************************************
- * SELECT clause
- */
-export const getSelectClause = (params: DTAJAXParams): SelectClause => {
-  return `SELECT ${params.columns.map(i => i.data).join(", ")}`;
-};
-
-
-/***********************************************************
  * Global Search handler
  */
-export const getGlobalSearchSql = (params: DTAJAXParams): SQLFragment => {
+export const getGlobalSearchSql = (params: DTAJAXParams,
+                                   wOpts: WhitespaceOpts): SQLFragment => {
   //  TODO  check if missing the keys
-return `(CONCAT(${params.columns.map(i => i.data).join(", ")}) LIKE '%${params.search.value}%')`;
+  let { str: finalStr, escape } = escapeForLIKE(params.search.value)
+  if (wOpts.removeLeadingWhitespace)  { finalStr = finalStr.replace(/^\s+/, '') }
+  if (wOpts.removeTrailingWhitespace) { finalStr = finalStr.replace(/\s+$/, '') }
+  const withoutESCAPE = `(CONCAT(${params.columns.filter(i => i.data !== "").map(i => escapeID(i.data)).join(", ")}) LIKE '%${finalStr}%'`;
+  if (escape)
+    return `${withoutESCAPE} ESCAPE '${escape}')`;
+  return `${withoutESCAPE})`;
 };
+
 
 /***********************************************************
  * Search Builder and helpers
  */
 export const getSBEqualsSql = (crit: SBCriterion): WhereClause => {
   if (crit.type === "string")
-    return `(${crit.origData} = '${crit.value1}')`;
+    return `(${escapeID(crit.origData)} = '${crit.value1}')`;
   //  TODO  is this really an ELSE condition? Is "string" or "num" exhaustive?
   const num = parseNumberHelper(crit.value1 ?? "");
-  return `(${crit.origData} = ${num})`;
+  return `(${escapeID(crit.origData)} = ${num})`;
 };
 
 //  NOTE  in SQLite, you can search for a number using a string
@@ -69,42 +87,45 @@ export const getSBEqualsSql = (crit: SBCriterion): WhereClause => {
 export const getSBEmpty = (crit: SBCriterion): WhereClause => {
   // if (crit.type === "string")
   // if (crit.type === "num")
-  return `((${crit.origData} IS NULL) OR (${crit.origData} = ''))`;
+  return `((${escapeID(crit.origData)} IS NULL) OR (${escapeID(crit.origData)} = ''))`;
 };
 
 export const getSBContainsSql = (crit: SBCriterion): WhereClause => {
-  return `(${crit.origData} LIKE '%${crit.value1 ?? ""}%')`;
+  let { str: finalStr, escape } = escapeForLIKE(crit.value1 ?? "");
+  if (escape)
+    return `(${escapeID(crit.origData)} LIKE '%${finalStr}%' ESCAPE '${escape}')`;
+  return `(${escapeID(crit.origData)} LIKE '%${finalStr}%')`;
 };
 
 export const getSBStartsWithSql = (crit: SBCriterion): WhereClause => {
-  return `(${crit.origData} LIKE '${crit.value1 ?? ""}%')`;
+  let { str: finalStr, escape } = escapeForLIKE(crit.value1 ?? "");
+  if (escape)
+    return `(${escapeID(crit.origData)} LIKE '${finalStr}%' ESCAPE '${escape}')`;
+  return `(${escapeID(crit.origData)} LIKE '${finalStr}%')`;
 };
 
 export const getSBEndsWithSql = (crit: SBCriterion): WhereClause => {
-  return `(${crit.origData} LIKE '%${crit.value1 ?? ""}')`;
+  let { str: finalStr, escape } = escapeForLIKE(crit.value1 ?? "");
+  if (escape)
+    return `(${escapeID(crit.origData)} LIKE '%${finalStr}' ESCAPE '${escape}')`;
+  return `(${escapeID(crit.origData)} LIKE '%${finalStr}')`;
 };
 
 //  TODO  no error handling. write tests for it
 export const getSBBetweenSql = (crit: SBCriterion): WhereClause => {
   const v1 = parseNumberHelper(crit.value1 ?? "");
   const v2 = parseNumberHelper(crit.value2 ?? "");
-  return `((${crit.origData} >= ${v1}) AND (${crit.origData} <= ${v2}))`;
-};
-
-export const getSBNotBetweenSql = (crit: SBCriterion): WhereClause => {
-  const v1 = parseNumberHelper(crit.value1 ?? "");
-  const v2 = parseNumberHelper(crit.value2 ?? "");
-return `((${crit.origData} < ${v1}) OR (${crit.origData} > ${v2}))`;
+  return `(${escapeID(crit.origData)} BETWEEN ${v1} AND ${v2})`;
 };
 
 export const getSBLessThanSql = (crit: SBCriterion, orEqualTo=false): WhereClause => {
   const v1 = parseNumberHelper(crit.value1 ?? "");
-  return `(${crit.origData} <${orEqualTo ? "=" : ""} ${v1})`;
+  return `(${escapeID(crit.origData)} <${orEqualTo ? "=" : ""} ${v1})`;
 };
 
 export const getSBGreaterThanSql = (crit: SBCriterion, orEqualTo=false): WhereClause => {
   const v1 = parseNumberHelper(crit.value1 ?? "");
-  return `(${crit.origData} >${orEqualTo ? "=" : ""} ${v1})`;
+  return `(${escapeID(crit.origData)} >${orEqualTo ? "=" : ""} ${v1})`;
 };
 
 export const getSBCriterionSql = (crit: SBCriterion): SQLFragment => {
@@ -120,11 +141,12 @@ export const getSBCriterionSql = (crit: SBCriterion): SQLFragment => {
   if (crit.condition === "ends")       return getSBEndsWithSql(crit);
   if (crit.condition === "!ends")      return negateClause(getSBEndsWithSql(crit));
   if (crit.condition === "between")    return getSBBetweenSql(crit);
-  if (crit.condition === "!between")   return getSBNotBetweenSql(crit);
+  if (crit.condition === "!between")   return negateClause(getSBBetweenSql(crit));
   if (crit.condition === "<")          return getSBLessThanSql(crit);
   if (crit.condition === "<=")         return getSBLessThanSql(crit, true);
   if (crit.condition === ">")          return getSBGreaterThanSql(crit);
   if (crit.condition === ">=")         return getSBGreaterThanSql(crit, true);
+  if (crit.condition === undefined)    return "(True = True)";
   throw new Error("unrecognized condition");
 };
 
@@ -136,9 +158,9 @@ export const getSearchBuilderSql = (params: SearchBuilder): SQLFragment => {
   };
 
   const allCriteria = params['criteria'].map((i): string => {
-    // @ts-ignore
+    // @ts-ignore  TODO  
     if (!isNestedP(i)) return getSBCriterionSql(i);
-    // @ts-ignore
+    // @ts-ignore  TODO  
     return getSearchBuilderSql(i);
   }); 
   if (params['logic'] === 'AND') {
@@ -159,12 +181,17 @@ export const getSearchBuilderSql = (params: SearchBuilder): SQLFragment => {
 /***********************************************************
  * WHERE clause
  */
-export const getWhereClause = (params: DTAJAXParams): WhereClause => {
+export const getWhereClause = (params: DTAJAXParams, configOpts: ConfigOpts): WhereClause => {
+  const defaultGSWhitespaceOpts = { removeLeadingWhitespace: true, removeTrailingWhitespace: true };
+  //  TODO  unused rn
+  const defaultSBWhitespaceOpts = { removeLeadingWhitespace: false, removeTrailingWhitespace: false };
+  let opts = configOpts ?? { globalSearch: defaultGSWhitespaceOpts, searchBuilder: defaultSBWhitespaceOpts };
+  const fromGlobalSearch = ('search' in params && params.search.value !== '') ? 
+                              getGlobalSearchSql(params, opts.globalSearch) :
+                              "True";
   const fromSearchBuilder = ('searchBuilder' in params) ? 
                               getSearchBuilderSql(params.searchBuilder) :
                               "True";
-  const fromGlobalSearch = ('search' in params && params.search.value !== '') ? 
-                              getGlobalSearchSql(params) :
-                              "True";
   return `WHERE (${ [fromSearchBuilder, fromGlobalSearch].join(" AND ") })`;
 };
+

@@ -1,7 +1,9 @@
 
 import {
   TableName,
-  DTAJAXParams
+  DTAJAXParams,
+  ConfigOpts,
+  Result
 } from "./types.js";
 
 import { 
@@ -11,18 +13,29 @@ import {
   getWhereClause
 } from "./getSqlFragments.js";
 
-//  TODO  sql injection protection
 
-export const dtajax2sql = (params: DTAJAXParams, tblName: TableName) => {
+const defaultConfigOpts: ConfigOpts = {
+  //  TODO  only for where clauses?!!?
+  globalSearch: {
+    removeLeadingWhitespace: true,
+    removeTrailingWhitespace: true
+  },
+  allowedFields: undefined
+};
+
+export const dtajax2sql = (params: DTAJAXParams, 
+                           tblName: TableName,
+                           configOpts=defaultConfigOpts): Result => {
   //  TODO  error checking...
   // if (!("columns" in params))
   //   throw new Error("params don't include a 'columns' property");
   const selectClause = getSelectClause(params);
-  const fromClause = `FROM ${tblName}`;
-  const limit = getLimitSql(params);
-  const offset = getOffsetSql(params);
-  const whereClause = getWhereClause(params);
-  const q = `${selectClause} ${fromClause} ${whereClause} ${limit} ${offset}`;
-  return q;
+  const fromClause   = `FROM ${tblName}`;
+  const limit        = getLimitSql(params);
+  const offset       = getOffsetSql(params);
+  const whereClause  = getWhereClause(params, configOpts);
+  const q            = `${selectClause} ${fromClause} ${whereClause} ${limit} ${offset}`;
+  const cq           = `SELECT COUNT(*) as filteredCount ${fromClause} ${whereClause}`;
+  return { query: q, countQuery: cq };
 };
 

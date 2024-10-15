@@ -10,3 +10,12 @@ export const parseNumberHelper = (str: string): number => {
   if (isNaN(num)) throw new Error("couldn't parse number");
   return num;
 };
+
+//  TODO  LAZY
+export const compose = (...fns: any[]) => {
+  return (input: any) => {
+    return fns.reduce((acc, i) => {
+      return i(acc);
+    }, input);
+  };
+};

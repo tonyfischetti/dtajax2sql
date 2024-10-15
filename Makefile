@@ -1,6 +1,6 @@
 
 .PHONY: default
-default: test
+default: test bundle
 
 .PHONY: clean
 clean:
@@ -22,9 +22,10 @@ bundle: build
 test: build
 	npm run test
 
-.PHONY: prepublish
-prepublish: build bundle
+.PHONY: check
+check: test
+	npm run check-exports
 
 .PHONY: publish
-publish: prepublish
+publish: bundle check
 	npm publish

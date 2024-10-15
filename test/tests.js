@@ -1,7 +1,14 @@
 
 import assert from 'assert';
 
+import BetterSqlite3 from 'better-sqlite3';
+
+import { returnOkEscapeCharacter, escapeID, escapeString,
+          escapeForLIKE }
+  from '../dist/sanitization.js';
+
 import {
+  getSelectClause,
   getLimitSql,
   getOffsetSql,
   getSBCriterionSql,
@@ -10,6 +17,20 @@ import {
 } from '../dist/getSqlFragments.js';
 
 
+/**************************************************************************/
+
+const DB = new BetterSqlite3("./test/music.db", {
+  readonly: true,
+  fileMustExist: true
+});
+
+
+/**************************************************************************/
+
+
+
+
+/**************************************************************************/
 
 describe('limits and offsets', () => {
 
@@ -39,31 +60,7 @@ describe('limits and offsets', () => {
 
 });
 
-  /*** Where clauses ****************************************************
-    Numbers
-      Equals =
-      Not !=
-      Less Than <
-      Less Than Equal To <=
-      Greater Than Equal To >=
-      Greater Than >
-      Between between (di)
-      Not Between !between (di)
-      Empty null
-      Not Empty !null
-
-    Strings
-*     Equals =
-*     Not !=
-      Contains contains
-      Does Not Contain !contains
-      Starts with starts
-      Does Not Start !starts
-      Ends With ends
-      Does Not Ends With !ends
-*     Empty null
-*     Not Empty !null
-  ***********************************************************************/
+/**************************************************************************/
 
 describe('Search builder criteria', () => {
 
@@ -71,11 +68,11 @@ describe('Search builder criteria', () => {
   describe('getSBEqualsSql', () => {
     it("should handle simple case (string)", () => {
       const exs = { "condition": "=", "data": "Title", "origData": "Title", "type": "string", "value": [ "El sueño..." ], "value1": "El sueño..." };
-      assert.equal(getSBCriterionSql(exs), "(Title = 'El sueño...')");
+      assert.equal(getSBCriterionSql(exs), `("Title" = 'El sueño...')`);
     });
     it("should handle simple case (number)", () => {
       const exn = { "condition": "=", "data": "ObjectID", "origData": "ObjectID", "type": "num", "value": [ "1" ], "value1": "1" };
-      assert.equal(getSBCriterionSql(exn), "(ObjectID = 1)");
+      assert.equal(getSBCriterionSql(exn), `("ObjectID" = 1)`);
     });
     it("error if number can't be parsed", () => {
       const exn = { "condition": "=", "data": "ObjectID", "origData": "ObjectID", "type": "num", "value": [ "one" ], "value1": "one" };
@@ -83,11 +80,11 @@ describe('Search builder criteria', () => {
     });
     it("should handle simple negative case (string)", () => {
       const exs = { "condition": "!=", "data": "Title", "origData": "Title", "type": "string", "value": [ "El sueño..." ], "value1": "El sueño..." };
-      assert.equal(getSBCriterionSql(exs), "(NOT (Title = 'El sueño...'))");
+      assert.equal(getSBCriterionSql(exs), `(NOT ("Title" = 'El sueño...'))`);
     });
     it("should handle simple negative case (number)", () => {
       const exn = { "condition": "!=", "data": "ObjectID", "origData": "ObjectID", "type": "num", "value": [ "1" ], "value1": "1" };
-      assert.equal(getSBCriterionSql(exn), "(NOT (ObjectID = 1))");
+      assert.equal(getSBCriterionSql(exn), `(NOT ("ObjectID" = 1))`);
     });
     it("error if number can't be parsed", () => {
       const exn = { "condition": "!=", "data": "ObjectID", "origData": "ObjectID", "type": "num", "value": [ "one" ], "value1": "one" };
@@ -98,21 +95,21 @@ describe('Search builder criteria', () => {
   describe('getSBEmptySql', () => {
     it("should handle simple case (string)", () => {
       const exs = { "condition": "null", "data": "Title", "origData": "Title", "type": "string" };
-      assert.equal(getSBCriterionSql(exs), "((Title IS NULL) OR (Title = ''))");
+      assert.equal(getSBCriterionSql(exs), `(("Title" IS NULL) OR ("Title" = ''))`);
     });
     //  NOTE  in SQLite, you can search for a number using a string
     //        but let's have different tests for other DBs (eventually)
     it("should handle simple case (number)", () => {
       const exn = { "condition": "null", "data": "Object ID", "origData": "ObjectID", "type": "num" };
-      assert.equal(getSBCriterionSql(exn), "((ObjectID IS NULL) OR (ObjectID = ''))");
+      assert.equal(getSBCriterionSql(exn), `(("ObjectID" IS NULL) OR ("ObjectID" = ''))`);
     });
     it("should handle simple negative case (string)", () => {
       const exs = { "condition": "!null", "data": "Title", "origData": "Title", "type": "string" };
-      assert.equal(getSBCriterionSql(exs), "(NOT ((Title IS NULL) OR (Title = '')))");
+      assert.equal(getSBCriterionSql(exs), `(NOT (("Title" IS NULL) OR ("Title" = '')))`);
     });
     it("should handle simple negative case (number)", () => {
       const exn = { "condition": "!null", "data": "Object ID", "origData": "ObjectID", "type": "num" };
-      assert.equal(getSBCriterionSql(exn), "(NOT ((ObjectID IS NULL) OR (ObjectID = '')))");
+      assert.equal(getSBCriterionSql(exn), `(NOT (("ObjectID" IS NULL) OR ("ObjectID" = '')))`);
     });
   });
 
@@ -120,42 +117,42 @@ describe('Search builder criteria', () => {
   describe('getSBContainsSql', () => {
     it("should handle simple case", () => {
       const exs = { "condition": "contains", "data": "Title", "origData": "Title", "type": "string", "value": [ "robot boy" ], "value1": "robot boy" };
-      assert.equal(getSBCriterionSql(exs), "(Title LIKE '%robot boy%')");
+      assert.equal(getSBCriterionSql(exs), `("Title" LIKE '%robot boy%')`);
     });
   });
 
   describe('!getSBContainsSql', () => {
     it("should handle simple case", () => {
       const exs = { "condition": "!contains", "data": "Title", "origData": "Title", "type": "string", "value": [ "robot boy" ], "value1": "robot boy" };
-      assert.equal(getSBCriterionSql(exs), "(NOT (Title LIKE '%robot boy%'))");
+      assert.equal(getSBCriterionSql(exs), `(NOT ("Title" LIKE '%robot boy%'))`);
     });
   });
 
   describe('getSBStartsWithSql', () => {
     it("should handle simple case", () => {
       const exs = { "condition": "starts", "data": "Title", "origData": "Title", "type": "string", "value": [ "gold star for" ], "value1": "gold star for" };
-      assert.equal(getSBCriterionSql(exs), "(Title LIKE 'gold star for%')");
+      assert.equal(getSBCriterionSql(exs), `("Title" LIKE 'gold star for%')`);
     });
   });
 
   describe('!getSBStartsWithSql', () => {
     it("should handle simple case", () => {
-      const exs = { "condition": "starts", "data": "Title", "origData": "Title", "type": "string", "value": [ "gold star for" ], "value1": "gold star for" };
-      assert.equal(getSBCriterionSql(exs), "(Title LIKE 'gold star for%')");
+      const exs = { "condition": "!starts", "data": "Title", "origData": "Title", "type": "string", "value": [ "gold star for" ], "value1": "gold star for" };
+      assert.equal(getSBCriterionSql(exs), `(NOT ("Title" LIKE 'gold star for%'))`);
     });
   });
 
   describe('getSBEndsWithSql', () => {
     it("should handle simple case", () => {
       const exs = { "condition": "ends", "data": "Title", "origData": "Title", "type": "string", "value": [ "robot boy" ], "value1": "robot boy" };
-      assert.equal(getSBCriterionSql(exs), "(Title LIKE '%robot boy')");
+      assert.equal(getSBCriterionSql(exs), `("Title" LIKE '%robot boy')`);
     });
   });
 
   describe('!getSBEndsWithSql', () => {
     it("should handle simple case", () => {
       const exs = { "condition": "!ends", "data": "Title", "origData": "Title", "type": "string", "value": [ "robot boy" ], "value1": "robot boy" };
-      assert.equal(getSBCriterionSql(exs), "(NOT (Title LIKE '%robot boy'))");
+      assert.equal(getSBCriterionSql(exs), `(NOT ("Title" LIKE '%robot boy'))`);
     });
   });
 
@@ -163,11 +160,11 @@ describe('Search builder criteria', () => {
   describe('getSBLessThan (and less than or equal to)', () => {
     it("should handle less than", () => {
       const ex = { "condition": "<", "data": "Object ID", "origData": "ObjectID", "type": "num", "value": [ "1" ], "value1": "1" };
-      assert.equal(getSBCriterionSql(ex), "(ObjectID < 1)");
+      assert.equal(getSBCriterionSql(ex), `("ObjectID" < 1)`);
     });
     it("should handle less than or equal to", () => {
       const ex = { "condition": "<=", "data": "Object ID", "origData": "ObjectID", "type": "num", "value": [ "1" ], "value1": "1" };
-      assert.equal(getSBCriterionSql(ex), "(ObjectID <= 1)");
+      assert.equal(getSBCriterionSql(ex), `("ObjectID" <= 1)`);
     });
     it("error if number can't be parsed", () => {
       const exn = { "condition": "<=", "data": "ObjectID", "origData": "ObjectID", "type": "num", "value": [ "one" ], "value1": "one" };
@@ -178,11 +175,11 @@ describe('Search builder criteria', () => {
   describe('getSBGreaterThan (and greater than or equal to)', () => {
     it("should handle greater than", () => {
       const ex = { "condition": ">", "data": "Object ID", "origData": "ObjectID", "type": "num", "value": [ "1" ], "value1": "1" };
-      assert.equal(getSBCriterionSql(ex), "(ObjectID > 1)");
+      assert.equal(getSBCriterionSql(ex), `("ObjectID" > 1)`);
     });
     it("should handle greater than or equal to", () => {
       const ex = { "condition": ">=", "data": "Object ID", "origData": "ObjectID", "type": "num", "value": [ "1" ], "value1": "1" };
-      assert.equal(getSBCriterionSql(ex), "(ObjectID >= 1)");
+      assert.equal(getSBCriterionSql(ex), `("ObjectID" >= 1)`);
     });
     it("error if number can't be parsed", () => {
       const exn = { "condition": ">=", "data": "ObjectID", "origData": "ObjectID", "type": "num", "value": [ "one" ], "value1": "one" };
@@ -193,11 +190,11 @@ describe('Search builder criteria', () => {
   describe('getSBBetweenSql', () => {
     it("should handle simple case", () => {
       const ex = { "condition": "between", "data": "Object ID", "origData": "ObjectID", "type": "num", "value": [ "1", "3" ], "value1": "1", "value2": "3" };
-      assert.equal(getSBCriterionSql(ex), "((ObjectID >= 1) AND (ObjectID <= 3))");
+      assert.equal(getSBCriterionSql(ex), `("ObjectID" BETWEEN 1 AND 3)`);
     });
     it("should handle simple negative case", () => {
       const ex = { "condition": "!between", "data": "Object ID", "origData": "ObjectID", "type": "num", "value": [ "1", "3" ], "value1": "1", "value2": "3" };
-      assert.equal(getSBCriterionSql(ex), "((ObjectID < 1) OR (ObjectID > 3))");
+      assert.equal(getSBCriterionSql(ex), `(NOT ("ObjectID" BETWEEN 1 AND 3))`);
     });
     it("error if FIRST number can't be parsed", () => {
       const ex = { "condition": "!between", "data": "Object ID", "origData": "ObjectID", "type": "num", "value": [ "one", "3" ], "value1": "one", "value2": "3" };
@@ -217,6 +214,7 @@ describe('Search builder criteria', () => {
   });
 });
 
+/**************************************************************************/
 
 
 describe('getSearchBuilderSql', () => {
@@ -224,21 +222,21 @@ describe('getSearchBuilderSql', () => {
   describe('handle single criterion', () => {
     it("AND logic", () => {
       const ex = { "criteria": [ { "condition": "contains", "data": "Title", "origData": "Title", "type": "string", "value": [ "q" ], "value1": "q" } ], "logic": "AND" };
-      assert.equal(getSearchBuilderSql(ex), "((Title LIKE '%q%') AND True)");
+      assert.equal(getSearchBuilderSql(ex), `(("Title" LIKE '%q%') AND True)`);
     });
     it("OR logic", () => {
       const ex = { "criteria": [ { "condition": "contains", "data": "Title", "origData": "Title", "type": "string", "value": [ "q" ], "value1": "q" } ], "logic": "OR" };
-      assert.equal(getSearchBuilderSql(ex), "((Title LIKE '%q%') OR False)");
+      assert.equal(getSearchBuilderSql(ex), `(("Title" LIKE '%q%') OR False)`);
     });
   });
 
   describe('handle multiple criteria (2nd level)', () => {
     const ex = { "criteria": [ { "condition": "=", "data": "Department", "origData": "Department", "type": "string", "value": [ "english" ], "value1": "english" }, { "condition": "contains", "data": "Title", "origData": "Title", "type": "string", "value": [ "bovary" ], "value1": "bovary" } ], };
     it("AND logic", () => {
-      assert.equal(getSearchBuilderSql({logic: "AND", ...ex}), "((Department = 'english') AND (Title LIKE '%bovary%'))");
+      assert.equal(getSearchBuilderSql({logic: "AND", ...ex}), `(("Department" = 'english') AND ("Title" LIKE '%bovary%'))`);
     });
     it("OR logic", () => {
-      assert.equal(getSearchBuilderSql({logic: "OR", ...ex}), "((Department = 'english') OR (Title LIKE '%bovary%'))");
+      assert.equal(getSearchBuilderSql({logic: "OR", ...ex}), `(("Department" = 'english') OR ("Title" LIKE '%bovary%'))`);
     });
   });
 
@@ -246,17 +244,16 @@ describe('getSearchBuilderSql', () => {
   describe('handle nested criteria (3rd level)', () => {
     it("Outer OR, inner ANDs", () => {
       const nested = { "criteria": [ { "criteria": [ { "condition": "=", "data": "Department", "origData": "Department", "type": "string", "value": { "[]": "Photography" }, "value1": "Photography" }, { "condition": "=", "data": "Last Name", "origData": "LastName", "type": "string", "value": { "[]": "Goldin" }, "value1": "Goldin" } ], "logic": "AND" }, { "criteria": [ { "condition": "=", "data": "Department", "origData": "Department", "type": "string", "value": { "[]": "Print" }, "value1": "Print" }, { "condition": "=", "data": "Last Name", "origData": "LastName", "type": "string", "value": { "[]": "Goya" }, "value1": "Goya" } ], "logic": "AND" } ], "logic": "OR" };
-      assert.equal(getSearchBuilderSql(nested), "(((Department = 'Photography') AND (LastName = 'Goldin')) OR ((Department = 'Print') AND (LastName = 'Goya')))");
+      assert.equal(getSearchBuilderSql(nested), `((("Department" = 'Photography') AND ("LastName" = 'Goldin')) OR (("Department" = 'Print') AND ("LastName" = 'Goya')))`);
     });
     it("Outer OR, ONE inner AND", () => {
       const nested = { "criteria": [ { "criteria": [ { "condition": "=", "data": "Department", "origData": "Department", "type": "string", "value": { "[]": "english" }, "value1": "english" }, { "condition": "contains", "data": "Title", "origData": "Title", "type": "string", "value": { "[]": "spanish" }, "value1": "spanish" } ], "logic": "AND" }, { "condition": "=", "data": "Department", "origData": "Department", "type": "string", "value": [ "spanish" ], "value1": "spanish" } ], "logic": "OR" };
-      assert.equal(getSearchBuilderSql(nested), "(((Department = 'english') AND (Title LIKE '%spanish%')) OR (Department = 'spanish'))");
+      assert.equal(getSearchBuilderSql(nested), `((("Department" = 'english') AND ("Title" LIKE '%spanish%')) OR ("Department" = 'spanish'))`);
     });
     it("Outer AND, ONE inner OR", () => {
       const nested = { "criteria": [ { "criteria": [ { "condition": "=", "data": "Department", "origData": "Department", "type": "string", "value": { "[]": "english" }, "value1": "english" }, { "condition": "contains", "data": "Title", "origData": "Title", "type": "string", "value": { "[]": "spanish" }, "value1": "spanish" } ], "logic": "OR" }, { "condition": "=", "data": "Department", "origData": "Department", "type": "string", "value": [ "spanish" ], "value1": "spanish" } ], "logic": "AND" };
-      assert.equal(getSearchBuilderSql(nested), "(((Department = 'english') OR (Title LIKE '%spanish%')) AND (Department = 'spanish'))");
+      assert.equal(getSearchBuilderSql(nested), `((("Department" = 'english') OR ("Title" LIKE '%spanish%')) AND ("Department" = 'spanish'))`);
     });
-
 
     it("handle nested nested criteria", () => {
       // if ('[0][condition]' in req.query?.searchBuilder.criteria[0].criteria[0].criteria) ...
@@ -312,22 +309,39 @@ describe('getSearchBuilderSql', () => {
   });
 });
 
+/**************************************************************************/
 
 describe('getWhereClause', () => {
 
   describe('simple cases', () => {
     it("both search AND searchBuilder", () => {
       const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'false', orderable: 'false' } ], search: { value: "global", regex: 'false' }, searchBuilder: { "criteria": [ { "condition": "contains", "data": "Title", "origData": "Title", "type": "string", "value": [ "q" ], "value1": "q" } ], "logic": "AND" }, start: '0', length: '30', _: '1727689860063' };
-      assert.equal(getWhereClause(ex_simple1), "WHERE (((Title LIKE '%q%') AND True) AND (CONCAT(Department, Title) LIKE '%global%'))");
-    });
-    it("only searchBuilder", () => {
-      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'false', orderable: 'false' } ], searchBuilder: { "criteria": [ { "condition": "contains", "data": "Title", "origData": "Title", "type": "string", "value": [ "q" ], "value1": "q" } ], "logic": "AND" }, start: '0', length: '30', _: '1727689860063' };
-      assert.equal(getWhereClause(ex_simple1), "WHERE (((Title LIKE '%q%') AND True) AND True)");
+      assert.equal(getWhereClause(ex_simple1), `WHERE ((("Title" LIKE '%q%') AND True) AND (CONCAT("Department", "Title") LIKE '%global%'))`);
     });
     it("only globalSearch", () => {
       const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'false', orderable: 'false' } ], search: { value: "global", regex: 'false' }, start: '0', length: '30', _: '1727689860063' };
-      assert.equal(getWhereClause(ex_simple1), "WHERE (True AND (CONCAT(Department, Title) LIKE '%global%'))");
+      assert.equal(getWhereClause(ex_simple1), `WHERE (True AND (CONCAT("Department", "Title") LIKE '%global%'))`);
     });
+
+    it("only globalSearch does away with whitespace by default", () => {
+      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'false', orderable: 'false' } ], search: { value: " global ", regex: 'false' }, start: '0', length: '30', _: '1727689860063' };
+      assert.equal(getWhereClause(ex_simple1), `WHERE (True AND (CONCAT("Department", "Title") LIKE '%global%'))`);
+    });
+    it("only globalSearch (leading whitespace)", () => {
+      const opts = { globalSearch: { removeLeadingWhitespace: false, removeTrailingWhitespace: true }, allowedFields: undefined };
+      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'false', orderable: 'false' } ], search: { value: " global ", regex: 'false' }, start: '0', length: '30', _: '1727689860063' };
+      assert.equal(getWhereClause(ex_simple1, opts), `WHERE (True AND (CONCAT("Department", "Title") LIKE '% global%'))`);
+    });
+    it("only globalSearch (trailing whitespace)", () => {
+      const opts = { globalSearch: { removeLeadingWhitespace: true, removeTrailingWhitespace: false }, allowedFields: undefined };
+      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'false', orderable: 'false' } ], search: { value: " global ", regex: 'false' }, start: '0', length: '30', _: '1727689860063' };
+      assert.equal(getWhereClause(ex_simple1, opts), `WHERE (True AND (CONCAT("Department", "Title") LIKE '%global %'))`);
+    });
+    it("only searchBuilder", () => {
+      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'false', orderable: 'false' } ], searchBuilder: { "criteria": [ { "condition": "contains", "data": "Title", "origData": "Title", "type": "string", "value": [ "q" ], "value1": "q" } ], "logic": "AND" }, start: '0', length: '30', _: '1727689860063' };
+      assert.equal(getWhereClause(ex_simple1), `WHERE ((("Title" LIKE '%q%') AND True) AND True)`);
+    });
+    //  TODO  should search handler different opts
     it("neither", () => {
       const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'false', orderable: 'false' } ], start: '0', length: '30', _: '1727689860063' };
       assert.equal(getWhereClause(ex_simple1), "WHERE (True AND True)");
@@ -338,3 +352,179 @@ describe('getWhereClause', () => {
 
 });
 
+/**************************************************************************/
+
+
+
+describe('select', () => {
+
+  describe('getSelectC', () => {
+    it("should handle simple case", () => {
+      assert.equal(getSelectClause({ columns: [{data: "dat 1"},{data: "dat 2"}] }), `SELECT "dat 1", "dat 2"`);
+    });
+    //  TODO  important
+    // it("should error with garbage", () => {
+    //   assert.throws(() => { getSelectClause({ columns: [{data: "da`t1"},{data: "dat2"}] }) }, Error);
+    //   assert.throws(() => { getSelectClause({ columns: [{data: "'"},{data: "dat2"}] }) }, Error);
+    //   assert.throws(() => { getSelectClause({ columns: [{data: "`"},{data: "dat2"}] }) }, Error);
+    //   assert.throws(() => { getSelectClause({ columns: [{data: "; DROP"},{data: "dat2"}] }) }, Error);
+    //   // console.log(getSelectClause({ columns: [{data: ""},{data: "dat2"}] }));
+    // });
+    it("should handle case of empty id", () => {
+      assert.equal(getSelectClause({ columns: [{data: ""},{data: "dat2"}] }), `SELECT "dat2"`);
+    });
+    it("???", () => {
+      // console.log(getSelectClause({ columns: [{data: ""}] }));
+      // console.log(getSelectClause({ columns: [{data: null}] }));
+      // console.log(getSelectClause({ columns: [{data: []}] }));
+    });
+  });
+
+});
+
+
+
+
+
+/**************************************************************************/
+/**************************************************************************/
+/**************************************************************************/
+/**************************************************************************/
+
+
+describe("checking test enviromnent", () => {
+  describe("music.db test DB", () => {
+    it("music.db hasn't changed", () => {
+      const q = `SELECT COUNT(*) as N FROM songs`;
+      assert.equal(DB.prepare(q).get()["N"], 19);
+    });
+  });
+});
+
+
+
+/**************************************************************************/
+
+describe('sanitization', () => {
+
+  describe('returnOkEscapeCharacter', () => {
+    it("simple", () => {
+      assert.equal(returnOkEscapeCharacter("simple"), "\\");
+    });
+    it("no backslash", () => {
+      assert.equal(returnOkEscapeCharacter("this\\that"), "@");
+    });
+    it("no @", () => {
+      assert.equal(returnOkEscapeCharacter("this@that"), "\\");
+    });
+    it("handle the unthinkable case", () => {
+      const s = "\\@!λ齆֎پ௺᭩uh oh!";
+      assert.equal(returnOkEscapeCharacter(s), "¼");
+    });
+  });
+
+  describe('escapeID (not DB)', () => {
+    it("simple", () => {
+      assert.equal(escapeID("song_id"), '"song_id"');
+    });
+    it("errors correctly", () => {
+      assert.throws(() => escapeID(4), Error);
+      assert.throws(() => escapeID({}), Error);
+    });
+    it("spaces in column name", () => {
+      assert.equal(escapeID("Song title"), '"Song title"');
+    });
+    it("quotes in column name", () => {
+      assert.equal(escapeID(`Tony's "Notes"`), `"Tony's ""Notes"""`);
+      assert.equal(escapeID(`Tony's ""Notes""`), `"Tony's """"Notes"""""`);
+    });
+  });
+
+  describe('escapeID using DB', () => {
+    it("simple", () => {
+      const q = `SELECT ${escapeID("song_id")} FROM songs WHERE ${escapeID("Song title")} = 'Electrobugs';`;
+      assert.equal(DB.prepare(q).get()["song_id"], 5);
+    });
+    it("spaces in column name", () => {
+      const q = `SELECT ${escapeID("Artist name")} FROM songs WHERE ${escapeID('Song title')} = '$ENV{''HOME''}'`;
+      assert.equal(DB.prepare(q).get()["Artist name"], "Tony and the Moondogs");
+    });
+    it("quotes in column name", () => {
+      const t = escapeID(`Tony's "Notes"`);
+      const q = `SELECT COUNT(*) AS N FROM songs WHERE ${t} = '::sweats::'`;
+      assert.equal(DB.prepare(q).get()["N"], 2);
+    });
+  });
+
+  // emoji
+
+  // describe('escapeString', () => {
+  //   it("simple", () => {
+  //     assert.equal(escapeString("simple"), "simple");
+  //   });
+  //   it("contains backslash", () => {
+  //     //  TODO  is this what we _really_ want?!
+  //     assert.equal(escapeString("left \\ right"), "left \\ right");
+  //   });
+  //   it("contains bell", () => {
+  //     assert.equal(escapeString("bell: \b"), "bell: \\b");
+  //   });
+  //   it("contains null", () => {
+  //     assert.equal(escapeString("null: \0"), "null: \\0");
+  //   });
+  //   it("ride into the danger zone", () => {
+  //     const dz = `Robert'); DROP TABLE Students;--`;
+  //     assert.equal(escapeString(dz), "Robert\\'); DROP TABLE Students;--");
+  //   });
+  // });
+
+  //  TODO  demonstrate that escapeString is a pre-req
+  describe('escapeForLIKE', () => {
+
+    it("simple", () => {
+      assert.equal(escapeForLIKE("simple").str, "simple");
+    });
+    it("single quote", () => {
+      assert.equal(escapeForLIKE("Ol'").str, "Ol''");
+    });
+    it("double quote", () => {
+      assert.equal(escapeForLIKE('"Friends').str, '"Friends');
+    });
+    it("backslash", () => {
+      assert.equal(escapeForLIKE('\\').str, '\\');
+    });
+    // it("null", () => {
+    //   assert.equal(escapeForLIKE('\0').str, '\\0');
+    // });
+    it("percent sign", () => {
+      const r = escapeForLIKE('100%');
+      assert.equal(r.str, '100\\%');
+      assert.equal(r.escape, '\\');
+    });
+    it("underscore", () => {
+      const r = escapeForLIKE('City_Vibes');
+      assert.equal(r.str, 'City\\_Vibes');
+      assert.equal(r.escape, '\\');
+    });
+    it("underscore 2", () => {
+      const r = escapeForLIKE('C\\ity_Vibes');
+      assert.equal(r.str, 'C\\ity@_Vibes');
+      assert.equal(r.escape, '@');
+    });
+    
+  });
+
+  //  TODO  expand!!!
+  describe('expand!', () => {
+    const q = `SELECT * FROM songs WHERE ((${escapeID("Song title")} LIKE '%${escapeForLIKE("\\").str}%') OR (${escapeID("Song title")} LIKE '%${escapeForLIKE("%").str}%' ESCAPE '${escapeForLIKE("%").escape}') OR (${escapeID("Song title")}='${escapeString("Robert'); DROP TABLE songs;--")}'))`;
+    console.log(q);
+    assert.equal(q, `SELECT * FROM songs WHERE (("Song title" LIKE '%\\%') OR ("Song title" LIKE '%\\%%' ESCAPE '\\') OR ("Song title"='Robert''); DROP TABLE songs;--'))`);
+  });
+
+});
+
+/**************************************************************************/
+
+/*
+ * 
+ */
