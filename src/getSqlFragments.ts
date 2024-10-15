@@ -10,8 +10,10 @@ import {
   WhitespaceOpts
 } from "./types.js";
 
-import { escapeForLIKE,
-         escapeID }           from "./sanitization.js";
+import {
+         escapeID,
+         escapeString,
+         escapeForLIKE }      from "./sanitization.js";
 import { negateClause,
          parseNumberHelper }  from "./utils.js";
 
@@ -35,10 +37,8 @@ const getLorOhelper = (params: DTAJAXParams,
 export const getSelectClause = (params: DTAJAXParams): SelectClause => {
   if (params.columns === undefined) throw new Error("malformed input");
   const columns = params.columns.
-                    filter(i => i.data !== "").
                     map(i => i.data).
-                    map(escapeID).
-                    filter(i => i !== "");
+                    map(escapeID);
   return `SELECT ${columns.join(", ")}`;
 };
 
@@ -76,7 +76,7 @@ export const getGlobalSearchSql = (params: DTAJAXParams,
  */
 export const getSBEqualsSql = (crit: SBCriterion): WhereClause => {
   if (crit.type.match(/^string/))
-    return `(${escapeID(crit.origData)} = '${crit.value1}')`;
+    return `(${escapeID(crit.origData)} = '${escapeString(crit.value1 ?? "")}')`;
   //  TODO  is this really an ELSE condition? Is "string" or "num" exhaustive?
   const num = parseNumberHelper(crit.value1 ?? "");
   return `(${escapeID(crit.origData)} = ${num})`;

@@ -16,6 +16,8 @@ import {
   getWhereClause,
 } from '../dist/getSqlFragments.js';
 
+import { dtajax2sql } from '../dist/dtajax2sql.js';
+
 
 /**************************************************************************/
 
@@ -353,41 +355,6 @@ describe('getWhereClause', () => {
 });
 
 /**************************************************************************/
-
-
-
-describe('select', () => {
-
-  describe('getSelectC', () => {
-    it("should handle simple case", () => {
-      assert.equal(getSelectClause({ columns: [{data: "dat 1"},{data: "dat 2"}] }), `SELECT "dat 1", "dat 2"`);
-    });
-    //  TODO  important
-    // it("should error with garbage", () => {
-    //   assert.throws(() => { getSelectClause({ columns: [{data: "da`t1"},{data: "dat2"}] }) }, Error);
-    //   assert.throws(() => { getSelectClause({ columns: [{data: "'"},{data: "dat2"}] }) }, Error);
-    //   assert.throws(() => { getSelectClause({ columns: [{data: "`"},{data: "dat2"}] }) }, Error);
-    //   assert.throws(() => { getSelectClause({ columns: [{data: "; DROP"},{data: "dat2"}] }) }, Error);
-    //   // console.log(getSelectClause({ columns: [{data: ""},{data: "dat2"}] }));
-    // });
-    it("should handle case of empty id", () => {
-      assert.equal(getSelectClause({ columns: [{data: ""},{data: "dat2"}] }), `SELECT "dat2"`);
-    });
-    it("???", () => {
-      // console.log(getSelectClause({ columns: [{data: ""}] }));
-      // console.log(getSelectClause({ columns: [{data: null}] }));
-      // console.log(getSelectClause({ columns: [{data: []}] }));
-    });
-  });
-
-});
-
-
-
-
-
-/**************************************************************************/
-/**************************************************************************/
 /**************************************************************************/
 /**************************************************************************/
 
@@ -401,6 +368,44 @@ describe("checking test enviromnent", () => {
   });
 });
 
+
+/**************************************************************************/
+
+describe('select', () => {
+
+  describe('getSelectC', () => {
+    it("should handle simple case", () => {
+      assert.equal(getSelectClause({ columns: [{data: "dat 1"},{data: "dat 2"}] }), `SELECT "dat 1", "dat 2"`);
+    });
+    //  TODO  important
+    it("should handle weird characters", () => {
+      const example = { columns: [{data: "da`t1"},{data: "dat2"}] };
+      assert.equal(getSelectClause(example), 'SELECT "da`t1", "dat2"');
+    });
+    it("should handle weird characters", () => {
+      const example = { columns: [{data: "`"},{data: "dat2"}] };
+      assert.equal(getSelectClause(example), 'SELECT "`", "dat2"');
+    });
+    it("this is actually legal in SQLite", () => {
+      const example = { columns: [{data: " "},{data: "dat2"}] };
+      assert.equal(getSelectClause(example), 'SELECT " ", "dat2"');
+    });
+    it("and, incredibly, this is too", () => {
+      const example = { columns: [{data: ""},{data: "dat2"}] };
+      assert.equal(getSelectClause(example), 'SELECT "", "dat2"');
+    });
+    it("and, incredibly, this is too", () => {
+      assert.equal(getSelectClause({ columns: [{data: ""}] }), 'SELECT ""');
+    });
+    it("???", () => {
+      assert.throws(() => { getLimitSql({ columns: [{data: null}] }) }, Error);
+      assert.throws(() => { getLimitSql({ columns: [{data: []}] }) }, Error);
+    });
+  });
+
+});
+
+/**************************************************************************/
 
 
 /**************************************************************************/
@@ -456,31 +461,7 @@ describe('sanitization', () => {
     });
   });
 
-  // emoji
-
-  // describe('escapeString', () => {
-  //   it("simple", () => {
-  //     assert.equal(escapeString("simple"), "simple");
-  //   });
-  //   it("contains backslash", () => {
-  //     //  TODO  is this what we _really_ want?!
-  //     assert.equal(escapeString("left \\ right"), "left \\ right");
-  //   });
-  //   it("contains bell", () => {
-  //     assert.equal(escapeString("bell: \b"), "bell: \\b");
-  //   });
-  //   it("contains null", () => {
-  //     assert.equal(escapeString("null: \0"), "null: \\0");
-  //   });
-  //   it("ride into the danger zone", () => {
-  //     const dz = `Robert'); DROP TABLE Students;--`;
-  //     assert.equal(escapeString(dz), "Robert\\'); DROP TABLE Students;--");
-  //   });
-  // });
-
-  //  TODO  demonstrate that escapeString is a pre-req
   describe('escapeForLIKE', () => {
-
     it("simple", () => {
       assert.equal(escapeForLIKE("simple").str, "simple");
     });
@@ -493,9 +474,6 @@ describe('sanitization', () => {
     it("backslash", () => {
       assert.equal(escapeForLIKE('\\').str, '\\');
     });
-    // it("null", () => {
-    //   assert.equal(escapeForLIKE('\0').str, '\\0');
-    // });
     it("percent sign", () => {
       const r = escapeForLIKE('100%');
       assert.equal(r.str, '100\\%');
@@ -525,6 +503,86 @@ describe('sanitization', () => {
 
 /**************************************************************************/
 
-/*
- * 
+
+/**************************************************************************
+ * Testing with a real DB
  */
+
+
+describe('testing against a real (weird) DB', () => {
+
+  describe('testing against valid (expected) input', () => {
+
+    it("global search is case-insensitive by default", () => {
+      const params = {"draw":"6","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"12","search":{"value":"keep","regex":"false"},"_":"1729015491120"};
+      const { query } = dtajax2sql(params, 'songs');
+      assert.equal(DB.prepare(query).get()["song_id"], 8);
+    });
+    it("global search takes quote", () => {
+      const params = {"draw":"12","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"11","search":{"value":"\"","regex":"false"},"searchBuilder":{"criteria":[{"type":""}],"logic":"AND"},"_":"1729015491126"};
+      const { query } = dtajax2sql(params, 'songs');
+      assert.deepEqual(DB.prepare(query).all().map(i => i['song_id']), [1, 2, 13]);
+    });
+    it("global search removes leading and trailing whitespace", () => {
+      const params = {"draw":"12","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"11","search":{"value":" \" ","regex":"false"},"searchBuilder":{"criteria":[{"type":""}],"logic":"AND"},"_":"1729015491126"};
+      const { query } = dtajax2sql(params, 'songs');
+      assert.deepEqual(DB.prepare(query).all().map(i => i['song_id']), [1, 2, 13]);
+    });
+
+    it("global search handles greek", () => {
+      const params = {"draw":"23","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"11","search":{"value":"Δημ","regex":"false"},"searchBuilder":{"criteria":[{"type":""}],"logic":"AND"},"_":"1729015491137"};
+      const { query } = dtajax2sql(params, 'songs');
+      assert.equal(DB.prepare(query).get()['song_id'], 3);
+    });
+
+    it("global search handles arabic", () => {
+      const params = {"draw":"23","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"11","search":{"value":"ٱللَّٰهُ","regex":"false"},"searchBuilder":{"criteria":[{"type":""}],"logic":"AND"},"_":"1729015491137"};
+      const { query } = dtajax2sql(params, 'songs');
+      assert.equal(DB.prepare(query).get()['song_id'], 9);
+    });
+
+    it("global search handles emojis", () => {
+      const params = {"draw":"23","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"11","search":{"value":"💯","regex":"false"},"searchBuilder":{"criteria":[{"type":""}],"logic":"AND"},"_":"1729015491137"};
+      const { query } = dtajax2sql(params, 'songs');
+      assert.equal(DB.prepare(query).get()['song_id'], 8);
+    });
+    it("global search handles sql injections", () => {
+      const params = {"draw":"3","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"12","search":{"value":"Robert'); DROP TABLE songs;--","regex":"false"},"_":"1729017098493"};
+      const { query } = dtajax2sql(params, 'songs');
+      assert.equal(DB.prepare(query).get()['song_id'], 10);
+    });
+
+    it("global search handles backslashes", () => {
+      const params = {"draw":"6","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"12","search":{"value":"\\","regex":"false"},"_":"1729017098496"};
+      const { query } = dtajax2sql(params, 'songs');
+      assert.equal(DB.prepare(query).get()['song_id'], 18);
+    });
+
+    it("global search handles percent signs", () => {
+      const params = {"draw":"9","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"12","search":{"value":"% (","regex":"false"},"_":"1729017098499"};
+      const { query } = dtajax2sql(params, 'songs');
+      assert.equal(DB.prepare(query).get()['song_id'], 17);
+    });
+    it("global search handles underscores and searches across all columns", () => {
+      const params = {"draw":"14","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"12","search":{"value":"_","regex":"false"},"_":"1729017098504"};
+      const { query } = dtajax2sql(params, 'songs');
+      assert.deepEqual(DB.prepare(query).all().map(i => i['song_id']), [6, 11, 19]);
+    });
+    it("global search handles asterisks", () => {
+      const params = {"draw":"3","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"12","search":{"value":"*","regex":"false"},"_":"1729017570310"};
+      const { query } = dtajax2sql(params, 'songs');
+      assert.equal(DB.prepare(query).get()['song_id'], 7);
+    });
+
+    // it("search builder number equals but empty field", () => {
+    //   const params = {"draw":"6","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"11","search":{"value":"","regex":"false"},"searchBuilder":{"criteria":[{"condition":"=","data":"Song ID","origData":"song_id","type":"num","value":[""],"value1":""}],"logic":"AND"},"_":"1729017570313"};
+    //   const { query } = dtajax2sql(params, 'songs');
+    //   assert.equal(DB.prepare(query).get()['song_id'], 7);
+    // });
+
+
+  });
+
+
+
+});

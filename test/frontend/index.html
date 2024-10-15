@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!-- Head --------------------------------------------------------------->
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>dtajax2sql demo</title>
+
+    <!-- CSS ------------------------------------------------------>
+    <link rel="stylesheet" href="styles/reset.css" />
+    <link rel="stylesheet" href="styles/main.css" />
+    <link
+      href="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.0.7/b-3.0.2/b-colvis-3.0.2/b-html5-3.0.2/fh-4.0.1/r-3.0.2/sc-2.4.2/sb-1.7.1/sp-2.3.1/sl-2.0.1/datatables.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- First javascript imports --------------------------------->
+    <!-- <script src="js/vendor/datatables.min.js"></script> -->
+    <script src="js/vendor/datatables.js"></script>
+    <script src="js/vendor/dataTables.pageResize.min.js"></script>
+    <script src="js/main.js" type="module"></script>
+  </head>
+
+  <!-- Body --------------------------------------------------------------->
+  <body class="is-preload">
+    <!-- Banner ----------------------------------------------------->
+    <div id="banner" role="banner">
+      <span>demo</span>
+    </div>
+
+    <!-- Header ----------------------------------------------------->
+    <header id="header">
+      <h1>Minimal demonstration</h1>
+    </header>
+
+    <!-- Mid section ------------------------------------------------>
+    <div id="midsection">
+      <!-- Port ------------------------------------------------>
+      <div id="port">
+        <span>port</span>
+      </div>
+
+      <!-- Main ------------------------------------------------>
+      <div id="main">
+        <!-- Main header ------------------------------------>
+        <div id="main-header">
+          <span>main header</span>
+        </div>
+
+        <!-- Main center ------------------------------------>
+        <div id="main-center">
+          <div id="dt-holder">
+            <div id="dt-resize-wrapper">
+              <table
+                id="dt-table"
+                class="display responsive nowrap"
+                style="width: 100%"
+              ></table>
+            </div>
+          </div>
+
+        <!-- Main footer ------------------------------------>
+        <div id="main-footer">
+          <div id="main-footer-text">2024</div>
+          <div class="small-horizontal-gap"></div>
+        </div>
+      </div>
+
+      <!-- Starboard -------------------------------------------->
+      <div id="starboard">
+        <span>starboard</span>
+      </div>
+    </div>
+
+    <!-- Footer ----------------------------------------------------->
+    <footer id="footer">
+      <span>footer</span>
+    </footer>
+  </body>
+</html>

@@ -68,7 +68,7 @@ export const escapeForLIKE = (s: string): EscapedLIKE => {
   const better = escapeString(s);
   const okEscapeCharacter = returnOkEscapeCharacter(s);
   let retEscape = undefined;
-  const retStr = better.replaceAll(/['%_]/g, (c) => {
+  const retStr = better.replaceAll(/[%_]/g, (c) => {
     /*  NOTE  just in case we have to treat them differently */
     switch (c) {
       case '%' :
