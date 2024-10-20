@@ -13,6 +13,9 @@ import {
   getWhereClause
 } from "./getSqlFragments.js";
 
+import {
+  convertColumnPropToArray
+} from './utils.js';
 
 const defaultConfigOpts: ConfigOpts = {
   //  TODO  only for where clauses?!!?
@@ -20,7 +23,8 @@ const defaultConfigOpts: ConfigOpts = {
     removeLeadingWhitespace: true,
     removeTrailingWhitespace: true
   },
-  allowedFields: undefined
+  allowedFields: undefined,
+  gsFields: undefined
 };
 
 export const dtajax2sql = (params: DTAJAXParams, 
@@ -29,6 +33,11 @@ export const dtajax2sql = (params: DTAJAXParams,
   //  TODO  error checking...
   // if (!("columns" in params))
   //   throw new Error("params don't include a 'columns' property");
+
+  //  TEST  WRITE TEST FOR THIS!!
+  if (!Array.isArray(params.columns))
+    params.columns =  convertColumnPropToArray(params.columns);
+
   const selectClause = getSelectClause(params);
   const fromClause   = `FROM ${tblName}`;
   const limit        = getLimitSql(params);

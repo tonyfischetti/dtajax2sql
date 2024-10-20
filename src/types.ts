@@ -173,6 +173,7 @@ export interface WhitespaceOpts {
 export interface ConfigOpts {
   globalSearch: WhitespaceOpts;
   allowedFields: Array<string> | undefined;
+  gsFields: Array<string> | undefined;
   //  TODO  really?
   // searchBuilder: WhitespaceOpts;
   //  TODO  there's more. think about it
