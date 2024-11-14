@@ -3,6 +3,8 @@ import {
   SQLFragment,
   SelectClause,
   WhereClause,
+  OrderClause,
+  OrderDirective,
   SBCriterion,
   SearchBuilder,
   DTAJAXParams,
@@ -180,6 +182,7 @@ export const getSearchBuilderSql = (params: SearchBuilder): SQLFragment => {
  * WHERE clause
  */
 export const getWhereClause = (params: DTAJAXParams, configOpts: ConfigOpts): WhereClause => {
+  //  TODO  this is ugly. fix it
   const defaultGSWhitespaceOpts = { removeLeadingWhitespace: true, removeTrailingWhitespace: true };
   //  TODO  unused rn
   const defaultSBWhitespaceOpts = { removeLeadingWhitespace: false, removeTrailingWhitespace: false };
@@ -197,7 +200,43 @@ export const getWhereClause = (params: DTAJAXParams, configOpts: ConfigOpts): Wh
 /***********************************************************
  * ORDER BY clause
  */
+
+/**
+ * OrderSpec
+ *
+ * example
+
+  "order": [
+    {
+      "column": "2",
+      "dir": "asc",
+      "name": ""
+    },
+    {
+      "column": "3",
+      "dir": "asc",
+      "name": ""
+    }
+  ]
+ */
 export const getOrderClause = (params: DTAJAXParams, configOpts: ConfigOpts): OrderClause => {
-  return `ORDER BY PP`;
+  configOpts; //  TODO  make NULL (FIRST|LAST) a configurable option
+  // console.log(params.order);
+  if (!params.order?.length)
+    return '';
+  const columns = params.columns.
+                    map(i => i.data).
+                    map(escapeID);
+  const fieldAndAscOrDesc = params.order.
+    // toReversed().
+    map((i: OrderDirective) => `${columns[i.column]} ${i.dir.toUpperCase()}`);
+  return `ORDER BY ${fieldAndAscOrDesc.join(', ')} NULLS LAST`;
 };
 
+// export const getSelectClause = (params: DTAJAXParams): SelectClause => {
+//   if (params.columns === undefined) throw new Error("malformed input");
+//   const columns = params.columns.
+//                     map(i => i.data).
+//                     map(escapeID);
+//   return `SELECT ${columns.join(", ")}`;
+//

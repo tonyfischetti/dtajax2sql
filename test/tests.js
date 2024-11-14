@@ -579,6 +579,18 @@ describe('testing against a real (weird) DB', () => {
     //   assert.equal(DB.prepare(query).get()['song_id'], 7);
     // });
 
+    it("ORDER BY works with one directive", () => {
+      const params = {"draw":"14","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"12","search":{"value":"_","regex":"false"},"_":"1729017098504", "order": [ { "column": "0", "dir": "desc", "name": "" } ]};
+      const { query } = dtajax2sql(params, 'songs');
+      assert.equal(DB.prepare(query).get()['song_id'], 19);
+    });
+
+    it("ORDER BY works with two directives", () => {
+      const params = {"draw": "14", "columns": [ { "data": "song_id", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } }, { "data": "Song title", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } }, { "data": "Artist name", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } }, { "data": "Tony's \"Notes\"", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } }, { "data": "\u03b3\u03c1'\u03b1`\u03c6[\u03ad]\u03c2", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } } ], "start": "0", "length": "7", "search": { "value": "", "regex": "false" }, "_": "1729017098504", "order": [ { "column": "2", "dir": "desc", "name": "" }, { "column": "1", "dir": "asc", "name": "" } ] };
+      const { query } = dtajax2sql(params, 'songs');
+      assert.deepEqual(DB.prepare(query).all().map(i => i['song_id']), [3, 13, 12, 17, 8, 18, 9]);
+    });
+
 
   });
 

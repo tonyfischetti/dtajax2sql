@@ -41,11 +41,11 @@ export const dtajax2sql = (params: DTAJAXParams,
 
   const selectClause = getSelectClause(params);
   const fromClause   = `FROM ${tblName}`;
-  const limit        = getLimitSql(params);
-  const offset       = getOffsetSql(params);
   const whereClause  = getWhereClause(params, configOpts);
   const orderClause  = getOrderClause(params, configOpts);
-  const q            = `${selectClause} ${fromClause} ${whereClause} ${limit} ${offset}`;
+  const limit        = getLimitSql(params);
+  const offset       = getOffsetSql(params);
+  const q            = `${selectClause} ${fromClause} ${whereClause} ${orderClause} ${limit} ${offset}`;
   const cq           = `SELECT COUNT(*) as filteredCount ${fromClause} ${whereClause}`;
   return { query: q, countQuery: cq };
 };
