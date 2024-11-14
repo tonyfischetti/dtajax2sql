@@ -6,10 +6,13 @@ export const columnDefs = [
     {
         data: "Song title",
         title: "Song title",
+        searchable: false
     },
     {
         data: "Artist name",
         title: "Artist name",
+        searchable: false,
+        randomKey: "random!"
     },
     {
         data: `Tony's "Notes"`,

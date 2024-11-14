@@ -10,7 +10,8 @@ import {
   getSelectClause,
   getLimitSql,
   getOffsetSql,
-  getWhereClause
+  getWhereClause,
+  getOrderClause,
 } from "./getSqlFragments.js";
 
 import {
@@ -43,6 +44,7 @@ export const dtajax2sql = (params: DTAJAXParams,
   const limit        = getLimitSql(params);
   const offset       = getOffsetSql(params);
   const whereClause  = getWhereClause(params, configOpts);
+  const orderClause  = getOrderClause(params, configOpts);
   const q            = `${selectClause} ${fromClause} ${whereClause} ${limit} ${offset}`;
   const cq           = `SELECT COUNT(*) as filteredCount ${fromClause} ${whereClause}`;
   return { query: q, countQuery: cq };

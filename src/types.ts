@@ -25,7 +25,7 @@ export interface ColumnObj {
   name: string;
   searchable?: 'true' | 'false';
   orderable?: 'true' | 'false';
-  // also has "search" property
+  //  TODO  also has "search" property
 }
 
 
@@ -108,6 +108,34 @@ export interface SearchBuilder {
 
 
 /**
+ * OrderSpec
+ *
+ * example
+
+  "order": [
+    {
+      "column": "2",
+      "dir": "asc",
+      "name": ""
+    },
+    {
+      "column": "3",
+      "dir": "asc",
+      "name": ""
+    }
+  ]
+ */
+
+export interface OrderDirective {
+  column: number;
+  dir: 'asc' | 'desc';
+  name?: string;
+}
+
+export type OrderSpec = Array<OrderDirective>;
+  
+
+/**
  * DTAJAXParams
  *
  * example
@@ -130,8 +158,6 @@ export interface SearchBuilder {
         search: [Object]
       }
     ],
-    start: '10',
-    length: '10',
     search: { value: 'global search', regex: 'false' },
     searchBuilder: {
 
@@ -150,6 +176,20 @@ export interface SearchBuilder {
       "logic": "AND"
 
     },
+    "order": [
+      {
+        "column": "2",
+        "dir": "asc",
+        "name": ""
+      },
+      {
+        "column": "3",
+        "dir": "asc",
+        "name": ""
+      }
+    ],
+    start: '10',
+    length: '10',
     _: '1727689860063'
   }
  */
@@ -160,7 +200,8 @@ export interface DTAJAXParams {
   start: string;
   length: string;
   search: GlobalSearch;
-  searchBuilder: SearchBuilder;
+  searchBuilder?: SearchBuilder;
+  order?: OrderSpec;
   _: string;
 }
 

@@ -193,3 +193,11 @@ export const getWhereClause = (params: DTAJAXParams, configOpts: ConfigOpts): Wh
   return `WHERE (${ [fromSearchBuilder, fromGlobalSearch].join(" AND ") })`;
 };
 
+
+/***********************************************************
+ * ORDER BY clause
+ */
+export const getOrderClause = (params: DTAJAXParams, configOpts: ConfigOpts): OrderClause => {
+  return `ORDER BY PP`;
+};
+

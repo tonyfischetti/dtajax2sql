@@ -6,8 +6,8 @@ export const musicRouter = express.Router();
 //  TODO CHANGED THIS !!!
 musicRouter.get("/dtajax", (req, res) => {
   console.log("received ajax query");
-  // console.log(JSON.stringify(req.query, null, 2));
-  console.log(JSON.stringify(req.query));
+  console.log(JSON.stringify(req.query, null, 2));
+  // console.log(JSON.stringify(req.query));
   musicService.performAJAX(req.query).
     then((it) => {
       res.status(200).send(it);

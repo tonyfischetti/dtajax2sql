@@ -495,7 +495,6 @@ describe('sanitization', () => {
   //  TODO  expand!!!
   describe('expand!', () => {
     const q = `SELECT * FROM songs WHERE ((${escapeID("Song title")} LIKE '%${escapeForLIKE("\\").str}%') OR (${escapeID("Song title")} LIKE '%${escapeForLIKE("%").str}%' ESCAPE '${escapeForLIKE("%").escape}') OR (${escapeID("Song title")}='${escapeString("Robert'); DROP TABLE songs;--")}'))`;
-    console.log(q);
     assert.equal(q, `SELECT * FROM songs WHERE (("Song title" LIKE '%\\%') OR ("Song title" LIKE '%\\%%' ESCAPE '\\') OR ("Song title"='Robert''); DROP TABLE songs;--'))`);
   });
 
