@@ -4,7 +4,7 @@
   "license": "GPL-3.0-or-later",
   "homepage": "https://github.com/tonyfischetti/dtajax2sql#readme",
   "version": "0.1.4",
-  "description": "A set of functions to help convert DataTables server-side AJAX calls into ANSI SQL",
+  "description": "A set of functions to help convert DataTables server-side AJAX calls into SQLite ANSI SQL",
   "type": "module",
   "main": "index.js",
   "types": "index.d.ts",
