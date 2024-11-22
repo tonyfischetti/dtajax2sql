@@ -157,6 +157,11 @@ export const getSearchBuilderSql = (params: SearchBuilder): SQLFragment => {
     return ("criteria" in obj);
   };
 
+  //  HACK  why in the world
+  if ("0" in params.criteria)
+    // @ts-ignore
+    params.criteria = Object.keys(params.criteria).map( i => params.criteria[i] );
+
   const allCriteria = params['criteria'].map((i): string => {
     // @ts-ignore  TODO  
     if (!isNestedP(i)) return getSBCriterionSql(i);
