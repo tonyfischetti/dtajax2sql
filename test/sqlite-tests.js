@@ -1,81 +1,547 @@
 
-// import assert from 'assert';
-//
-// import BetterSqlite3 from 'better-sqlite3';
-//
-// import { SQLiteAdapter } from '../dist/adapters/SQLiteAdapter.js';
-//
-// import { returnOkEscapeCharacter, escapeID, escapeString,
-//           escapeForLIKE }
-//   from '../dist/sanitization.js';
-//
-// import {
-//   getSelectClause,
-//   getLimitSql,
-//   getOffsetSql,
-//   getSBCriterionSql,
-//   getSearchBuilderSql,
-//   getWhereClause,
-// } from '../dist/getSqlFragments.js';
-//
-// import { dtajax2sql } from '../dist/dtajax2sql.js';
+import assert from 'assert';
+
+import BetterSqlite3 from 'better-sqlite3';
+
+import { SQLiteAdapter } from '../dist/adapters/SQLiteAdapter.js';
 
 
-/**************************************************************************/
 
-// const DB = new BetterSqlite3("./test/music.db", {
-//   readonly: true,
-//   fileMustExist: true
-// });
+/*************************************************************************
+  * setup
+  */
+
+const DB = new BetterSqlite3("./test/music.db", {
+  readonly: true,
+  fileMustExist: true
+});
 
 
-/**************************************************************************/
+const adapter = new SQLiteAdapter('main', {
+  whitespace: {
+    removeLeading: true,
+    removeTrailing: true
+  },
+  excludeFromGlobalSearch: ["song_id", "γρ'α`φ[έ]ς"]
+});
 
-// const adapter = new SQLiteAdapter('main', {});
+const variant1 = new SQLiteAdapter('main', {
+  whitespace: {
+    removeLeading: false,
+    removeTrailing: true
+  },
+  excludeFromGlobalSearch: ["γρ'α`φ[έ]ς"]
+});
+
+const variant2 = new SQLiteAdapter('main', {
+  whitespace: {
+    removeLeading: true,
+    removeTrailing: false
+  },
+  excludeFromGlobalSearch: []
+});
+
+const exParams = {
+  "draw": "6",
+  "columns": [
+    {
+      "data": "song_id",
+      "name": "",
+      "searchable": "true",
+      "orderable": "false",
+      "search": {
+        "value": "",
+        "regex": "false"
+      }
+    },
+    {
+      "data": "Song title",
+      "name": "",
+      "searchable": "true",
+      "orderable": "false",
+      "search": {
+        "value": "",
+        "regex": "false"
+      }
+    },
+    {
+      "data": "Artist name",
+      "name": "",
+      "searchable": "true",
+      "orderable": "false",
+      "search": {
+        "value": "",
+        "regex": "false"
+      }
+    },
+    {
+      "data": "Tony's \"Notes\"",
+      "name": "",
+      "searchable": "true",
+      "orderable": "false",
+      "search": {
+        "value": "",
+        "regex": "false"
+      }
+    },
+    {
+      "data": "γρ'α`φ[έ]ς",
+      "name": "",
+      "searchable": "true",
+      "orderable": "false",
+      "search": {
+        "value": "",
+        "regex": "false"
+      }
+    }
+  ],
+  "start": "0",
+  "length": "12",
+  "search": {
+    "value": "keep",
+    "regex": "false"
+  },
+  "_": "1729015491120"
+};
+
+
+describe("checking test enviromnent", () => {
+  describe("music.db test DB", () => {
+    it("music.db hasn't changed", () => {
+      const q = `SELECT COUNT(*) as N FROM songs`;
+      assert.equal(DB.prepare(q).get()["N"], 19);
+    });
+  });
+});
+
+
+
+/*************************************************************************
+  * sanitization
+  */
+
+describe('sanitization', () => {
+
+  describe('returnOkEscapeCharacter', () => {
+    it("simple", () => {
+      assert.equal(adapter.returnOkEscapeCharacter("simple"), "\\");
+    });
+    it("no backslash", () => {
+      assert.equal(adapter.returnOkEscapeCharacter("this\\that"), "@");
+    });
+    it("no @", () => {
+      assert.equal(adapter.returnOkEscapeCharacter("this@that"), "\\");
+    });
+    it("handle the unthinkable case", () => {
+      const s = "\\@!λ齆֎پ௺᭩uh oh!";
+      assert.equal(adapter.returnOkEscapeCharacter(s), "¼");
+    });
+  });
+
+  describe('escapeID (not DB)', () => {
+    it("simple", () => {
+      assert.equal(adapter.escapeID("song_id"), '"song_id"');
+    });
+    it("errors correctly", () => {
+      assert.throws(() => adapter.escapeID(4), Error);
+      assert.throws(() => adapter.escapeID({}), Error);
+    });
+    it("spaces in column name", () => {
+      assert.equal(adapter.escapeID("Song title"), '"Song title"');
+    });
+    it("quotes in column name", () => {
+      assert.equal(adapter.escapeID(`Tony's "Notes"`), `"Tony's ""Notes"""`);
+      assert.equal(adapter.escapeID(`Tony's ""Notes""`), `"Tony's """"Notes"""""`);
+    });
+  });
+
+  describe('escapeID using DB', () => {
+    it("simple", () => {
+      const q = `SELECT ${adapter.escapeID("song_id")} FROM songs WHERE ${adapter.escapeID("Song title")} = 'Electrobugs';`;
+      assert.equal(DB.prepare(q).get()["song_id"], 5);
+    });
+    it("spaces in column name", () => {
+      const q = `SELECT ${adapter.escapeID("Artist name")} FROM songs WHERE ${adapter.escapeID('Song title')} = '$ENV{''HOME''}'`;
+      assert.equal(DB.prepare(q).get()["Artist name"], "Tony and the Moondogs");
+    });
+    it("quotes in column name", () => {
+      const t = adapter.escapeID(`Tony's "Notes"`);
+      const q = `SELECT COUNT(*) AS N FROM songs WHERE ${t} = '::sweats::'`;
+      assert.equal(DB.prepare(q).get()["N"], 2);
+    });
+  });
+
+  describe('escapeForLIKE', () => {
+    it("simple", () => {
+      assert.equal(adapter.escapeForLIKE("simple").str, "simple");
+    });
+    it("single quote", () => {
+      assert.equal(adapter.escapeForLIKE("Ol'").str, "Ol''");
+    });
+    it("double quote", () => {
+      assert.equal(adapter.escapeForLIKE('"Friends').str, '"Friends');
+    });
+    it("backslash", () => {
+      assert.equal(adapter.escapeForLIKE('\\').str, '\\');
+    });
+    it("percent sign", () => {
+      const r = adapter.escapeForLIKE('100%');
+      assert.equal(r.str, '100\\%');
+      assert.equal(r.escape, '\\');
+    });
+    it("underscore", () => {
+      const r = adapter.escapeForLIKE('City_Vibes');
+      assert.equal(r.str, 'City\\_Vibes');
+      assert.equal(r.escape, '\\');
+    });
+    it("underscore 2", () => {
+      const r = adapter.escapeForLIKE('C\\ity_Vibes');
+      assert.equal(r.str, 'C\\ity@_Vibes');
+      assert.equal(r.escape, '@');
+    });
+
+  });
+
+  //  TODO  expand on this!!!
+  describe('all escaping (DB)', () => {
+    const q = `SELECT * FROM songs WHERE ((${adapter.escapeID("Song title")} LIKE '%${adapter.escapeForLIKE("\\").str}%') OR (${adapter.escapeID("Song title")} LIKE '%${adapter.escapeForLIKE("%").str}%' ESCAPE '${adapter.escapeForLIKE("%").escape}') OR (${adapter.escapeID("Song title")}='${adapter.escapeString("Robert'); DROP TABLE songs;--")}'))`;
+    assert.equal(q, `SELECT * FROM songs WHERE (("Song title" LIKE '%\\%') OR ("Song title" LIKE '%\\%%' ESCAPE '\\') OR ("Song title"='Robert''); DROP TABLE songs;--'))`);
+  });
+
+});
+
+
+
+/*************************************************************************
+  * LIMITs and OFFSETs
+  */
+
+describe('limits and offsets', () => {
+
+  describe('getLimitSql', () => {
+    it("should handle simple case", () => {
+      assert.equal(adapter.getLimitSql({ length: "20" }), "LIMIT 20");
+    });
+    it("error on missing key", () => {
+      assert.throws(() => { adapter.getLimitSql({ draw: "2" }) }, Error);
+    });
+    it("error if number can't be parsed", () => {
+      assert.throws(() => { adapter.getLimitSql({ length: "the moon" }) }, Error);
+    });
+  });
+
+  describe('getOffsetSql', () => {
+    it("should handle simple case", () => {
+      assert.equal(adapter.getOffsetSql({ start: "20" }), "OFFSET 20");
+    });
+    it("error on missing key", () => {
+      assert.throws(() => { adapter.getOffsetSql({ draw: "2" }) }, Error);
+    });
+    it("error if number can't be parsed", () => {
+      assert.throws(() => { adapter.getOffsetSql({ length: "the moon" }) }, Error);
+    });
+  });
+
+});
+
+
+
+/*************************************************************************
+  * getSelectClause
+  */
+
+describe('getSelectClause', () => {
+
+  describe('getSelectClause', () => {
+    it("should handle simple case", () => {
+      assert.equal(adapter.getSelectClause({ columns: [{data: "dat 1"},{data: "dat 2"}] }), `SELECT "dat 1", "dat 2"`);
+    });
+    //  TODO  important
+    it("should handle weird characters", () => {
+      const example = { columns: [{data: "da`t1"},{data: "dat2"}] };
+      assert.equal(adapter.getSelectClause(example), 'SELECT "da`t1", "dat2"');
+    });
+    it("should handle weird characters", () => {
+      const example = { columns: [{data: "`"},{data: "dat2"}] };
+      assert.equal(adapter.getSelectClause(example), 'SELECT "`", "dat2"');
+    });
+    it("this is actually legal in SQLite", () => {
+      const example = { columns: [{data: " "},{data: "dat2"}] };
+      assert.equal(adapter.getSelectClause(example), 'SELECT " ", "dat2"');
+    });
+    it("and, incredibly, this is too", () => {
+      const example = { columns: [{data: ""},{data: "dat2"}] };
+      assert.equal(adapter.getSelectClause(example), 'SELECT "", "dat2"');
+    });
+    it("and, incredibly, this is too", () => {
+      assert.equal(adapter.getSelectClause({ columns: [{data: ""}] }), 'SELECT ""');
+    });
+    //  TODO  switch to more specific errors
+    it("???", () => {
+      assert.throws(() => { adapter.getLimitSql({ columns: [{data: null}] }) }, Error);
+      assert.throws(() => { adapter.getLimitSql({ columns: [{data: []}] }) }, Error);
+    });
+  });
+
+});
+
+
+
+/*************************************************************************
+  * getWhereClause
+  */
+
+describe('global search', () => {
+
+  describe('respects `excludeFromGlobalSearch`', () => {
+    const params = { ...exParams, search: { value: "keep", regex: "false" } };
+    it("variant 0", () => {
+      assert.equal(adapter.getGlobalSearchSql(params),
+        `(CONCAT("Song title", "Artist name", "Tony's ""Notes""") LIKE '%keep%')`);
+    });
+    it("variant 1", () => {
+      assert.equal(variant1.getGlobalSearchSql(params),
+        `(CONCAT("song_id", "Song title", "Artist name", "Tony's ""Notes""") LIKE '%keep%')`);
+    });
+    it("variant 2", () => {
+      assert.equal(variant2.getGlobalSearchSql(params),
+        `(CONCAT("song_id", "Song title", "Artist name", "Tony's ""Notes""", "` + "γρ'α`φ[έ]ς" + `") LIKE '%keep%')`);
+    });
+  });
+
+});
+
+describe('Search builder criteria', () => {
+
+  /**** strings AND numbers */
+  describe('getSBEqualsSql', () => {
+    it("should handle simple case (string)", () => {
+      const exs = { "condition": "=", "data": "Title", "origData": "Title", "type": "string", "value": [ "El sueño..." ], "value1": "El sueño..." };
+      assert.equal(adapter.getSBCriterionSql(exs), `("Title" = 'El sueño...')`);
+    });
+    it("should handle simple case (number)", () => {
+      const exn = { "condition": "=", "data": "ObjectID", "origData": "ObjectID", "type": "num", "value": [ "1" ], "value1": "1" };
+      assert.equal(adapter.getSBCriterionSql(exn), `("ObjectID" = 1)`);
+    });
+    it("error if number can't be parsed", () => {
+      const exn = { "condition": "=", "data": "ObjectID", "origData": "ObjectID", "type": "num", "value": [ "one" ], "value1": "one" };
+      assert.throws(() => { adapter.getSBCriterionSql(exn) }, Error);
+    });
+    it("should handle simple negative case (string)", () => {
+      const exs = { "condition": "!=", "data": "Title", "origData": "Title", "type": "string", "value": [ "El sueño..." ], "value1": "El sueño..." };
+      assert.equal(adapter.getSBCriterionSql(exs), `(NOT ("Title" = 'El sueño...'))`);
+    });
+    it("should handle simple negative case (number)", () => {
+      const exn = { "condition": "!=", "data": "ObjectID", "origData": "ObjectID", "type": "num", "value": [ "1" ], "value1": "1" };
+      assert.equal(adapter.getSBCriterionSql(exn), `(NOT ("ObjectID" = 1))`);
+    });
+    it("error if number can't be parsed", () => {
+      const exn = { "condition": "!=", "data": "ObjectID", "origData": "ObjectID", "type": "num", "value": [ "one" ], "value1": "one" };
+      assert.throws(() => { adapter.getSBCriterionSql(exn) }, Error);
+    });
+  });
+
+  describe('getSBEmptySql', () => {
+    it("should handle simple case (string)", () => {
+      const exs = { "condition": "null", "data": "Title", "origData": "Title", "type": "string" };
+      assert.equal(adapter.getSBCriterionSql(exs), `(("Title" IS NULL) OR ("Title" = ''))`);
+    });
+    //  NOTE  in SQLite, you can search for a number using a string
+    //        but let's have different tests for other DBs (eventually)
+    it("should handle simple case (number)", () => {
+      const exn = { "condition": "null", "data": "Object ID", "origData": "ObjectID", "type": "num" };
+      assert.equal(adapter.getSBCriterionSql(exn), `(("ObjectID" IS NULL) OR ("ObjectID" = ''))`);
+    });
+    it("should handle simple negative case (string)", () => {
+      const exs = { "condition": "!null", "data": "Title", "origData": "Title", "type": "string" };
+      assert.equal(adapter.getSBCriterionSql(exs), `(NOT (("Title" IS NULL) OR ("Title" = '')))`);
+    });
+    it("should handle simple negative case (number)", () => {
+      const exn = { "condition": "!null", "data": "Object ID", "origData": "ObjectID", "type": "num" };
+      assert.equal(adapter.getSBCriterionSql(exn), `(NOT (("ObjectID" IS NULL) OR ("ObjectID" = '')))`);
+    });
+  });
+
+  /**** just strings */
+  describe('getSBContainsSql', () => {
+    it("should handle simple case", () => {
+      const exs = { "condition": "contains", "data": "Title", "origData": "Title", "type": "string", "value": [ "robot boy" ], "value1": "robot boy" };
+      assert.equal(adapter.getSBCriterionSql(exs), `("Title" LIKE '%robot boy%')`);
+    });
+  });
+
+  describe('!getSBContainsSql', () => {
+    it("should handle simple case", () => {
+      const exs = { "condition": "!contains", "data": "Title", "origData": "Title", "type": "string", "value": [ "robot boy" ], "value1": "robot boy" };
+      assert.equal(adapter.getSBCriterionSql(exs), `(NOT ("Title" LIKE '%robot boy%'))`);
+    });
+  });
+
+  describe('getSBStartsWithSql', () => {
+    it("should handle simple case", () => {
+      const exs = { "condition": "starts", "data": "Title", "origData": "Title", "type": "string", "value": [ "gold star for" ], "value1": "gold star for" };
+      assert.equal(adapter.getSBCriterionSql(exs), `("Title" LIKE 'gold star for%')`);
+    });
+  });
+
+  describe('!getSBStartsWithSql', () => {
+    it("should handle simple case", () => {
+      const exs = { "condition": "!starts", "data": "Title", "origData": "Title", "type": "string", "value": [ "gold star for" ], "value1": "gold star for" };
+      assert.equal(adapter.getSBCriterionSql(exs), `(NOT ("Title" LIKE 'gold star for%'))`);
+    });
+  });
+
+  describe('getSBEndsWithSql', () => {
+    it("should handle simple case", () => {
+      const exs = { "condition": "ends", "data": "Title", "origData": "Title", "type": "string", "value": [ "robot boy" ], "value1": "robot boy" };
+      assert.equal(adapter.getSBCriterionSql(exs), `("Title" LIKE '%robot boy')`);
+    });
+  });
+
+  describe('!getSBEndsWithSql', () => {
+    it("should handle simple case", () => {
+      const exs = { "condition": "!ends", "data": "Title", "origData": "Title", "type": "string", "value": [ "robot boy" ], "value1": "robot boy" };
+      assert.equal(adapter.getSBCriterionSql(exs), `(NOT ("Title" LIKE '%robot boy'))`);
+    });
+  });
+
+  /**** just numbers */
+  describe('getSBLessThan (and less than or equal to)', () => {
+    it("should handle less than", () => {
+      const ex = { "condition": "<", "data": "Object ID", "origData": "ObjectID", "type": "num", "value": [ "1" ], "value1": "1" };
+      assert.equal(adapter.getSBCriterionSql(ex), `("ObjectID" < 1)`);
+    });
+    it("should handle less than or equal to", () => {
+      const ex = { "condition": "<=", "data": "Object ID", "origData": "ObjectID", "type": "num", "value": [ "1" ], "value1": "1" };
+      assert.equal(adapter.getSBCriterionSql(ex), `("ObjectID" <= 1)`);
+    });
+    it("error if number can't be parsed", () => {
+      const exn = { "condition": "<=", "data": "ObjectID", "origData": "ObjectID", "type": "num", "value": [ "one" ], "value1": "one" };
+      assert.throws(() => { adapter.getSBCriterionSql(exn) }, Error);
+    });
+  });
+
+  describe('getSBGreaterThan (and greater than or equal to)', () => {
+    it("should handle greater than", () => {
+      const ex = { "condition": ">", "data": "Object ID", "origData": "ObjectID", "type": "num", "value": [ "1" ], "value1": "1" };
+      assert.equal(adapter.getSBCriterionSql(ex), `("ObjectID" > 1)`);
+    });
+    it("should handle greater than or equal to", () => {
+      const ex = { "condition": ">=", "data": "Object ID", "origData": "ObjectID", "type": "num", "value": [ "1" ], "value1": "1" };
+      assert.equal(adapter.getSBCriterionSql(ex), `("ObjectID" >= 1)`);
+    });
+    it("error if number can't be parsed", () => {
+      const exn = { "condition": ">=", "data": "ObjectID", "origData": "ObjectID", "type": "num", "value": [ "one" ], "value1": "one" };
+      assert.throws(() => { adapter.getSBCriterionSql(exn) }, Error);
+    });
+  });
+
+  describe('getSBBetweenSql', () => {
+    it("should handle simple case", () => {
+      const ex = { "condition": "between", "data": "Object ID", "origData": "ObjectID", "type": "num", "value": [ "1", "3" ], "value1": "1", "value2": "3" };
+      assert.equal(adapter.getSBCriterionSql(ex), `("ObjectID" BETWEEN 1 AND 3)`);
+    });
+    it("should handle simple negative case", () => {
+      const ex = { "condition": "!between", "data": "Object ID", "origData": "ObjectID", "type": "num", "value": [ "1", "3" ], "value1": "1", "value2": "3" };
+      assert.equal(adapter.getSBCriterionSql(ex), `(NOT ("ObjectID" BETWEEN 1 AND 3))`);
+    });
+    it("error if FIRST number can't be parsed", () => {
+      const ex = { "condition": "!between", "data": "Object ID", "origData": "ObjectID", "type": "num", "value": [ "one", "3" ], "value1": "one", "value2": "3" };
+      assert.throws(() => { adapter.getSBCriterionSql(ex) }, Error);
+    });
+    it("error if SECOND number can't be parsed", () => {
+      const ex = { "condition": "!between", "data": "Object ID", "origData": "ObjectID", "type": "num", "value": [ "1", "three" ], "value1": "1", "value2": "three" };
+      assert.throws(() => { adapter.getSBCriterionSql(ex) }, Error);
+    });
+  });
+
+  describe('error on unrecognized conditions', () => {
+    it("error on unrecognized condition", () => {
+      const ex = { "condition": "==", "data": "Title", "origData": "Title", "type": "string", "value": [ "El sueño..." ], "value1": "El sueño..." };
+      assert.throws(() => { adapter.getSBCriterionSql(ex) }, Error);
+    });
+  });
+});
+
+
+
+
+
+
+
+
+
+// describe('testing against a real (weird) DB', () => {
 //
+//   describe('testing against valid (expected) input', () => {
 //
-//
-// describe('escapeID', () => {
-//   describe('getlimitsql', () => {
-//     it("should handle simple case", () => {
-//       assert.equal(adapter.escapeID("main"), `"main"`);
+//     it("global search is case-insensitive by default", () => {
+//       const params = {"draw":"6","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"12","search":{"value":"keep","regex":"false"},"_":"1729015491120"};
+//       const { query } = dtajax2sql(params, 'songs');
+//       assert.equal(DB.prepare(query).get()["song_id"], 8);
 //     });
-//   });
-// });
+//     it("global search takes quote", () => {
+//       const params = {"draw":"12","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"11","search":{"value":"\"","regex":"false"},"searchBuilder":{"criteria":[{"type":""}],"logic":"AND"},"_":"1729015491126"};
+//       const { query } = dtajax2sql(params, 'songs');
+//       assert.deepEqual(DB.prepare(query).all().map(i => i['song_id']), [1, 2, 13]);
+//     });
+//     it("global search removes leading and trailing whitespace", () => {
+//       const params = {"draw":"12","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"11","search":{"value":" \" ","regex":"false"},"searchBuilder":{"criteria":[{"type":""}],"logic":"AND"},"_":"1729015491126"};
+//       const { query } = dtajax2sql(params, 'songs');
+//       assert.deepEqual(DB.prepare(query).all().map(i => i['song_id']), [1, 2, 13]);
+//     });
+//
+//     it("global search handles greek", () => {
+//       const params = {"draw":"23","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"11","search":{"value":"Δημ","regex":"false"},"searchBuilder":{"criteria":[{"type":""}],"logic":"AND"},"_":"1729015491137"};
+//       const { query } = dtajax2sql(params, 'songs');
+//       assert.equal(DB.prepare(query).get()['song_id'], 3);
+//     });
+//
+//     it("global search handles arabic", () => {
+//       const params = {"draw":"23","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"11","search":{"value":"ٱللَّٰهُ","regex":"false"},"searchBuilder":{"criteria":[{"type":""}],"logic":"AND"},"_":"1729015491137"};
+//       const { query } = dtajax2sql(params, 'songs');
+//       assert.equal(DB.prepare(query).get()['song_id'], 9);
+//     });
+//
+//     it("global search handles emojis", () => {
+//       const params = {"draw":"23","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"11","search":{"value":"💯","regex":"false"},"searchBuilder":{"criteria":[{"type":""}],"logic":"AND"},"_":"1729015491137"};
+//       const { query } = dtajax2sql(params, 'songs');
+//       assert.equal(DB.prepare(query).get()['song_id'], 8);
+//     });
+//     it("global search handles sql injections", () => {
+//       const params = {"draw":"3","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"12","search":{"value":"Robert'); DROP TABLE songs;--","regex":"false"},"_":"1729017098493"};
+//       const { query } = dtajax2sql(params, 'songs');
+//       assert.equal(DB.prepare(query).get()['song_id'], 10);
+//     });
+//
+//     it("global search handles backslashes", () => {
+//       const params = {"draw":"6","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"12","search":{"value":"\\","regex":"false"},"_":"1729017098496"};
+//       const { query } = dtajax2sql(params, 'songs');
+//       assert.equal(DB.prepare(query).get()['song_id'], 18);
+//     });
+//
+//     it("global search handles percent signs", () => {
+//       const params = {"draw":"9","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"12","search":{"value":"% (","regex":"false"},"_":"1729017098499"};
+//       const { query } = dtajax2sql(params, 'songs');
+//       assert.equal(DB.prepare(query).get()['song_id'], 17);
+//     });
+//     it("global search handles underscores and searches across all columns", () => {
+//       const params = {"draw":"14","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"12","search":{"value":"_","regex":"false"},"_":"1729017098504"};
+//       const { query } = dtajax2sql(params, 'songs');
+//       assert.deepEqual(DB.prepare(query).all().map(i => i['song_id']), [6, 11, 19]);
+//     });
+//     it("global search handles asterisks", () => {
+//       const params = {"draw":"3","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"12","search":{"value":"*","regex":"false"},"_":"1729017570310"};
+//       const { query } = dtajax2sql(params, 'songs');
+//       assert.equal(DB.prepare(query).get()['song_id'], 7);
+//     });
 
 
-//
-//
-// /**************************************************************************/
-//
-// describe('limits and offsets', () => {
-//
-//   describe('getlimitsql', () => {
-//     it("should handle simple case", () => {
-//       assert.equal(getlimitsql({ length: "20" }), "limit 20");
-//     });
-//     it("error on missing key", () => {
-//       assert.throws(() => { getlimitsql({ draw: "2" }) }, error);
-//     });
-//     it("error if number can't be parsed", () => {
-//       assert.throws(() => { getlimitsql({ length: "the moon" }) }, error);
-//     });
-//   });
-//
-//   describe('getOffsetSql', () => {
-//     it("should handle simple case", () => {
-//       assert.equal(getOffsetSql({ start: "20" }), "OFFSET 20");
-//     });
-//     it("error on missing key", () => {
-//       assert.throws(() => { getOffsetSql({ draw: "2" }) }, Error);
-//     });
-//     it("error if number can't be parsed", () => {
-//       assert.throws(() => { getOffsetSql({ length: "the moon" }) }, Error);
-//     });
-//   });
-//
-// });
-//
+
+
+
+
+
 // /**************************************************************************/
 //
 // describe('Search builder criteria', () => {
@@ -373,148 +839,16 @@
 // /**************************************************************************/
 //
 //
-// describe("checking test enviromnent", () => {
-//   describe("music.db test DB", () => {
-//     it("music.db hasn't changed", () => {
-//       const q = `SELECT COUNT(*) as N FROM songs`;
-//       assert.equal(DB.prepare(q).get()["N"], 19);
-//     });
-//   });
-// });
 //
 //
 // /**************************************************************************/
 //
-// describe('select', () => {
-//
-//   describe('getSelectC', () => {
-//     it("should handle simple case", () => {
-//       assert.equal(getSelectClause({ columns: [{data: "dat 1"},{data: "dat 2"}] }), `SELECT "dat 1", "dat 2"`);
-//     });
-//     //  TODO  important
-//     it("should handle weird characters", () => {
-//       const example = { columns: [{data: "da`t1"},{data: "dat2"}] };
-//       assert.equal(getSelectClause(example), 'SELECT "da`t1", "dat2"');
-//     });
-//     it("should handle weird characters", () => {
-//       const example = { columns: [{data: "`"},{data: "dat2"}] };
-//       assert.equal(getSelectClause(example), 'SELECT "`", "dat2"');
-//     });
-//     it("this is actually legal in SQLite", () => {
-//       const example = { columns: [{data: " "},{data: "dat2"}] };
-//       assert.equal(getSelectClause(example), 'SELECT " ", "dat2"');
-//     });
-//     it("and, incredibly, this is too", () => {
-//       const example = { columns: [{data: ""},{data: "dat2"}] };
-//       assert.equal(getSelectClause(example), 'SELECT "", "dat2"');
-//     });
-//     it("and, incredibly, this is too", () => {
-//       assert.equal(getSelectClause({ columns: [{data: ""}] }), 'SELECT ""');
-//     });
-//     it("???", () => {
-//       assert.throws(() => { getLimitSql({ columns: [{data: null}] }) }, Error);
-//       assert.throws(() => { getLimitSql({ columns: [{data: []}] }) }, Error);
-//     });
-//   });
-//
-// });
 //
 // /**************************************************************************/
 //
 //
 // /**************************************************************************/
 //
-// describe('sanitization', () => {
-//
-//   describe('returnOkEscapeCharacter', () => {
-//     it("simple", () => {
-//       assert.equal(returnOkEscapeCharacter("simple"), "\\");
-//     });
-//     it("no backslash", () => {
-//       assert.equal(returnOkEscapeCharacter("this\\that"), "@");
-//     });
-//     it("no @", () => {
-//       assert.equal(returnOkEscapeCharacter("this@that"), "\\");
-//     });
-//     it("handle the unthinkable case", () => {
-//       const s = "\\@!λ齆֎پ௺᭩uh oh!";
-//       assert.equal(returnOkEscapeCharacter(s), "¼");
-//     });
-//   });
-//
-//   describe('escapeID (not DB)', () => {
-//     it("simple", () => {
-//       assert.equal(escapeID("song_id"), '"song_id"');
-//     });
-//     it("errors correctly", () => {
-//       assert.throws(() => escapeID(4), Error);
-//       assert.throws(() => escapeID({}), Error);
-//     });
-//     it("spaces in column name", () => {
-//       assert.equal(escapeID("Song title"), '"Song title"');
-//     });
-//     it("quotes in column name", () => {
-//       assert.equal(escapeID(`Tony's "Notes"`), `"Tony's ""Notes"""`);
-//       assert.equal(escapeID(`Tony's ""Notes""`), `"Tony's """"Notes"""""`);
-//     });
-//   });
-//
-//   describe('escapeID using DB', () => {
-//     it("simple", () => {
-//       const q = `SELECT ${escapeID("song_id")} FROM songs WHERE ${escapeID("Song title")} = 'Electrobugs';`;
-//       assert.equal(DB.prepare(q).get()["song_id"], 5);
-//     });
-//     it("spaces in column name", () => {
-//       const q = `SELECT ${escapeID("Artist name")} FROM songs WHERE ${escapeID('Song title')} = '$ENV{''HOME''}'`;
-//       assert.equal(DB.prepare(q).get()["Artist name"], "Tony and the Moondogs");
-//     });
-//     it("quotes in column name", () => {
-//       const t = escapeID(`Tony's "Notes"`);
-//       const q = `SELECT COUNT(*) AS N FROM songs WHERE ${t} = '::sweats::'`;
-//       assert.equal(DB.prepare(q).get()["N"], 2);
-//     });
-//   });
-//
-//   describe('escapeForLIKE', () => {
-//     it("simple", () => {
-//       assert.equal(escapeForLIKE("simple").str, "simple");
-//     });
-//     it("single quote", () => {
-//       assert.equal(escapeForLIKE("Ol'").str, "Ol''");
-//     });
-//     it("double quote", () => {
-//       assert.equal(escapeForLIKE('"Friends').str, '"Friends');
-//     });
-//     it("backslash", () => {
-//       assert.equal(escapeForLIKE('\\').str, '\\');
-//     });
-//     it("percent sign", () => {
-//       const r = escapeForLIKE('100%');
-//       assert.equal(r.str, '100\\%');
-//       assert.equal(r.escape, '\\');
-//     });
-//     it("underscore", () => {
-//       const r = escapeForLIKE('City_Vibes');
-//       assert.equal(r.str, 'City\\_Vibes');
-//       assert.equal(r.escape, '\\');
-//     });
-//     it("underscore 2", () => {
-//       const r = escapeForLIKE('C\\ity_Vibes');
-//       assert.equal(r.str, 'C\\ity@_Vibes');
-//       assert.equal(r.escape, '@');
-//     });
-//     
-//   });
-//
-//   //  TODO  expand!!!
-//   describe('expand!', () => {
-//     const q = `SELECT * FROM songs WHERE ((${escapeID("Song title")} LIKE '%${escapeForLIKE("\\").str}%') OR (${escapeID("Song title")} LIKE '%${escapeForLIKE("%").str}%' ESCAPE '${escapeForLIKE("%").escape}') OR (${escapeID("Song title")}='${escapeString("Robert'); DROP TABLE songs;--")}'))`;
-//     assert.equal(q, `SELECT * FROM songs WHERE (("Song title" LIKE '%\\%') OR ("Song title" LIKE '%\\%%' ESCAPE '\\') OR ("Song title"='Robert''); DROP TABLE songs;--'))`);
-//   });
-//
-// });
-//
-// /**************************************************************************/
 //
 //
 // /**************************************************************************

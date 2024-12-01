@@ -64,8 +64,8 @@ export const getGlobalSearchSql = (params: DTAJAXParams,
                                    wOpts: WhitespaceOpts): SQLFragment => {
   //  TODO  check if missing the keys
   let { str: finalStr, escape } = escapeForLIKE(params.search.value)
-  if (wOpts.removeLeadingWhitespace)  { finalStr = finalStr.replace(/^\s+/, '') }
-  if (wOpts.removeTrailingWhitespace) { finalStr = finalStr.replace(/\s+$/, '') }
+  if (wOpts.removeLeading)  { finalStr = finalStr.replace(/^\s+/, '') }
+  if (wOpts.removeTrailing) { finalStr = finalStr.replace(/\s+$/, '') }
   const withoutESCAPE = `(CONCAT(${params.columns.filter(i => i.data !== "").map(i => escapeID(i.data)).join(", ")}) LIKE '%${finalStr}%'`;
   if (escape)
     return `${withoutESCAPE} ESCAPE '${escape}')`;
@@ -127,6 +127,8 @@ export const getSBGreaterThanSql = (crit: SBCriterion, orEqualTo=false): WhereCl
   const v1 = parseNumberHelper(crit.value1 ?? "");
   return `(${escapeID(crit.origData)} >${orEqualTo ? "=" : ""} ${v1})`;
 };
+
+// STOPPED HERE //
 
 export const getSBCriterionSql = (crit: SBCriterion): SQLFragment => {
   //  TODO  no error checking
@@ -193,7 +195,7 @@ export const getWhereClause = (params: DTAJAXParams, configOpts: ConfigOpts): Wh
   const defaultSBWhitespaceOpts = { removeLeadingWhitespace: false, removeTrailingWhitespace: false };
   let opts = configOpts ?? { globalSearch: defaultGSWhitespaceOpts, searchBuilder: defaultSBWhitespaceOpts };
   const fromGlobalSearch = ('search' in params && params.search.value !== '') ? 
-                              getGlobalSearchSql(params, opts.globalSearch) :
+                              getGlobalSearchSql(params, opts.whitespace) :
                               "True";
   const fromSearchBuilder = ('searchBuilder' in params) ? 
                               getSearchBuilderSql(params.searchBuilder) :

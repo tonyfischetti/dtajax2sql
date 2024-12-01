@@ -208,17 +208,13 @@ export interface DTAJAXParams {
 
 
 export interface WhitespaceOpts {
-  removeLeadingWhitespace: boolean;
-  removeTrailingWhitespace: boolean;
+  removeLeading: boolean;
+  removeTrailing: boolean;
 }
 
 export interface ConfigOpts {
-  globalSearch: WhitespaceOpts;
-  allowedFields: Array<string> | undefined;
-  gsFields: Array<string> | undefined;
-  //  TODO  really?
-  // searchBuilder: WhitespaceOpts;
-  //  TODO  there's more. think about it
+  whitespace: WhitespaceOpts;
+  excludeFromGlobalSearch: Array<string>;
 }
 
 export interface EscapedLIKE {

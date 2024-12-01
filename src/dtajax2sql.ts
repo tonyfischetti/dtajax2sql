@@ -18,17 +18,17 @@ import {
   convertColumnPropToArray
 } from './utils.js';
 
+
 const defaultConfigOpts: ConfigOpts = {
   //  TODO  only for where clauses?!!?
-  globalSearch: {
-    removeLeadingWhitespace: true,
-    removeTrailingWhitespace: true
+  whitespace: {
+    removeLeading: true,
+    removeTrailing: true
   },
-  allowedFields: undefined,
-  gsFields: undefined
+  excludeFromGlobalSearch: []
 };
 
-export const dtajax2sql = (params: DTAJAXParams, 
+export const DTajax2sql = (params: DTAJAXParams, 
                            tblName: TableName,
                            configOpts=defaultConfigOpts): Result => {
   //  TODO  error checking...
@@ -38,6 +38,14 @@ export const dtajax2sql = (params: DTAJAXParams,
   //  TEST  WRITE TEST FOR THIS!!
   if (!Array.isArray(params.columns))
     params.columns =  convertColumnPropToArray(params.columns);
+
+/*
+  *
+  //  HACK  why in the world
+  if ("0" in params.criteria)
+    // @ts-ignore
+    params.criteria = Object.keys(params.criteria).map( i => params.criteria[i] );
+  */
 
   const selectClause = getSelectClause(params);
   const fromClause   = `FROM ${tblName}`;
@@ -50,3 +58,5 @@ export const dtajax2sql = (params: DTAJAXParams,
   return { query: q, countQuery: cq };
 };
 
+
+export default DTajax2sql;

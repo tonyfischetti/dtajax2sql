@@ -11,15 +11,6 @@ export const parseNumberHelper = (str: string): number => {
   return num;
 };
 
-//  TODO  LAZY
-export const compose = (...fns: any[]) => {
-  return (input: any) => {
-    return fns.reduce((acc, i) => {
-      return i(acc);
-    }, input);
-  };
-};
-
 // When you have a lot of columns, datatables sends the columns
 // in a weird way. This converts it back to what's expected
 export const convertColumnPropToArray = (columns: any) => {
@@ -27,3 +18,14 @@ export const convertColumnPropToArray = (columns: any) => {
   const newcols = thekeys.map(i => columns[i]);
   return newcols;
 };
+
+export const withEsc = (base: string, escape: string | undefined) => {
+  if (escape)
+    return `${base} ESCAPE '${escape}'`;
+  return base;
+};
+
+export const parenthisize = (s: string) => {
+  return `(${s})`;
+};
+
