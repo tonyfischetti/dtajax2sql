@@ -17,7 +17,9 @@ import {
          escapeString,
          escapeForLIKE }      from "./sanitization.js";
 import { negateClause,
-         parseNumberHelper }  from "./utils.js";
+         parenthisize,
+         parseNumberHelper, 
+         withEsc}  from "./utils.js";
 
 
 /***********************************************************
@@ -66,10 +68,8 @@ export const getGlobalSearchSql = (params: DTAJAXParams,
   let { str: finalStr, escape } = escapeForLIKE(params.search.value)
   if (wOpts.removeLeading)  { finalStr = finalStr.replace(/^\s+/, '') }
   if (wOpts.removeTrailing) { finalStr = finalStr.replace(/\s+$/, '') }
-  const withoutESCAPE = `(CONCAT(${params.columns.filter(i => i.data !== "").map(i => escapeID(i.data)).join(", ")}) LIKE '%${finalStr}%'`;
-  if (escape)
-    return `${withoutESCAPE} ESCAPE '${escape}')`;
-  return `${withoutESCAPE})`;
+  const withoutESCAPE = `CONCAT(${params.columns.filter(i => i.data !== "").map(i => escapeID(i.data)).join(", ")}) LIKE '%${finalStr}%'`;
+  return parenthisize(withEsc(withoutESCAPE, escape));
 };
 
 
@@ -128,7 +128,6 @@ export const getSBGreaterThanSql = (crit: SBCriterion, orEqualTo=false): WhereCl
   return `(${escapeID(crit.origData)} >${orEqualTo ? "=" : ""} ${v1})`;
 };
 
-// STOPPED HERE //
 
 export const getSBCriterionSql = (crit: SBCriterion): SQLFragment => {
   //  TODO  no error checking
@@ -151,6 +150,9 @@ export const getSBCriterionSql = (crit: SBCriterion): SQLFragment => {
   if (crit.condition === undefined)    return "(True = True)";
   throw new Error("unrecognized condition");
 };
+
+
+// STOPPED HERE //
 
 export const getSearchBuilderSql = (params: SearchBuilder): SQLFragment => {
   if (!(params.criteria)) throw new Error("no criteria?");
