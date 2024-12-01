@@ -1,7 +1,10 @@
 # dtajax2sql
 
 A set of functions to help convert DataTables server-side AJAX calls into
-SQLite ANSI SQL.
+SQL.
+
+The architecture is designed to accomodate different RDBMSs and dialects,
+but SQLite is the only one currently implemented
 
 
 __WARNING__: This is nowhere _close_ to production-ready. Please don't use
