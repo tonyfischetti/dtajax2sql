@@ -3,7 +3,7 @@ import assert from 'assert';
 
 import BetterSqlite3 from 'better-sqlite3';
 
-import { SQLiteAdapter } from '../dist/adapters/SQLiteAdapter.js';
+import SQLiteAdapter from '../dist/adapters/SQLiteAdapter.js';
 
 
 

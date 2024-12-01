@@ -1,4 +1,4 @@
 
-export * from './dtajax2sql.js';
+export * from './Dtajax2sql.js';
 
 export { DTAJAXParams } from './types.js';

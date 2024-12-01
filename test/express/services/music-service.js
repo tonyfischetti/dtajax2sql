@@ -1,10 +1,14 @@
 import BetterSqlite3 from 'better-sqlite3';
-import { dtajax2sql } from '../../../dist/dtajax2sql.js';
+import Dtajax2sql from '../../../dist/Dtajax2sql.js';
 let DB;
 DB = new BetterSqlite3("../../test/music.db", {
     readonly: true,
     fileMustExist: true
 });
+// const dtajax2sql = new Dtajax2sql('songs', 'sqlite', {
+//   excludeFromGlobalSearch: ["song_id", "γρ'α`φ[έ]ς"]
+// });
+const dtajax2sql = new Dtajax2sql('songs', 'sqlite');
 /*****
  * CRUD THINGS
  */
@@ -13,7 +17,7 @@ DB = new BetterSqlite3("../../test/music.db", {
 export const performAJAX = (params) => {
   return new Promise((resolve, reject) => {
     try {
-      const { query, countQuery } = dtajax2sql(params, 'songs');
+      const { query, countQuery } = dtajax2sql.toSQL(params);
       console.log({ query, countQuery });
       //  TODO  this strikes me as inefficient
       //  HACK  this strikes me as inefficient

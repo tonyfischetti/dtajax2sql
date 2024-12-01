@@ -5,7 +5,8 @@ import {
   EscapedLIKE,
   SQLFragment,
   DTAJAXParams,
-  SBCriterion
+  SBCriterion,
+  OrderDirective
 } from '../types.js';
 
 import {
@@ -145,8 +146,16 @@ export class SQLiteAdapter extends DialectAdapter {
    */
 
   public getOrderByClause(params: DTAJAXParams): SQLFragment {
-    console.log(params.draw);
-    return "ORDER BY id";
+    // configOpts; //  TODO  make NULL (FIRST|LAST) a configurable option
+    if (!params.order?.length)
+      return '';
+    const columns = params.columns.
+                      map(i => i.data).
+                      map(this.escapeID);
+    const fieldAndAscOrDesc = params.order.
+      // toReversed().
+      map((i: OrderDirective) => `${columns[i.column]} ${i.dir.toUpperCase()}`);
+    return `ORDER BY ${fieldAndAscOrDesc.join(', ')} NULLS LAST`;
   }
 
 }

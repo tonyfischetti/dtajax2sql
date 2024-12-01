@@ -129,7 +129,6 @@ export abstract class DialectAdapter {
       return ("criteria" in obj);
     };
 
-
     const allCriteria = params['criteria'].map((i): string => {
       // @ts-ignore  TODO  
       if (!isNestedP(i)) return this.getSBCriterionSql(i);
@@ -174,7 +173,6 @@ export abstract class DialectAdapter {
    */
 
   public toSQL(params: DTAJAXParams): Result {
-    console.log(params.draw);
     const selectClause = this.getSelectClause(params);
     const fromClause   = this.getFromClause();
     const whereClause  = this.getWhereClause(params);

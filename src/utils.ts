@@ -1,7 +1,7 @@
 
-import { WhereClause } from "./types";
+import { SQLFragment } from "./types";
 
-export const negateClause = (clause: WhereClause): WhereClause => {
+export const negateClause = (clause: SQLFragment): SQLFragment => {
   return `(NOT ${clause})`;
 };
 

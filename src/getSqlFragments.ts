@@ -1,9 +1,6 @@
 
 import {
   SQLFragment,
-  SelectClause,
-  WhereClause,
-  OrderClause,
   OrderDirective,
   SBCriterion,
   SearchBuilder,
@@ -15,11 +12,11 @@ import {
 import {
          escapeID,
          escapeString,
-         escapeForLIKE }      from "./sanitization.js";
+         escapeForLIKE }  from "./sanitization.js";
 import { negateClause,
          parenthisize,
          parseNumberHelper, 
-         withEsc}  from "./utils.js";
+         withEsc }        from "./utils.js";
 
 
 /***********************************************************
@@ -38,7 +35,7 @@ const getLorOhelper = (params: DTAJAXParams,
 /***********************************************************
  * SELECT clause
  */
-export const getSelectClause = (params: DTAJAXParams): SelectClause => {
+export const getSelectClause = (params: DTAJAXParams): SQLFragment => {
   if (params.columns === undefined) throw new Error("malformed input");
   const columns = params.columns.
                     map(i => i.data).
@@ -76,7 +73,7 @@ export const getGlobalSearchSql = (params: DTAJAXParams,
 /***********************************************************
  * Search Builder and helpers
  */
-export const getSBEqualsSql = (crit: SBCriterion): WhereClause => {
+export const getSBEqualsSql = (crit: SBCriterion): SQLFragment => {
   if (crit.type.match(/^string/))
     return `(${escapeID(crit.origData)} = '${escapeString(crit.value1 ?? "")}')`;
   //  TODO  is this really an ELSE condition? Is "string" or "num" exhaustive?
@@ -86,25 +83,25 @@ export const getSBEqualsSql = (crit: SBCriterion): WhereClause => {
 
 //  NOTE  in SQLite, you can search for a number using a string
 //        but let's have different tests for other DBs (eventually)
-export const getSBEmpty = (crit: SBCriterion): WhereClause => {
+export const getSBEmpty = (crit: SBCriterion): SQLFragment => {
   return `((${escapeID(crit.origData)} IS NULL) OR (${escapeID(crit.origData)} = ''))`;
 };
 
-export const getSBContainsSql = (crit: SBCriterion): WhereClause => {
+export const getSBContainsSql = (crit: SBCriterion): SQLFragment => {
   let { str: finalStr, escape } = escapeForLIKE(crit.value1 ?? "");
   if (escape)
     return `(${escapeID(crit.origData)} LIKE '%${finalStr}%' ESCAPE '${escape}')`;
   return `(${escapeID(crit.origData)} LIKE '%${finalStr}%')`;
 };
 
-export const getSBStartsWithSql = (crit: SBCriterion): WhereClause => {
+export const getSBStartsWithSql = (crit: SBCriterion): SQLFragment => {
   let { str: finalStr, escape } = escapeForLIKE(crit.value1 ?? "");
   if (escape)
     return `(${escapeID(crit.origData)} LIKE '${finalStr}%' ESCAPE '${escape}')`;
   return `(${escapeID(crit.origData)} LIKE '${finalStr}%')`;
 };
 
-export const getSBEndsWithSql = (crit: SBCriterion): WhereClause => {
+export const getSBEndsWithSql = (crit: SBCriterion): SQLFragment => {
   let { str: finalStr, escape } = escapeForLIKE(crit.value1 ?? "");
   if (escape)
     return `(${escapeID(crit.origData)} LIKE '%${finalStr}' ESCAPE '${escape}')`;
@@ -112,18 +109,18 @@ export const getSBEndsWithSql = (crit: SBCriterion): WhereClause => {
 };
 
 //  TODO  no error handling. write tests for it
-export const getSBBetweenSql = (crit: SBCriterion): WhereClause => {
+export const getSBBetweenSql = (crit: SBCriterion): SQLFragment => {
   const v1 = parseNumberHelper(crit.value1 ?? "");
   const v2 = parseNumberHelper(crit.value2 ?? "");
   return `(${escapeID(crit.origData)} BETWEEN ${v1} AND ${v2})`;
 };
 
-export const getSBLessThanSql = (crit: SBCriterion, orEqualTo=false): WhereClause => {
+export const getSBLessThanSql = (crit: SBCriterion, orEqualTo=false): SQLFragment => {
   const v1 = parseNumberHelper(crit.value1 ?? "");
   return `(${escapeID(crit.origData)} <${orEqualTo ? "=" : ""} ${v1})`;
 };
 
-export const getSBGreaterThanSql = (crit: SBCriterion, orEqualTo=false): WhereClause => {
+export const getSBGreaterThanSql = (crit: SBCriterion, orEqualTo=false): SQLFragment => {
   const v1 = parseNumberHelper(crit.value1 ?? "");
   return `(${escapeID(crit.origData)} >${orEqualTo ? "=" : ""} ${v1})`;
 };
@@ -190,7 +187,7 @@ export const getSearchBuilderSql = (params: SearchBuilder): SQLFragment => {
 /***********************************************************
  * WHERE clause
  */
-export const getWhereClause = (params: DTAJAXParams, configOpts: ConfigOpts): WhereClause => {
+export const getSQLFragment = (params: DTAJAXParams, configOpts: ConfigOpts): SQLFragment => {
   //  TODO  this is ugly. fix it
   const defaultGSWhitespaceOpts = { removeLeadingWhitespace: true, removeTrailingWhitespace: true };
   //  TODO  unused rn
@@ -228,7 +225,7 @@ export const getWhereClause = (params: DTAJAXParams, configOpts: ConfigOpts): Wh
     }
   ]
  */
-export const getOrderClause = (params: DTAJAXParams, configOpts: ConfigOpts): OrderClause => {
+export const getOrderClause = (params: DTAJAXParams, configOpts: ConfigOpts): SQLFragment => {
   configOpts; //  TODO  make NULL (FIRST|LAST) a configurable option
   // console.log(params.order);
   if (!params.order?.length)
@@ -242,10 +239,3 @@ export const getOrderClause = (params: DTAJAXParams, configOpts: ConfigOpts): Or
   return `ORDER BY ${fieldAndAscOrDesc.join(', ')} NULLS LAST`;
 };
 
-// export const getSelectClause = (params: DTAJAXParams): SelectClause => {
-//   if (params.columns === undefined) throw new Error("malformed input");
-//   const columns = params.columns.
-//                     map(i => i.data).
-//                     map(escapeID);
-//   return `SELECT ${columns.join(", ")}`;
-//

@@ -1,8 +1,7 @@
 
-export type TableName    = string;
+export type DialectName = 'sqlite';
+
 export type SQLFragment  = string;
-export type SelectClause = SQLFragment;
-export type WhereClause  = SQLFragment;
 export type SQLQuery     = string;
 export type OrderClause  = SQLFragment;
 

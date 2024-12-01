@@ -1,6 +1,5 @@
 
 import {
-  TableName,
   DTAJAXParams,
   ConfigOpts,
   Result
@@ -10,7 +9,6 @@ import {
   getSelectClause,
   getLimitSql,
   getOffsetSql,
-  getWhereClause,
   getOrderClause,
 } from "./getSqlFragments.js";
 
@@ -29,7 +27,7 @@ const defaultConfigOpts: ConfigOpts = {
 };
 
 export const DTajax2sql = (params: DTAJAXParams, 
-                           tblName: TableName,
+                           tblName: string,
                            configOpts=defaultConfigOpts): Result => {
   //  TODO  error checking...
   // if (!("columns" in params))
@@ -49,7 +47,7 @@ export const DTajax2sql = (params: DTAJAXParams,
 
   const selectClause = getSelectClause(params);
   const fromClause   = `FROM ${tblName}`;
-  const whereClause  = getWhereClause(params, configOpts);
+  const whereClause  = ""; // getWhereClause(params, configOpts);
   const orderClause  = getOrderClause(params, configOpts);
   const limit        = getLimitSql(params);
   const offset       = getOffsetSql(params);
