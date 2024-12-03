@@ -30,6 +30,9 @@ const healParams = (params: DTAJAXParams): DTAJAXParams => {
   if (!Array.isArray(params.columns))
     params.columns =  convertColumnPropToArray(params.columns);
 
+  if (params.order && !Array.isArray(params.order))
+    params.order =  convertColumnPropToArray(params.order);
+
   if ("searchBuilder" in params && "criteria" in params.searchBuilder) {
     if ("0" in params?.searchBuilder?.criteria) {
       params.searchBuilder.criteria = convertColumnPropToArray(params.searchBuilder.criteria);
