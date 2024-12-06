@@ -20,10 +20,11 @@ const defaultConfigOpts: ConfigOpts = {
   excludeFromGlobalSearch: []
 };
 
-const completeConfigurationObj = (config: ConfigOpts): ConfigOpts => {
-  config = { ...defaultConfigOpts, ...config };
-  config.whitespace = { ...defaultConfigOpts.whitespace, ...config.whitespace };
-  return config;
+const completeConfigurationObj = (config: Partial<ConfigOpts>): ConfigOpts => {
+  let combinedConfig = { ...defaultConfigOpts, ...config };
+  if (config.whitespace !== undefined)
+    combinedConfig.whitespace = { ...defaultConfigOpts.whitespace, ...config.whitespace }
+  return combinedConfig;
 };
 
 const healParams = (params: DTAJAXParams): DTAJAXParams => {
@@ -48,13 +49,11 @@ export class Dtajax2sql {
   readonly dialectAdapter: DialectAdapter;
   readonly config: ConfigOpts;
 
-  constructor(tableName: string, dialect: DialectName, config?: ConfigOpts) {
+  constructor(tableName: string, dialect: DialectName, config?: Partial<ConfigOpts>) {
     this.tableName = tableName;
 
-    if (config)
-      this.config = completeConfigurationObj(config);
-    else
-      this.config = defaultConfigOpts;
+    if (config) this.config = completeConfigurationObj(config);
+    else this.config = defaultConfigOpts;
 
     switch (dialect) {
       case 'sqlite':

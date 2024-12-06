@@ -80,9 +80,9 @@ export class SQLiteAdapter extends DialectAdapter {
 
   public getGlobalSearchSql(params: DTAJAXParams): SQLFragment {
     let { str: finalStr, escape } = this.escapeForLIKE(params.search.value);
-    if (this.config.whitespace.removeLeading)
+    if (this.config.whitespace?.removeLeading)
       finalStr = finalStr.replace(/^\s+/, '');
-    if (this.config.whitespace.removeTrailing)
+    if (this.config.whitespace?.removeTrailing)
       finalStr = finalStr.replace(/\s$/, '');
     const columnsToConcat = params.columns.
       map(i => i.data).
