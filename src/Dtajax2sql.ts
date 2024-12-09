@@ -16,8 +16,7 @@ const defaultConfigOpts: ConfigOpts = {
   whitespace: {
     removeLeading: true,
     removeTrailing: true
-  },
-  excludeFromGlobalSearch: []
+  }
 };
 
 const completeConfigurationObj = (config: Partial<ConfigOpts>): ConfigOpts => {

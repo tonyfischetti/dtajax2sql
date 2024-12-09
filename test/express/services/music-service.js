@@ -5,9 +5,6 @@ DB = new BetterSqlite3("../../test/music.db", {
     readonly: true,
     fileMustExist: true
 });
-// const dtajax2sql = new Dtajax2sql('songs', 'sqlite', {
-//   excludeFromGlobalSearch: ["song_id", "γρ'α`φ[έ]ς"]
-// });
 const dtajax2sql = new Dtajax2sql('songs', 'sqlite');
 /*****
  * CRUD THINGS

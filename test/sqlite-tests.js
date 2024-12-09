@@ -1,10 +1,7 @@
 
 import assert from 'assert';
-
 import BetterSqlite3 from 'better-sqlite3';
-
 import SQLiteAdapter from '../dist/adapters/SQLiteAdapter.js';
-
 
 
 /*************************************************************************
@@ -22,23 +19,20 @@ const adapter = new SQLiteAdapter('main', {
     removeLeading: true,
     removeTrailing: true
   },
-  excludeFromGlobalSearch: ["song_id", "γρ'α`φ[έ]ς"]
 });
 
-const variant1 = new SQLiteAdapter('main', {
+const configVariant1 = new SQLiteAdapter('main', {
   whitespace: {
     removeLeading: false,
     removeTrailing: true
   },
-  excludeFromGlobalSearch: ["γρ'α`φ[έ]ς"]
 });
 
-const variant2 = new SQLiteAdapter('main', {
+const configVariant2 = new SQLiteAdapter('main', {
   whitespace: {
     removeLeading: true,
     removeTrailing: false
   },
-  excludeFromGlobalSearch: []
 });
 
 const exParams = {
@@ -47,8 +41,8 @@ const exParams = {
     {
       "data": "song_id",
       "name": "",
-      "searchable": "true",
-      "orderable": "false",
+      "searchable": "false",
+      "orderable": "true",
       "search": {
         "value": "",
         "regex": "false"
@@ -58,7 +52,7 @@ const exParams = {
       "data": "Song title",
       "name": "",
       "searchable": "true",
-      "orderable": "false",
+      "orderable": "true",
       "search": {
         "value": "",
         "regex": "false"
@@ -68,7 +62,7 @@ const exParams = {
       "data": "Artist name",
       "name": "",
       "searchable": "true",
-      "orderable": "false",
+      "orderable": "true",
       "search": {
         "value": "",
         "regex": "false"
@@ -87,8 +81,8 @@ const exParams = {
     {
       "data": "γρ'α`φ[έ]ς",
       "name": "",
-      "searchable": "true",
-      "orderable": "false",
+      "searchable": "false",
+      "orderable": "true",
       "search": {
         "value": "",
         "regex": "false"
@@ -293,19 +287,27 @@ describe('getSelectClause', () => {
 
 describe('global search', () => {
 
-  describe('respects `excludeFromGlobalSearch`', () => {
-    const params = { ...exParams, search: { value: "keep", regex: "false" } };
+  describe('respects "searchable" key`', () => {
     it("variant 0", () => {
+      const params = { ...exParams };
+      params.columns = [...exParams.columns];
       assert.equal(adapter.getGlobalSearchSql(params),
         `(CONCAT("Song title", "Artist name", "Tony's ""Notes""") LIKE '%keep%')`);
     });
     it("variant 1", () => {
-      assert.equal(variant1.getGlobalSearchSql(params),
-        `(CONCAT("song_id", "Song title", "Artist name", "Tony's ""Notes""") LIKE '%keep%')`);
+      const params = { ...exParams };
+      params.columns = [...exParams.columns];
+      params.columns[0] =  { "data": "song_id", "name": "", "searchable": "true", "orderable": "true", "search": { "value": "", "regex": "false" } };
+      params.columns[4] =  { "data": "γρ'α`φ[έ]ς", "name": "", "searchable": "true", "orderable": "true", "search": { "value": "", "regex": "false" } };
+      assert.equal(adapter.getGlobalSearchSql(params),
+        `(CONCAT("song_id", "Song title", "Artist name", "Tony's ""Notes""", "` + "γρ'α`φ[έ]ς" + `") LIKE '%keep%')`);
     });
     it("variant 2", () => {
-      assert.equal(variant2.getGlobalSearchSql(params),
-        `(CONCAT("song_id", "Song title", "Artist name", "Tony's ""Notes""", "` + "γρ'α`φ[έ]ς" + `") LIKE '%keep%')`);
+      const params = { ...exParams };
+      params.columns = [...exParams.columns];
+      params.columns[4] =  { "data": "γρ'α`φ[έ]ς", "name": "", "searchable": "true", "orderable": "true", "search": { "value": "", "regex": "false" } };
+      assert.equal(adapter.getGlobalSearchSql(params),
+        `(CONCAT("Song title", "Artist name", "Tony's ""Notes""", "` + "γρ'α`φ[έ]ς" + `") LIKE '%keep%')`);
     });
   });
 
@@ -562,33 +564,37 @@ describe('getWhereClause', () => {
 
   describe('simple cases', () => {
     it("both search AND searchBuilder", () => {
-      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'false', orderable: 'false' } ], search: { value: "global", regex: 'false' }, searchBuilder: { "criteria": [ { "condition": "contains", "data": "Title", "origData": "Title", "type": "string", "value": [ "q" ], "value1": "q" } ], "logic": "AND" }, start: '0', length: '30', _: '1727689860063' };
+      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'true', orderable: 'false' } ], search: { value: "global", regex: 'false' }, searchBuilder: { "criteria": [ { "condition": "contains", "data": "Title", "origData": "Title", "type": "string", "value": [ "q" ], "value1": "q" } ], "logic": "AND" }, start: '0', length: '30', _: '1727689860063' };
       assert.equal(adapter.getWhereClause(ex_simple1), `WHERE ((("Title" LIKE '%q%') AND True) AND (CONCAT("Department", "Title") LIKE '%global%'))`);
     });
+    it("both search AND searchBuilder (with more excluded columns)", () => {
+      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'false', orderable: 'false' } ], search: { value: "global", regex: 'false' }, searchBuilder: { "criteria": [ { "condition": "contains", "data": "Title", "origData": "Title", "type": "string", "value": [ "q" ], "value1": "q" } ], "logic": "AND" }, start: '0', length: '30', _: '1727689860063' };
+      assert.equal(adapter.getWhereClause(ex_simple1), `WHERE ((("Title" LIKE '%q%') AND True) AND (CONCAT("Department") LIKE '%global%'))`);
+    });
     it("only globalSearch", () => {
-      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'false', orderable: 'false' } ], search: { value: "global", regex: 'false' }, start: '0', length: '30', _: '1727689860063' };
+      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'true', orderable: 'false' } ], search: { value: "global", regex: 'false' }, start: '0', length: '30', _: '1727689860063' };
       assert.equal(adapter.getWhereClause(ex_simple1), `WHERE (True AND (CONCAT("Department", "Title") LIKE '%global%'))`);
     });
 
     it("only globalSearch does away with whitespace by default", () => {
-      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'false', orderable: 'false' } ], search: { value: " global ", regex: 'false' }, start: '0', length: '30', _: '1727689860063' };
+      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'true', orderable: 'false' } ], search: { value: " global ", regex: 'false' }, start: '0', length: '30', _: '1727689860063' };
       assert.equal(adapter.getWhereClause(ex_simple1), `WHERE (True AND (CONCAT("Department", "Title") LIKE '%global%'))`);
     });
     it("only globalSearch (leading whitespace)", () => {
-      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'false', orderable: 'false' } ], search: { value: " global ", regex: 'false' }, start: '0', length: '30', _: '1727689860063' };
-      assert.equal(variant1.getWhereClause(ex_simple1), `WHERE (True AND (CONCAT("Department", "Title") LIKE '% global%'))`);
+      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'true', orderable: 'false' } ], search: { value: " global ", regex: 'false' }, start: '0', length: '30', _: '1727689860063' };
+      assert.equal(configVariant1.getWhereClause(ex_simple1), `WHERE (True AND (CONCAT("Department", "Title") LIKE '% global%'))`);
     });
     it("only globalSearch (trailing whitespace)", () => {
-      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'false', orderable: 'false' } ], search: { value: " global ", regex: 'false' }, start: '0', length: '30', _: '1727689860063' };
-      assert.equal(variant2.getWhereClause(ex_simple1), `WHERE (True AND (CONCAT("Department", "Title") LIKE '%global %'))`);
+      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'true', orderable: 'false' } ], search: { value: " global ", regex: 'false' }, start: '0', length: '30', _: '1727689860063' };
+      assert.equal(configVariant2.getWhereClause(ex_simple1), `WHERE (True AND (CONCAT("Department", "Title") LIKE '%global %'))`);
     });
     it("only searchBuilder", () => {
-      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'false', orderable: 'false' } ], searchBuilder: { "criteria": [ { "condition": "contains", "data": "Title", "origData": "Title", "type": "string", "value": [ "q" ], "value1": "q" } ], "logic": "AND" }, start: '0', length: '30', _: '1727689860063' };
+      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'true', orderable: 'false' } ], searchBuilder: { "criteria": [ { "condition": "contains", "data": "Title", "origData": "Title", "type": "string", "value": [ "q" ], "value1": "q" } ], "logic": "AND" }, start: '0', length: '30', _: '1727689860063' };
       assert.equal(adapter.getWhereClause(ex_simple1), `WHERE ((("Title" LIKE '%q%') AND True) AND True)`);
     });
     //  TODO  should search handler different opts
     it("neither", () => {
-      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'false', orderable: 'false' } ], start: '0', length: '30', _: '1727689860063' };
+      const ex_simple1 = { draw: '2', columns: [ { data: 'Department', name: '', searchable: 'true', orderable: 'false' }, { data: 'Title', name: '', searchable: 'true', orderable: 'false' } ], start: '0', length: '30', _: '1727689860063' };
       assert.equal(adapter.getWhereClause(ex_simple1), "WHERE (True AND True)");
     });
   });

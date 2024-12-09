@@ -213,7 +213,6 @@ export interface WhitespaceOpts {
 
 export interface ConfigOpts {
   whitespace: WhitespaceOpts;
-  excludeFromGlobalSearch: Array<string>;
 }
 
 export interface EscapedLIKE {

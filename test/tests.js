@@ -29,7 +29,7 @@ const exParams = {
       "data": "song_id",
       "name": "",
       "searchable": "true",
-      "orderable": "false",
+      "orderable": "true",
       "search": {
         "value": "",
         "regex": "false"
@@ -39,7 +39,7 @@ const exParams = {
       "data": "Song title",
       "name": "",
       "searchable": "true",
-      "orderable": "false",
+      "orderable": "true",
       "search": {
         "value": "",
         "regex": "false"
@@ -49,7 +49,7 @@ const exParams = {
       "data": "Artist name",
       "name": "",
       "searchable": "true",
-      "orderable": "false",
+      "orderable": "true",
       "search": {
         "value": "",
         "regex": "false"
@@ -68,8 +68,8 @@ const exParams = {
     {
       "data": "γρ'α`φ[έ]ς",
       "name": "",
-      "searchable": "true",
-      "orderable": "false",
+      "searchable": "false",
+      "orderable": "true",
       "search": {
         "value": "",
         "regex": "false"

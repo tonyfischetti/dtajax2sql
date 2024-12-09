@@ -85,9 +85,9 @@ export class SQLiteAdapter extends DialectAdapter {
     if (this.config.whitespace?.removeTrailing)
       finalStr = finalStr.replace(/\s$/, '');
     const columnsToConcat = params.columns.
+      filter(i => i.searchable==='true').
       map(i => i.data).
       filter(i => i !== "").
-      filter(i => !this.config.excludeFromGlobalSearch.includes(i)).
       map(this.escapeID);
     const withoutESCAPE = `CONCAT(${columnsToConcat.join(", ")}) LIKE '%${finalStr}%'`;
     return parenthisize(withEsc(withoutESCAPE, escape));
