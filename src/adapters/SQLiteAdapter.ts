@@ -85,7 +85,7 @@ export class SQLiteAdapter extends DialectAdapter {
     if (this.config.whitespace?.removeTrailing)
       finalStr = finalStr.replace(/\s$/, '');
     const columnsToConcat = params.columns.
-      filter(i => i.searchable==='true').
+      filter(i => i.searchable===true || i.searchable==='true').
       map(i => i.data).
       filter(i => i !== "").
       map(this.escapeID);

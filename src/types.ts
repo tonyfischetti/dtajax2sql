@@ -23,8 +23,8 @@ export type OrderClause  = SQLFragment;
 export interface ColumnObj {
   data: string;
   name: string;
-  searchable?: 'true' | 'false';
-  orderable?: 'true' | 'false';
+  searchable?: 'true' | 'false' | true | false;
+  orderable?: 'true' | 'false' | true | false;
   //  TODO  also has "search" property
 }
 

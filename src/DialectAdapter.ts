@@ -123,7 +123,10 @@ export abstract class DialectAdapter {
   }
 
   public getSearchBuilderSql(params: SearchBuilder): SQLFragment {
-    if (!(params.criteria)) throw new Error("no criteria?");
+    // if (!(params.criteria)) throw new Error("no criteria?");
+    if (!(params.criteria)) {
+      return '(True AND True)';
+    }
 
     const isNestedP = (obj: SearchBuilder | SBCriterion): boolean => {
       return ("criteria" in obj);
