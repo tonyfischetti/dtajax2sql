@@ -3,7 +3,7 @@
   "author": "Tony Fischetti <tony.fischetti@gmail.com>",
   "license": "GPL-3.0-or-later",
   "homepage": "https://github.com/tonyfischetti/dtajax2sql#readme",
-  "version": "0.2.17",
+  "version": "0.3.3",
   "description": "A set of functions to help convert DataTables server-side AJAX calls into SQL",
   "type": "module",
   "main": "index.js",

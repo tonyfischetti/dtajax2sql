@@ -44,9 +44,9 @@ const healParams = (params: DTAJAXParams): DTAJAXParams => {
 
 export class Dtajax2sql {
 
-  readonly tableName: string;
-  readonly dialectAdapter: DialectAdapter;
-  readonly config: ConfigOpts;
+  readonly tableName:       string;
+  readonly dialectAdapter:  DialectAdapter;
+  readonly config:          ConfigOpts;
 
   constructor(tableName: string, dialect: DialectName, config?: Partial<ConfigOpts>) {
     this.tableName = tableName;
@@ -65,6 +65,15 @@ export class Dtajax2sql {
   public toSQL(params: DTAJAXParams): Result {
     params = healParams(params);
     return this.dialectAdapter.toSQL(params);
+  }
+
+  public toSQLThroughFtTable(ftTableName: string,
+                             rowidKey: string,
+                             params: DTAJAXParams): Result {
+    params = healParams(params);
+    return this.dialectAdapter.toSQLThroughFtTable(ftTableName,
+                                                   rowidKey,
+                                                   params);
   }
 }
 

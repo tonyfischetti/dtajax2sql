@@ -202,6 +202,7 @@ export interface DTAJAXParams {
   search: GlobalSearch;
   searchBuilder?: SearchBuilder;
   order?: OrderSpec;
+  globalSearchMode?: string;
   _: string;
 }
 

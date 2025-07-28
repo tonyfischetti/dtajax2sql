@@ -53,11 +53,20 @@ export abstract class DialectAdapter {
    * SELECT clause
    */
 
+  // public getSelectClause(params: DTAJAXParams): SQLFragment {
+  //   if (params.columns === undefined) throw new Error("malformed input");
+  //   const columns = params.columns.
+  //                     map(i => i.data).
+  //                     map(this.escapeID);
+  //   return `SELECT ${columns.map(_ => `${this.escapeID(this.tableName)}.${_}`).join(", ")}`;
+  // };
+
   public getSelectClause(params: DTAJAXParams): SQLFragment {
     if (params.columns === undefined) throw new Error("malformed input");
     const columns = params.columns.
                       map(i => i.data).
-                      map(this.escapeID);
+                      map(this.escapeID).
+                      map(_ => `${this.escapeID(this.tableName)}.${_}`);
     return `SELECT ${columns.join(", ")}`;
   };
 
@@ -68,6 +77,17 @@ export abstract class DialectAdapter {
 
   public getFromClause(): SQLFragment {
     return `FROM ${this.escapeID(this.tableName)}`;
+  }
+
+
+  /***********************************************************
+   * JOIN clause
+   *
+   * only used when going through a full-text table
+   */
+
+  public getJoinClause(ftTable: string, rowidKey: string): SQLFragment {
+    return `INNER JOIN ${this.escapeID(ftTable)} ON (${this.escapeID(ftTable)}.rowid = ${this.escapeID(this.tableName)}.${this.escapeID(rowidKey)})`;
   }
 
 
@@ -88,16 +108,17 @@ export abstract class DialectAdapter {
    * WHERE clause
    */
 
-  abstract getGlobalSearchSql  (params: DTAJAXParams): SQLFragment;
+  abstract getGlobalSearchSql   (params: DTAJAXParams): SQLFragment;
+  abstract getFtGlobalSearchSql (ftTableName: string, params: DTAJAXParams): SQLFragment;
 
-  abstract getSBEqualsSql      (crit: SBCriterion): SQLFragment;
-  abstract getSBEmpty          (crit: SBCriterion): SQLFragment;
-  abstract getSBContainsSql    (crit: SBCriterion): SQLFragment;
-  abstract getSBStartsWithSql  (crit: SBCriterion): SQLFragment;
-  abstract getSBEndsWithSql    (crit: SBCriterion): SQLFragment;
-  abstract getSBBetweenSql     (crit: SBCriterion): SQLFragment;
-  abstract getSBLessThanSql    (crit: SBCriterion, orEqualTo: boolean): SQLFragment;
-  abstract getSBGreaterThanSql (crit: SBCriterion, orEqualTo: boolean): SQLFragment;
+  abstract getSBEqualsSql       (crit: SBCriterion): SQLFragment;
+  abstract getSBEmpty           (crit: SBCriterion): SQLFragment;
+  abstract getSBContainsSql     (crit: SBCriterion): SQLFragment;
+  abstract getSBStartsWithSql   (crit: SBCriterion): SQLFragment;
+  abstract getSBEndsWithSql     (crit: SBCriterion): SQLFragment;
+  abstract getSBBetweenSql      (crit: SBCriterion): SQLFragment;
+  abstract getSBLessThanSql     (crit: SBCriterion, orEqualTo: boolean): SQLFragment;
+  abstract getSBGreaterThanSql  (crit: SBCriterion, orEqualTo: boolean): SQLFragment;
 
   public getSBCriterionSql(crit: SBCriterion): SQLFragment {
     //  TODO  no error checking
@@ -164,6 +185,18 @@ export abstract class DialectAdapter {
     return `WHERE (${ [fromSearchBuilder, fromGlobalSearch].join(" AND ") })`;
   }
 
+  public getFtWhereClause(ftTableName: string,
+                          params: DTAJAXParams): SQLFragment {
+    const fromGlobalSearch = ('search' in params && params.search.value !== '') ? 
+      
+      this.getFtGlobalSearchSql(ftTableName, params) :
+      "True";
+    const fromSearchBuilder = ('searchBuilder' in params) ? 
+      this.getSearchBuilderSql(params.searchBuilder) :
+      "True";
+    return `WHERE (${ [fromSearchBuilder, fromGlobalSearch].join(" AND ") })`;
+  }
+
   /***********************************************************
    * ORDER BY clause
    */
@@ -185,6 +218,22 @@ export abstract class DialectAdapter {
 
     const q  = `${selectClause} ${fromClause} ${whereClause} ${orderClause} ${limit} ${offset}`;
     const cq = `SELECT COUNT(*) as filteredCount ${fromClause} ${whereClause}`;
+    return { query: q, countQuery: cq };
+  }
+
+  public toSQLThroughFtTable(ftTableName: string,
+                             rowidKey: string,
+                             params: DTAJAXParams): Result {
+    const selectClause = this.getSelectClause(params);
+    const fromClause   = this.getFromClause();
+    const joinClause   = this.getJoinClause(ftTableName, rowidKey);
+    const whereClause  = this.getFtWhereClause(ftTableName, params);
+    const orderClause  = this.getOrderByClause(params);
+    const limit        = this.getLimitSql(params);
+    const offset       = this.getOffsetSql(params);
+
+    const q  = `${selectClause} ${fromClause} ${joinClause} ${whereClause} ${orderClause} ${limit} ${offset}`;
+    const cq = `SELECT COUNT(*) as filteredCount ${fromClause} ${joinClause} ${whereClause}`;
     return { query: q, countQuery: cq };
   }
 

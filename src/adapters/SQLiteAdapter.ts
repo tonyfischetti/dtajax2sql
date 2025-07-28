@@ -56,6 +56,10 @@ export class SQLiteAdapter extends DialectAdapter {
     return s.replaceAll(/'/g, "''");
   }
 
+  public escapeStringForFtSearch(s: string): string {
+    return s.replaceAll(/'/g, "''");
+  }
+
   public escapeForLIKE(s: string): EscapedLIKE {
     const better = this.escapeString(s);
     const okEscapeCharacter = this.returnOkEscapeCharacter(s);
@@ -88,56 +92,66 @@ export class SQLiteAdapter extends DialectAdapter {
       filter(i => i.searchable===true || i.searchable==='true').
       map(i => i.data).
       filter(i => i !== "").
-      map(this.escapeID);
+      map(this.escapeID).
+      map(_ => `${this.escapeID(this.tableName)}.${_}`);
     const withoutESCAPE = `CONCAT(${columnsToConcat.join(", ")}) LIKE '%${finalStr}%'`;
     return parenthisize(withEsc(withoutESCAPE, escape));
+  };
+
+  public getFtGlobalSearchSql(ftTableName: string, params: DTAJAXParams): SQLFragment {
+    let ftSearchTerm = this.escapeStringForFtSearch(params.search.value);
+    if (this.config.whitespace?.removeLeading)
+      ftSearchTerm = ftSearchTerm.replace(/^\s+/, '');
+    if (this.config.whitespace?.removeTrailing)
+      ftSearchTerm = ftSearchTerm.replace(/\s$/, '');
+    return parenthisize(`${ftTableName} = '${ftSearchTerm}'`);
   };
 
 
   public getSBEqualsSql = (crit: SBCriterion): SQLFragment => {
     if (crit.type.match(/^string/))
-      return `(${this.escapeID(crit.origData)} = '${this.escapeString(crit.value1 ?? "")}')`;
+      return `(${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} = '${this.escapeString(crit.value1 ?? "")}')`;
     //  TODO  is this really an ELSE condition? Is "string" or "num" exhaustive?
     const num = parseNumberHelper(crit.value1 ?? "");
-    return `(${this.escapeID(crit.origData)} = ${num})`;
+    return `(${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} = ${num})`;
   }
 
   //  NOTE  in SQLite, you can search for a number using a string
   //        but let's have different tests for other DBs (eventually)
   public getSBEmpty(crit: SBCriterion): SQLFragment {
-    return `((${this.escapeID(crit.origData)} IS NULL) OR (${this.escapeID(crit.origData)} = ''))`;
+    return `((${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} IS NULL) OR (${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} = ''))`;
   }
 
   public getSBContainsSql(crit: SBCriterion): SQLFragment {
     let { str: finalStr, escape } = this.escapeForLIKE(crit.value1 ?? "");
-    return parenthisize(withEsc(`${this.escapeID(crit.origData)} LIKE '%${finalStr}%'`, escape));
+    return parenthisize(withEsc(`${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} LIKE '%${finalStr}%'`, escape));
   }
 
   public getSBStartsWithSql(crit: SBCriterion): SQLFragment {
     let { str: finalStr, escape } = this.escapeForLIKE(crit.value1 ?? "");
-    return parenthisize(withEsc(`${this.escapeID(crit.origData)} LIKE '${finalStr}%'`, escape));
+    return parenthisize(withEsc(`${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} LIKE '${finalStr}%'`, escape));
   }
 
   public getSBEndsWithSql(crit: SBCriterion): SQLFragment {
     let { str: finalStr, escape } = this.escapeForLIKE(crit.value1 ?? "");
-    return parenthisize(withEsc(`${this.escapeID(crit.origData)} LIKE '%${finalStr}'`, escape));
+    return parenthisize(withEsc(`${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} LIKE '%${finalStr}'`, escape));
   }
 
   //  TODO  no error handling. write tests for it
   public getSBBetweenSql(crit: SBCriterion): SQLFragment {
     const v1 = parseNumberHelper(crit.value1 ?? "");
     const v2 = parseNumberHelper(crit.value2 ?? "");
-    return `(${this.escapeID(crit.origData)} BETWEEN ${v1} AND ${v2})`;
+    return `(${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} BETWEEN ${v1} AND ${v2})`;
   }
 
   public getSBLessThanSql(crit: SBCriterion, orEqualTo=false): SQLFragment {
     const v1 = parseNumberHelper(crit.value1 ?? "");
-    return `(${this.escapeID(crit.origData)} <${orEqualTo ? "=" : ""} ${v1})`;
+    return `(${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} <${orEqualTo ? "=" : ""} ${v1})`;
   }
 
   public getSBGreaterThanSql(crit: SBCriterion, orEqualTo=false): SQLFragment {
     const v1 = parseNumberHelper(crit.value1 ?? "");
-    return `(${this.escapeID(crit.origData)} >${orEqualTo ? "=" : ""} ${v1})`;
+    return `(${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} >${orEqualTo ? "=" : ""} ${v1})`;
   }
 
 
