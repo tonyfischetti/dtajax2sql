@@ -57,7 +57,8 @@ export class SQLiteAdapter extends DialectAdapter {
   }
 
   public escapeStringForFtSearch(s: string): string {
-    return s.replaceAll(/'/g, "''");
+    return s.replaceAll(/'/g, "").
+             replaceAll(/-/g, " ");
   }
 
   public escapeForLIKE(s: string): EscapedLIKE {

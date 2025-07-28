@@ -188,7 +188,6 @@ export abstract class DialectAdapter {
   public getFtWhereClause(ftTableName: string,
                           params: DTAJAXParams): SQLFragment {
     const fromGlobalSearch = ('search' in params && params.search.value !== '') ? 
-      
       this.getFtGlobalSearchSql(ftTableName, params) :
       "True";
     const fromSearchBuilder = ('searchBuilder' in params) ? 
