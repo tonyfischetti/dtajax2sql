@@ -317,9 +317,10 @@ describe('Search builder criteria', () => {
 
   /**** strings AND numbers */
   describe('getSBEqualsSql', () => {
+    /* also showcases the conversion to NFD unicode form */
     it("should handle simple case (string)", () => {
       const exs = { "condition": "=", "data": "Title", "origData": "Title", "type": "string", "value": [ "El sueño..." ], "value1": "El sueño..." };
-      assert.equal(adapter.getSBCriterionSql(exs), `("main"."Title" = 'El sueño...')`);
+      assert.equal(adapter.getSBCriterionSql(exs), `("main"."Title" = 'El sueño...')`);
     });
     it("should handle simple case (number)", () => {
       const exn = { "condition": "=", "data": "ObjectID", "origData": "ObjectID", "type": "num", "value": [ "1" ], "value1": "1" };
@@ -331,7 +332,7 @@ describe('Search builder criteria', () => {
     });
     it("should handle simple negative case (string)", () => {
       const exs = { "condition": "!=", "data": "Title", "origData": "Title", "type": "string", "value": [ "El sueño..." ], "value1": "El sueño..." };
-      assert.equal(adapter.getSBCriterionSql(exs), `(NOT ("main"."Title" = 'El sueño...'))`);
+      assert.equal(adapter.getSBCriterionSql(exs), `(NOT ("main"."Title" = 'El sueño...'))`);
     });
     it("should handle simple negative case (number)", () => {
       const exn = { "condition": "!=", "data": "ObjectID", "origData": "ObjectID", "type": "num", "value": [ "1" ], "value1": "1" };

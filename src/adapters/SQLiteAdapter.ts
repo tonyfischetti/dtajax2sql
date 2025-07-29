@@ -84,7 +84,7 @@ export class SQLiteAdapter extends DialectAdapter {
    */
 
   public getGlobalSearchSql(params: DTAJAXParams): SQLFragment {
-    let { str: finalStr, escape } = this.escapeForLIKE(params.search.value);
+    let { str: finalStr, escape } = this.escapeForLIKE(params.search.value.normalize("NFD"));
     if (this.config.whitespace?.removeLeading)
       finalStr = finalStr.replace(/^\s+/, '');
     if (this.config.whitespace?.removeTrailing)
@@ -100,7 +100,7 @@ export class SQLiteAdapter extends DialectAdapter {
   };
 
   public getFtGlobalSearchSql(ftTableName: string, params: DTAJAXParams): SQLFragment {
-    let ftSearchTerm = this.escapeStringForFtSearch(params.search.value);
+    let ftSearchTerm = this.escapeStringForFtSearch(params.search.value.normalize("NFD"));
     if (this.config.whitespace?.removeLeading)
       ftSearchTerm = ftSearchTerm.replace(/^\s+/, '');
     if (this.config.whitespace?.removeTrailing)
@@ -111,7 +111,7 @@ export class SQLiteAdapter extends DialectAdapter {
 
   public getSBEqualsSql = (crit: SBCriterion): SQLFragment => {
     if (crit.type.match(/^string/))
-      return `(${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} = '${this.escapeString(crit.value1 ?? "")}')`;
+      return `(${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} = '${this.escapeString(crit.value1?.normalize("NFD") ?? "")}')`;
     //  TODO  is this really an ELSE condition? Is "string" or "num" exhaustive?
     const num = parseNumberHelper(crit.value1 ?? "");
     return `(${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} = ${num})`;
@@ -125,17 +125,17 @@ export class SQLiteAdapter extends DialectAdapter {
 
   public getSBContainsSql(crit: SBCriterion): SQLFragment {
     let { str: finalStr, escape } = this.escapeForLIKE(crit.value1 ?? "");
-    return parenthisize(withEsc(`${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} LIKE '%${finalStr}%'`, escape));
+    return parenthisize(withEsc(`${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} LIKE '%${finalStr.normalize("NFD")}%'`, escape));
   }
 
   public getSBStartsWithSql(crit: SBCriterion): SQLFragment {
     let { str: finalStr, escape } = this.escapeForLIKE(crit.value1 ?? "");
-    return parenthisize(withEsc(`${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} LIKE '${finalStr}%'`, escape));
+    return parenthisize(withEsc(`${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} LIKE '${finalStr.normalize("NFD")}%'`, escape));
   }
 
   public getSBEndsWithSql(crit: SBCriterion): SQLFragment {
     let { str: finalStr, escape } = this.escapeForLIKE(crit.value1 ?? "");
-    return parenthisize(withEsc(`${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} LIKE '%${finalStr}'`, escape));
+    return parenthisize(withEsc(`${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} LIKE '%${finalStr.normalize("NFD")}'`, escape));
   }
 
   //  TODO  no error handling. write tests for it
