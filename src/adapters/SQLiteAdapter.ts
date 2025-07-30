@@ -166,7 +166,8 @@ export class SQLiteAdapter extends DialectAdapter {
       return '';
     const columns = params.columns.
                       map(i => i.data).
-                      map(this.escapeID);
+                      map(this.escapeID).
+                      map(_ => `${this.escapeID(this.tableName)}.${_}`);
     const fieldAndAscOrDesc = params.order.
       // toReversed().
       map((i: OrderDirective) => `${columns[i.column]} ${i.dir.toUpperCase()}`);
