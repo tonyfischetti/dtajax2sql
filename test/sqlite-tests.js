@@ -354,6 +354,14 @@ describe('global search', () => {
     });
   });
 
+  describe('no searchable columns', () => {
+    it("matches nothing, mirroring client-side DataTables (and avoids `CONCAT()`)", () => {
+      const params = { ...exParams };
+      params.columns = exParams.columns.map(c => ({ ...c, searchable: "false" }));
+      assert.equal(adapter.getGlobalSearchSql(params), "(False)");
+    });
+  });
+
 });
 
 describe('Search builder criteria', () => {
@@ -531,6 +539,16 @@ describe('getSearchBuilderSql', () => {
     it("OR logic", () => {
       const ex = { "criteria": [ { "condition": "contains", "data": "Title", "origData": "Title", "type": "string", "value": [ "q" ], "value1": "q" } ], "logic": "OR" };
       assert.equal(adapter.getSearchBuilderSql(ex), `(("main"."Title" LIKE '%q%') OR False)`);
+    });
+  });
+
+  describe('handle empty criteria', () => {
+    it("an empty criteria array filters nothing (and is not a syntax error)", () => {
+      assert.equal(adapter.getSearchBuilderSql({ "criteria": [], "logic": "AND" }), "(True AND True)");
+      assert.equal(adapter.getSearchBuilderSql({ "criteria": [], "logic": "OR" }), "(True AND True)");
+    });
+    it("missing criteria behaves the same", () => {
+      assert.equal(adapter.getSearchBuilderSql({ "logic": "AND" }), "(True AND True)");
     });
   });
 

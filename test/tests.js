@@ -180,6 +180,20 @@ describe('testing against a real (weird) DB', () => {
       assert.equal(DB.prepare(query).get()['song_id'], 19);
     });
 
+    it("an empty searchBuilder criteria array doesn't break the query", () => {
+      const params = {"draw":"3","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"12","search":{"value":"","regex":"false"},"searchBuilder":{"criteria":[],"logic":"AND"},"_":"1729017098493"};
+      const { query, countQuery } = inst.toSQL(params);
+      assert.equal(DB.prepare(query).all().length, 12);
+      assert.equal(DB.prepare(countQuery).get()["filteredCount"], 19);
+    });
+
+    it("a global search with no searchable columns matches nothing (and doesn't break)", () => {
+      const params = {"draw":"3","columns":[{"data":"song_id","name":"","searchable":"false","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"false","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"12","search":{"value":"keep","regex":"false"},"_":"1729017098493"};
+      const { query, countQuery } = inst.toSQL(params);
+      assert.equal(DB.prepare(query).all().length, 0);
+      assert.equal(DB.prepare(countQuery).get()["filteredCount"], 0);
+    });
+
     it("ORDER BY works with two directives", () => {
       const params = {"draw": "14", "columns": [ { "data": "song_id", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } }, { "data": "Song title", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } }, { "data": "Artist name", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } }, { "data": "Tony's \"Notes\"", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } }, { "data": "\u03b3\u03c1'\u03b1`\u03c6[\u03ad]\u03c2", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } } ], "start": "0", "length": "7", "search": { "value": "", "regex": "false" }, "_": "1729017098504", "order": [ { "column": "2", "dir": "desc", "name": "" }, { "column": "1", "dir": "asc", "name": "" } ] };
       const { query } = inst.toSQL(params);

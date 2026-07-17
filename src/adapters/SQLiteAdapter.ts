@@ -111,6 +111,11 @@ export class SQLiteAdapter extends DialectAdapter {
       map(i => i.data).
       filter(i => i !== "").
       map(i => this.qualifyColumn(i));
+    //  NOTE  a search term with no searchable columns matches nothing
+    //        (mirrors client-side DataTables); without this it would
+    //        generate `CONCAT() LIKE ...` --- an error in SQLite
+    if (columnsToConcat.length === 0)
+      return parenthisize("False");
     return parenthisize(`CONCAT(${columnsToConcat.join(", ")}) LIKE ${this.quoteForLIKE(searchTerm, '%', '%')}`);
   };
 

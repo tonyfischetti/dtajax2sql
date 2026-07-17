@@ -165,7 +165,9 @@ export abstract class DialectAdapter {
 
   public getSearchBuilderSql(params: SearchBuilder): SQLFragment {
     // if (!(params.criteria)) throw new Error("no criteria?");
-    if (!(params.criteria)) {
+    //  NOTE  an empty criteria array must behave like a missing one
+    //        (without this, it would generate `()` --- a syntax error)
+    if (!(params.criteria) || params.criteria.length === 0) {
       return '(True AND True)';
     }
 
