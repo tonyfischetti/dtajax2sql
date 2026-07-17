@@ -2,6 +2,10 @@
 import assert from 'assert';
 import BetterSqlite3 from 'better-sqlite3';
 import SQLiteAdapter from '../dist/adapters/SQLiteAdapter.js';
+import {
+  unflattenBracketKeys,
+  healSearchBuilderTree
+} from '../dist/utils.js';
 
 
 /*************************************************************************
@@ -577,7 +581,7 @@ describe('getSearchBuilderSql', () => {
       assert.equal(adapter.getSearchBuilderSql(nested), `((("main"."Department" = 'english') OR ("main"."Title" LIKE '%spanish%')) AND ("main"."Department" = 'spanish'))`);
     });
 
-    it("handle nested nested criteria", () => {
+    it("handle nested nested criteria (flattened past qs's depth limit)", () => {
       // if ('[0][condition]' in req.query?.searchBuilder.criteria[0].criteria[0].criteria) ...
       const nested = {
         "criteria": [
@@ -626,8 +630,49 @@ describe('getSearchBuilderSql', () => {
         ],
         "logic": "AND"
       };
-      //assert.equal(getSearchBuilderSql(nested), "((((ObjectID = 1) AND (Title = 'test')) OR (Department = 'testdep')) AND (Title = 'test'))");
+      healSearchBuilderTree(nested);
+      assert.equal(adapter.getSearchBuilderSql(nested), `(((("main"."ObjectID" = 1) AND ("main"."Title" = 'test')) OR ("main"."Department" = 'testdep')) AND ("main"."Title" = 'test'))`);
     });
+  });
+});
+
+
+describe('unflattenBracketKeys', () => {
+  it("unflattens what qs leaves behind past its depth limit", () => {
+    const flat = {
+      "[0][condition]": "=",
+      "[0][data]": "Object ID",
+      "[0][origData]": "ObjectID",
+      "[0][type]": "num",
+      "[0][value][]": "1",
+      "[0][value1]": "1",
+      "[1][condition]": "null",
+      "[1][origData]": "Title",
+      "[1][type]": "string"
+    };
+    assert.deepEqual(unflattenBracketKeys(flat), [
+      { condition: "=", data: "Object ID", origData: "ObjectID",
+        type: "num", value: ["1"], value1: "1" },
+      { condition: "null", origData: "Title", type: "string" }
+    ]);
+  });
+  it("handles arbitrarily deep remainders (groups within the remainder)", () => {
+    const flat = {
+      "[0][criteria][0][condition]": "=",
+      "[0][criteria][0][origData]": "song_id",
+      "[0][criteria][0][type]": "num",
+      "[0][criteria][0][value1]": "1",
+      "[0][logic]": "AND",
+      "[1][condition]": "null",
+      "[1][origData]": "Title",
+      "[1][type]": "string"
+    };
+    assert.deepEqual(unflattenBracketKeys(flat), [
+      { criteria: [ { condition: "=", origData: "song_id",
+                      type: "num", value1: "1" } ],
+        logic: "AND" },
+      { condition: "null", origData: "Title", type: "string" }
+    ]);
   });
 });
 

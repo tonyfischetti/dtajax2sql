@@ -180,6 +180,66 @@ describe('testing against a real (weird) DB', () => {
       assert.equal(DB.prepare(query).get()['song_id'], 19);
     });
 
+    it("deeply nested searchBuilder criteria (flattened past qs's depth limit) work end-to-end", () => {
+      // (song_id BETWEEN-ish [2,3] AND'd via a flattened inner group) OR song_id = 8, all AND song_id >= 1
+      const params = {
+        "draw": "3",
+        "columns": [{"data":"song_id","name":"","searchable":"true","orderable":"true","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],
+        "start": "0", "length": "20",
+        "search": {"value":"","regex":"false"},
+        "order": [{"column":"0","dir":"asc","name":""}],
+        "searchBuilder": {
+          "criteria": [
+            {
+              "criteria": [
+                {
+                  "criteria": {
+                    "[0][condition]": "<=", "[0][data]": "Song ID", "[0][origData]": "song_id", "[0][type]": "num", "[0][value][]": "3", "[0][value1]": "3",
+                    "[1][condition]": ">=", "[1][data]": "Song ID", "[1][origData]": "song_id", "[1][type]": "num", "[1][value][]": "2", "[1][value1]": "2"
+                  },
+                  "logic": "AND"
+                },
+                { "condition": "=", "data": "Song ID", "origData": "song_id", "type": "num", "value": ["8"], "value1": "8" }
+              ],
+              "logic": "OR"
+            },
+            { "condition": ">=", "data": "Song ID", "origData": "song_id", "type": "num", "value": ["1"], "value1": "1" }
+          ],
+          "logic": "AND"
+        },
+        "_": "1729017098493"
+      };
+      const { query, countQuery } = inst.toSQL(params);
+      assert.deepEqual(DB.prepare(query).all().map(i => i['song_id']), [2, 3, 8]);
+      assert.equal(DB.prepare(countQuery).get()["filteredCount"], 3);
+    });
+
+    it("nested criteria arriving as numeric-keyed objects work end-to-end", () => {
+      const params = {
+        "draw": "3",
+        "columns": [{"data":"song_id","name":"","searchable":"true","orderable":"true","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],
+        "start": "0", "length": "20",
+        "search": {"value":"","regex":"false"},
+        "order": [{"column":"0","dir":"asc","name":""}],
+        "searchBuilder": {
+          "criteria": {
+            "0": {
+              "criteria": {
+                "0": { "condition": "=", "data": "Song ID", "origData": "song_id", "type": "num", "value": ["3"], "value1": "3" },
+                "1": { "condition": "=", "data": "Song ID", "origData": "song_id", "type": "num", "value": ["8"], "value1": "8" }
+              },
+              "logic": "OR"
+            }
+          },
+          "logic": "AND"
+        },
+        "_": "1729017098493"
+      };
+      const { query, countQuery } = inst.toSQL(params);
+      assert.deepEqual(DB.prepare(query).all().map(i => i['song_id']), [3, 8]);
+      assert.equal(DB.prepare(countQuery).get()["filteredCount"], 2);
+    });
+
     it("an empty searchBuilder criteria array doesn't break the query", () => {
       const params = {"draw":"3","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"12","search":{"value":"","regex":"false"},"searchBuilder":{"criteria":[],"logic":"AND"},"_":"1729017098493"};
       const { query, countQuery } = inst.toSQL(params);

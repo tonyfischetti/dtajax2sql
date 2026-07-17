@@ -6,7 +6,10 @@ import {
   Result
 } from './types.js';
 
-import { convertColumnPropToArray } from './utils.js';
+import {
+  convertColumnPropToArray,
+  healSearchBuilderTree
+} from './utils.js';
 
 import { DialectAdapter, } from './DialectAdapter.js';
 import { SQLiteAdapter } from './adapters/SQLiteAdapter.js';
@@ -33,11 +36,8 @@ const healParams = (params: DTAJAXParams): DTAJAXParams => {
   if (params.order && !Array.isArray(params.order))
     params.order =  convertColumnPropToArray(params.order);
 
-  if ("searchBuilder" in params && "criteria" in params.searchBuilder) {
-    if ("0" in params?.searchBuilder?.criteria) {
-      params.searchBuilder.criteria = convertColumnPropToArray(params.searchBuilder.criteria);
-    }
-  }
+  if ("searchBuilder" in params)
+    healSearchBuilderTree(params.searchBuilder);
   return params;
 };
 
