@@ -88,7 +88,7 @@ export class SQLiteAdapter extends DialectAdapter {
     if (this.config.whitespace?.removeLeading)
       finalStr = finalStr.replace(/^\s+/, '');
     if (this.config.whitespace?.removeTrailing)
-      finalStr = finalStr.replace(/\s$/, '');
+      finalStr = finalStr.replace(/\s+$/, '');
     const columnsToConcat = params.columns.
       filter(i => i.searchable===true || i.searchable==='true').
       map(i => i.data).
@@ -104,8 +104,8 @@ export class SQLiteAdapter extends DialectAdapter {
     if (this.config.whitespace?.removeLeading)
       ftSearchTerm = ftSearchTerm.replace(/^\s+/, '');
     if (this.config.whitespace?.removeTrailing)
-      ftSearchTerm = ftSearchTerm.replace(/\s$/, '');
-    return parenthisize(`${ftTableName} = '${ftSearchTerm}'`);
+      ftSearchTerm = ftSearchTerm.replace(/\s+$/, '');
+    return parenthisize(`${this.escapeID(ftTableName)} = '${ftSearchTerm}'`);
   };
 
 
@@ -123,19 +123,22 @@ export class SQLiteAdapter extends DialectAdapter {
     return `((${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} IS NULL) OR (${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} = ''))`;
   }
 
+  //  NOTE  normalization must happen _before_ escaping, so that
+  //        `returnOkEscapeCharacter` sees the characters that actually
+  //        end up in the SQL
   public getSBContainsSql(crit: SBCriterion): SQLFragment {
-    let { str: finalStr, escape } = this.escapeForLIKE(crit.value1 ?? "");
-    return parenthisize(withEsc(`${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} LIKE '%${finalStr.normalize("NFD")}%'`, escape));
+    let { str: finalStr, escape } = this.escapeForLIKE((crit.value1 ?? "").normalize("NFD"));
+    return parenthisize(withEsc(`${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} LIKE '%${finalStr}%'`, escape));
   }
 
   public getSBStartsWithSql(crit: SBCriterion): SQLFragment {
-    let { str: finalStr, escape } = this.escapeForLIKE(crit.value1 ?? "");
-    return parenthisize(withEsc(`${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} LIKE '${finalStr.normalize("NFD")}%'`, escape));
+    let { str: finalStr, escape } = this.escapeForLIKE((crit.value1 ?? "").normalize("NFD"));
+    return parenthisize(withEsc(`${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} LIKE '${finalStr}%'`, escape));
   }
 
   public getSBEndsWithSql(crit: SBCriterion): SQLFragment {
-    let { str: finalStr, escape } = this.escapeForLIKE(crit.value1 ?? "");
-    return parenthisize(withEsc(`${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} LIKE '%${finalStr.normalize("NFD")}'`, escape));
+    let { str: finalStr, escape } = this.escapeForLIKE((crit.value1 ?? "").normalize("NFD"));
+    return parenthisize(withEsc(`${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} LIKE '%${finalStr}'`, escape));
   }
 
   //  TODO  no error handling. write tests for it

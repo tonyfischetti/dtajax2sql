@@ -139,7 +139,15 @@ export abstract class DialectAdapter {
     if (crit.condition === "<=")         return this.getSBLessThanSql(crit, true);
     if (crit.condition === ">")          return this.getSBGreaterThanSql(crit, false);
     if (crit.condition === ">=")         return this.getSBGreaterThanSql(crit, true);
-    if (crit.condition === undefined)    return "(True = True)";
+    //  NOTE  DataTables sends incomplete criteria (e.g. `{ type: "" }`)
+    //        for SearchBuilder rows that haven't been filled in yet;
+    //        those must not filter anything. A criterion with a value
+    //        but no condition, though, is malformed --- refuse to
+    //        silently match everything
+    if (crit.condition === undefined) {
+      if (crit.value1) throw new Error("criterion has a value but no condition");
+      return "(True = True)";
+    }
     throw new Error("unrecognized condition");
   }
 

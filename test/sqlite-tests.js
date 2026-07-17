@@ -198,8 +198,11 @@ describe('sanitization', () => {
 
   //  TODO  expand on this!!!
   describe('all escaping (DB)', () => {
-    const q = `SELECT * FROM songs WHERE ((${adapter.escapeID("Song title")} LIKE '%${adapter.escapeForLIKE("\\").str}%') OR (${adapter.escapeID("Song title")} LIKE '%${adapter.escapeForLIKE("%").str}%' ESCAPE '${adapter.escapeForLIKE("%").escape}') OR (${adapter.escapeID("Song title")}='${adapter.escapeString("Robert'); DROP TABLE songs;--")}'))`;
-    assert.equal(q, `SELECT * FROM songs WHERE (("Song title" LIKE '%\\%') OR ("Song title" LIKE '%\\%%' ESCAPE '\\') OR ("Song title"='Robert''); DROP TABLE songs;--'))`);
+    it("escaping composes into a well-formed query", () => {
+      const q = `SELECT * FROM songs WHERE ((${adapter.escapeID("Song title")} LIKE '%${adapter.escapeForLIKE("\\").str}%') OR (${adapter.escapeID("Song title")} LIKE '%${adapter.escapeForLIKE("%").str}%' ESCAPE '${adapter.escapeForLIKE("%").escape}') OR (${adapter.escapeID("Song title")}='${adapter.escapeString("Robert'); DROP TABLE songs;--")}'))`;
+      assert.equal(q, `SELECT * FROM songs WHERE (("Song title" LIKE '%\\%') OR ("Song title" LIKE '%\\%%' ESCAPE '\\') OR ("Song title"='Robert''); DROP TABLE songs;--'))`);
+      assert.doesNotThrow(() => DB.prepare(q).all());
+    });
   });
 
 });
@@ -308,6 +311,14 @@ describe('global search', () => {
       params.columns[4] =  { "data": "γρ'α`φ[έ]ς", "name": "", "searchable": "true", "orderable": "true", "search": { "value": "", "regex": "false" } };
       assert.equal(adapter.getGlobalSearchSql(params),
         `(CONCAT("main"."Song title", "main"."Artist name", "main"."Tony's ""Notes""", "` + 'main"."' + "γρ'α`φ[έ]ς" + `") LIKE '%keep%')`);
+    });
+  });
+
+  describe('whitespace trimming', () => {
+    it("strips ALL leading and trailing whitespace, not just one character", () => {
+      const params = { ...exParams, search: { value: "   keep  \t ", regex: "false" } };
+      assert.equal(adapter.getGlobalSearchSql(params),
+        `(CONCAT("main"."Song title", "main"."Artist name", "main"."Tony's ""Notes""") LIKE '%keep%')`);
     });
   });
 
@@ -461,6 +472,16 @@ describe('Search builder criteria', () => {
   describe('error on unrecognized conditions', () => {
     it("error on unrecognized condition", () => {
       const ex = { "condition": "==", "data": "Title", "origData": "Title", "type": "string", "value": [ "El sueño..." ], "value1": "El sueño..." };
+      assert.throws(() => { adapter.getSBCriterionSql(ex) }, Error);
+    });
+  });
+
+  describe('incomplete criteria', () => {
+    it("an empty criterion (unfilled SearchBuilder row) matches everything", () => {
+      assert.equal(adapter.getSBCriterionSql({ "type": "" }), "(True = True)");
+    });
+    it("error when a criterion has a value but no condition (must not fail open)", () => {
+      const ex = { "data": "Title", "origData": "Title", "type": "string", "value": [ "x" ], "value1": "x" };
       assert.throws(() => { adapter.getSBCriterionSql(ex) }, Error);
     });
   });
