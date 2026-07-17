@@ -260,6 +260,23 @@ describe('testing against a real (weird) DB', () => {
       assert.equal(DB.prepare(countQuery).get()["filteredCount"], 0);
     });
 
+    it("fusedQuery returns the page AND the filtered count in one query", () => {
+      const params = {"draw":"14","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"true","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"2","search":{"value":"_","regex":"false"},"_":"1729017098504","order":[{"column":"0","dir":"asc","name":""}]};
+      const { query, countQuery, fusedQuery } = inst.toSQL(params);
+      const fusedRows = DB.prepare(fusedQuery).all();
+      assert.deepEqual(fusedRows.map(i => i['song_id']),
+                       DB.prepare(query).all().map(i => i['song_id']));
+      fusedRows.forEach(r => assert.equal(r['filteredCount'], 3));
+      assert.equal(DB.prepare(countQuery).get()['filteredCount'], 3);
+    });
+
+    it("fusedQuery past the end returns no rows (consumers fall back to countQuery)", () => {
+      const params = {"draw":"14","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"true","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"10","length":"10","search":{"value":"_","regex":"false"},"_":"1729017098504","order":[{"column":"0","dir":"asc","name":""}]};
+      const { countQuery, fusedQuery } = inst.toSQL(params);
+      assert.equal(DB.prepare(fusedQuery).all().length, 0);
+      assert.equal(DB.prepare(countQuery).get()['filteredCount'], 3);
+    });
+
     it("ORDER BY works with two directives", () => {
       const params = {"draw": "14", "columns": [ { "data": "song_id", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } }, { "data": "Song title", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } }, { "data": "Artist name", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } }, { "data": "Tony's \"Notes\"", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } }, { "data": "\u03b3\u03c1'\u03b1`\u03c6[\u03ad]\u03c2", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } } ], "start": "0", "length": "7", "search": { "value": "", "regex": "false" }, "_": "1729017098504", "order": [ { "column": "2", "dir": "desc", "name": "" }, { "column": "1", "dir": "asc", "name": "" } ] };
       const { query } = inst.toSQL(params);

@@ -194,27 +194,30 @@ describe('property: generated SQL always parses', function () {
 
   it("any global search value (LIKE path)", () => {
     fc.assert(fc.property(anyText, (searchValue) => {
-      const { query, countQuery } = inst.toSQL(mkParams(searchValue));
+      const { query, countQuery, fusedQuery } = inst.toSQL(mkParams(searchValue));
       DB.prepare(query);
       DB.prepare(countQuery);
+      DB.prepare(fusedQuery);
     }), { numRuns: 300 });
   });
 
   it("any global search value (FTS5 path — its own query language)", () => {
     fc.assert(fc.property(anyText, (searchValue) => {
-      const { query, countQuery } =
+      const { query, countQuery, fusedQuery } =
         inst.toSQLThroughFtTable('songs_fts', 'song_id', mkParams(searchValue));
       DB.prepare(query);
       DB.prepare(countQuery);
+      DB.prepare(fusedQuery);
     }), { numRuns: 300 });
   });
 
   it("any searchBuilder tree (parses AND runs)", () => {
     fc.assert(fc.property(sbTree, anyText, (sb, searchValue) => {
-      const { query, countQuery } =
+      const { query, countQuery, fusedQuery } =
         inst.toSQL(mkParams(searchValue, { searchBuilder: sb }));
       DB.prepare(query).all();
       DB.prepare(countQuery).get();
+      DB.prepare(fusedQuery).all();
     }), { numRuns: 200 });
   });
 
@@ -251,35 +254,34 @@ describe('property: generated SQL always parses', function () {
 describe('property: SQL result === reference implementation result', function () {
   this.timeout(30000);
 
+  const checkAgainstRef = (result, expected) => {
+    const { query, countQuery, fusedQuery } = result;
+    const got = DB.prepare(query).all().map(r => r['song_id']);
+    assert.deepEqual(got, expected);
+    assert.equal(DB.prepare(countQuery).get()['filteredCount'], expected.length);
+    const fusedRows = DB.prepare(fusedQuery).all();
+    assert.deepEqual(fusedRows.map(r => r['song_id']), expected);
+    fusedRows.forEach(r => assert.equal(r['filteredCount'], expected.length));
+  };
+
   it("global search (LIKE path)", () => {
     fc.assert(fc.property(anyText, (searchValue) => {
-      const { query, countQuery } = inst.toSQL(mkParams(searchValue));
-      const got = DB.prepare(query).all().map(r => r['song_id']);
-      const expected = refFilter(searchValue, undefined);
-      assert.deepEqual(got, expected);
-      assert.equal(DB.prepare(countQuery).get()['filteredCount'], expected.length);
+      checkAgainstRef(inst.toSQL(mkParams(searchValue)),
+                      refFilter(searchValue, undefined));
     }), { numRuns: 200 });
   });
 
   it("searchBuilder trees (with NULL three-valued logic)", () => {
     fc.assert(fc.property(sbTree, (sb) => {
-      const { query, countQuery } =
-        inst.toSQL(mkParams('', { searchBuilder: sb }));
-      const got = DB.prepare(query).all().map(r => r['song_id']);
-      const expected = refFilter('', sb);
-      assert.deepEqual(got, expected);
-      assert.equal(DB.prepare(countQuery).get()['filteredCount'], expected.length);
+      checkAgainstRef(inst.toSQL(mkParams('', { searchBuilder: sb })),
+                      refFilter('', sb));
     }), { numRuns: 200 });
   });
 
   it("searchBuilder AND global search combined", () => {
     fc.assert(fc.property(sbTree, anyText, (sb, searchValue) => {
-      const { query, countQuery } =
-        inst.toSQL(mkParams(searchValue, { searchBuilder: sb }));
-      const got = DB.prepare(query).all().map(r => r['song_id']);
-      const expected = refFilter(searchValue, sb);
-      assert.deepEqual(got, expected);
-      assert.equal(DB.prepare(countQuery).get()['filteredCount'], expected.length);
+      checkAgainstRef(inst.toSQL(mkParams(searchValue, { searchBuilder: sb })),
+                      refFilter(searchValue, sb));
     }), { numRuns: 200 });
   });
 

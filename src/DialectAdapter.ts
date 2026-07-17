@@ -224,6 +224,20 @@ export abstract class DialectAdapter {
 
 
   /***********************************************************
+   * fused filtered-count (window function)
+   *
+   * window functions are computed BEFORE LIMIT/OFFSET, so this
+   * stamps the size of the whole filtered set on every returned
+   * row --- one scan of the WHERE clause instead of two.
+   * requires SQLite >= 3.25 (2018)
+   */
+
+  public getFilteredCountWindowSql(): SQLFragment {
+    return `COUNT(*) OVER () AS filteredCount`;
+  }
+
+
+  /***********************************************************
    * toSQL method
    */
 
@@ -237,7 +251,8 @@ export abstract class DialectAdapter {
 
     const q  = `${selectClause} ${fromClause} ${whereClause} ${orderClause} ${limit} ${offset}`;
     const cq = `SELECT COUNT(*) as filteredCount ${fromClause} ${whereClause}`;
-    return { query: q, countQuery: cq };
+    const fq = `${selectClause}, ${this.getFilteredCountWindowSql()} ${fromClause} ${whereClause} ${orderClause} ${limit} ${offset}`;
+    return { query: q, countQuery: cq, fusedQuery: fq };
   }
 
   public toSQLThroughFtTable(ftTableName: string,
@@ -253,7 +268,8 @@ export abstract class DialectAdapter {
 
     const q  = `${selectClause} ${fromClause} ${joinClause} ${whereClause} ${orderClause} ${limit} ${offset}`;
     const cq = `SELECT COUNT(*) as filteredCount ${fromClause} ${joinClause} ${whereClause}`;
-    return { query: q, countQuery: cq };
+    const fq = `${selectClause}, ${this.getFilteredCountWindowSql()} ${fromClause} ${joinClause} ${whereClause} ${orderClause} ${limit} ${offset}`;
+    return { query: q, countQuery: cq, fusedQuery: fq };
   }
 
 }

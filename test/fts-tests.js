@@ -156,6 +156,14 @@ describe('toSQLThroughFtTable', () => {
       assert.equal(DB.prepare(query).all().length, 2);
       assert.equal(DB.prepare(countQuery).get()['filteredCount'], 6);
     });
+    it("fusedQuery stamps the filtered count through the ft table too", () => {
+      const params = mkParams("moondogs");
+      params.length = "2";
+      const { fusedQuery } = inst.toSQLThroughFtTable('songs_fts', 'song_id', params);
+      const fusedRows = DB.prepare(fusedQuery).all();
+      assert.equal(fusedRows.length, 2);
+      fusedRows.forEach(r => assert.equal(r['filteredCount'], 6));
+    });
   });
 
 });

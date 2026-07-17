@@ -240,8 +240,23 @@ export interface EscapedLIKE {
   escape: string | undefined;
 }
 
+/**
+ * Result
+ *
+ * query      --- the page query (LIMIT/OFFSET applied)
+ * countQuery --- counts the whole filtered set (no LIMIT/OFFSET)
+ * fusedQuery --- the page query with `filteredCount` riding along on
+ *                every row (COUNT(*) OVER ()), so one execution gets
+ *                the page AND recordsFiltered.
+ *                NOTE: a page past the end returns zero rows and
+ *                therefore no count --- fall back to countQuery then.
+ *                NOTE: biggest win when the filter is selective
+ *                (~50% per draw); for very broad filters the window
+ *                defeats SQLite's top-k sorter and can be a wash
+ */
 export interface Result {
   query: SQLQuery;
   countQuery: SQLQuery;
+  fusedQuery: SQLQuery;
 }
 
