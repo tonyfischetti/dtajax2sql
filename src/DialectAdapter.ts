@@ -6,6 +6,7 @@ import {
   Result,
   ConfigOpts,
   SBCriterion,
+  SBCompleteCriterion,
   SearchBuilder
 } from './types.js';
 
@@ -122,14 +123,14 @@ export abstract class DialectAdapter {
   abstract getGlobalSearchSql   (params: DTAJAXParams): SQLFragment;
   abstract getFtGlobalSearchSql (ftTableName: string, params: DTAJAXParams): SQLFragment;
 
-  abstract getSBEqualsSql       (crit: SBCriterion): SQLFragment;
-  abstract getSBEmpty           (crit: SBCriterion): SQLFragment;
-  abstract getSBContainsSql     (crit: SBCriterion): SQLFragment;
-  abstract getSBStartsWithSql   (crit: SBCriterion): SQLFragment;
-  abstract getSBEndsWithSql     (crit: SBCriterion): SQLFragment;
-  abstract getSBBetweenSql      (crit: SBCriterion): SQLFragment;
-  abstract getSBLessThanSql     (crit: SBCriterion, orEqualTo: boolean): SQLFragment;
-  abstract getSBGreaterThanSql  (crit: SBCriterion, orEqualTo: boolean): SQLFragment;
+  abstract getSBEqualsSql       (crit: SBCompleteCriterion): SQLFragment;
+  abstract getSBEmpty           (crit: SBCompleteCriterion): SQLFragment;
+  abstract getSBContainsSql     (crit: SBCompleteCriterion): SQLFragment;
+  abstract getSBStartsWithSql   (crit: SBCompleteCriterion): SQLFragment;
+  abstract getSBEndsWithSql     (crit: SBCompleteCriterion): SQLFragment;
+  abstract getSBBetweenSql      (crit: SBCompleteCriterion): SQLFragment;
+  abstract getSBLessThanSql     (crit: SBCompleteCriterion, orEqualTo: boolean): SQLFragment;
+  abstract getSBGreaterThanSql  (crit: SBCompleteCriterion, orEqualTo: boolean): SQLFragment;
 
   public getSBCriterionSql(crit: SBCriterion): SQLFragment {
     //  TODO  no error checking
@@ -168,16 +169,14 @@ export abstract class DialectAdapter {
       return '(True AND True)';
     }
 
-    const isNestedP = (obj: SearchBuilder | SBCriterion): boolean => {
+    const isNestedP = (obj: SearchBuilder | SBCriterion): obj is SearchBuilder => {
       return ("criteria" in obj);
     };
 
-    const allCriteria = params['criteria'].map((i): string => {
-      // @ts-ignore  TODO  
+    const allCriteria = params.criteria.map((i): SQLFragment => {
       if (!isNestedP(i)) return this.getSBCriterionSql(i);
-      // @ts-ignore  TODO  
       return this.getSearchBuilderSql(i);
-    }); 
+    });
 
     if (params['logic'] === 'AND') {
       if (allCriteria.length === 1) allCriteria.push("True")

@@ -5,7 +5,7 @@ import {
   EscapedLIKE,
   SQLFragment,
   DTAJAXParams,
-  SBCriterion,
+  SBCompleteCriterion,
   OrderDirective
 } from '../types.js';
 
@@ -124,7 +124,7 @@ export class SQLiteAdapter extends DialectAdapter {
   };
 
 
-  public getSBEqualsSql = (crit: SBCriterion): SQLFragment => {
+  public getSBEqualsSql = (crit: SBCompleteCriterion): SQLFragment => {
     if (crit.type.match(/^string/))
       return `(${this.qualifyColumn(crit.origData)} = ${this.quoteString(crit.value1 ?? "")})`;
     //  TODO  is this really an ELSE condition? Is "string" or "num" exhaustive?
@@ -134,35 +134,35 @@ export class SQLiteAdapter extends DialectAdapter {
 
   //  NOTE  in SQLite, you can search for a number using a string
   //        but let's have different tests for other DBs (eventually)
-  public getSBEmpty(crit: SBCriterion): SQLFragment {
+  public getSBEmpty(crit: SBCompleteCriterion): SQLFragment {
     return `((${this.qualifyColumn(crit.origData)} IS NULL) OR (${this.qualifyColumn(crit.origData)} = ''))`;
   }
 
-  public getSBContainsSql(crit: SBCriterion): SQLFragment {
+  public getSBContainsSql(crit: SBCompleteCriterion): SQLFragment {
     return parenthisize(`${this.qualifyColumn(crit.origData)} LIKE ${this.quoteForLIKE(crit.value1 ?? "", '%', '%')}`);
   }
 
-  public getSBStartsWithSql(crit: SBCriterion): SQLFragment {
+  public getSBStartsWithSql(crit: SBCompleteCriterion): SQLFragment {
     return parenthisize(`${this.qualifyColumn(crit.origData)} LIKE ${this.quoteForLIKE(crit.value1 ?? "", '', '%')}`);
   }
 
-  public getSBEndsWithSql(crit: SBCriterion): SQLFragment {
+  public getSBEndsWithSql(crit: SBCompleteCriterion): SQLFragment {
     return parenthisize(`${this.qualifyColumn(crit.origData)} LIKE ${this.quoteForLIKE(crit.value1 ?? "", '%', '')}`);
   }
 
   //  TODO  no error handling. write tests for it
-  public getSBBetweenSql(crit: SBCriterion): SQLFragment {
+  public getSBBetweenSql(crit: SBCompleteCriterion): SQLFragment {
     const v1 = parseNumberHelper(crit.value1 ?? "");
     const v2 = parseNumberHelper(crit.value2 ?? "");
     return `(${this.qualifyColumn(crit.origData)} BETWEEN ${v1} AND ${v2})`;
   }
 
-  public getSBLessThanSql(crit: SBCriterion, orEqualTo=false): SQLFragment {
+  public getSBLessThanSql(crit: SBCompleteCriterion, orEqualTo=false): SQLFragment {
     const v1 = parseNumberHelper(crit.value1 ?? "");
     return `(${this.qualifyColumn(crit.origData)} <${orEqualTo ? "=" : ""} ${v1})`;
   }
 
-  public getSBGreaterThanSql(crit: SBCriterion, orEqualTo=false): SQLFragment {
+  public getSBGreaterThanSql(crit: SBCompleteCriterion, orEqualTo=false): SQLFragment {
     const v1 = parseNumberHelper(crit.value1 ?? "");
     return `(${this.qualifyColumn(crit.origData)} >${orEqualTo ? "=" : ""} ${v1})`;
   }

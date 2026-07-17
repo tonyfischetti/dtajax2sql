@@ -61,7 +61,22 @@ export interface GlobalSearch {
 
  */
 
-export interface SBCriterion {
+/*
+ * a SearchBuilder row that hasn't been filled in yet (DataTables
+ * sends e.g. `{ type: "" }` for these); `condition` is the
+ * discriminant between the two shapes
+ */
+export interface SBIncompleteCriterion {
+  condition?: undefined;
+  data?: string;
+  origData?: string;
+  type: 'num' | 'string' | '';
+  value?: Array<string>;
+  value1?: string;
+  value2?: string;
+}
+
+export interface SBCompleteCriterion {
   condition: '=' | '!=' | 'starts' | '!starts' | 'ends' |
              '!ends' | 'contains' | '!contains' |
              'null' | '!null' | '<' | '<=' | '>' | '>=' |
@@ -74,6 +89,8 @@ export interface SBCriterion {
   value1?: string;
   value2?: string;
 }
+
+export type SBCriterion = SBIncompleteCriterion | SBCompleteCriterion;
 
 
 /**
@@ -102,7 +119,9 @@ export interface SBCriterion {
 */
 
 export interface SearchBuilder {
-  criteria: Array<SBCriterion> | Array<SearchBuilder>
+  //  NOTE  criteria and sub-groups can be MIXED at the same level
+  //        (e.g. `(A AND B) OR C`)
+  criteria: Array<SBCriterion | SearchBuilder>
   logic: 'AND' | 'OR'
 }
 
