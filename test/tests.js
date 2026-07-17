@@ -129,6 +129,12 @@ describe('testing against a real (weird) DB', () => {
       assert.equal(DB.prepare(query).get()['song_id'], 3);
     });
 
+    it("global search typed composed (NFC) matches decomposed (NFD) stored data", () => {
+      const params = {"draw":"23","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"11","search":{"value":"Δημήτρης".normalize("NFC"),"regex":"false"},"searchBuilder":{"criteria":[{"type":""}],"logic":"AND"},"_":"1729015491137"};
+      const { query } = inst.toSQL(params);
+      assert.equal(DB.prepare(query).get()['song_id'], 3);
+    });
+
     it("global search handles arabic", () => {
       const params = {"draw":"23","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Artist name","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Tony's \"Notes\"","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"γρ'α`φ[έ]ς","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"11","search":{"value":"ٱللَّٰهُ","regex":"false"},"searchBuilder":{"criteria":[{"type":""}],"logic":"AND"},"_":"1729015491137"};
       const { query } = inst.toSQL(params);

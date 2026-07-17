@@ -56,9 +56,18 @@ export class SQLiteAdapter extends DialectAdapter {
     return s.replaceAll(/'/g, "''");
   }
 
+  //  NOTE  each token gets wrapped in FTS5 double-quotes: bare tokens
+  //        containing `%`, `*`, etc. are syntax errors in the FTS5
+  //        query language, but quoted phrases never are (their
+  //        contents just get tokenized, so `"100%"` still matches
+  //        "100% (cover)" via the token `100`)
   public escapeStringForFtSearch(s: string): string {
     return s.replaceAll(/'/g, "").
-             replaceAll(/-/g, " ");
+             replaceAll(/-/g, " ").
+             split(/\s+/).
+             filter(t => t !== "").
+             map(t => `"${t.replaceAll(/"/g, '""')}"`).
+             join(" ");
   }
 
   public escapeForLIKE(s: string): EscapedLIKE {
@@ -120,11 +129,13 @@ export class SQLiteAdapter extends DialectAdapter {
   };
 
   public getFtGlobalSearchSql(ftTableName: string, params: DTAJAXParams): SQLFragment {
-    let ftSearchTerm = this.escapeStringForFtSearch(params.search.value.normalize("NFD"));
-    if (this.config.whitespace?.removeLeading)
-      ftSearchTerm = ftSearchTerm.replace(/^\s+/, '');
-    if (this.config.whitespace?.removeTrailing)
-      ftSearchTerm = ftSearchTerm.replace(/\s+$/, '');
+    const ftSearchTerm = this.escapeStringForFtSearch(params.search.value.normalize("NFD"));
+    //  NOTE  a term with no tokens at all (e.g. just `-`) can't be
+    //        represented as an FTS5 query (`= ''` is a syntax error);
+    //        match nothing, consistent with getGlobalSearchSql's
+    //        no-searchable-columns case
+    if (ftSearchTerm === '')
+      return parenthisize("False");
     return parenthisize(`${this.escapeID(ftTableName)} = '${ftSearchTerm}'`);
   };
 
