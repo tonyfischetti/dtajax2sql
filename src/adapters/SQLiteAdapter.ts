@@ -47,13 +47,18 @@ export class SQLiteAdapter extends DialectAdapter {
    * Sanitization functions
    */
 
+  //  NOTE  NUL bytes are stripped everywhere: they cannot be
+  //        represented in SQL text (SQLite's tokenizer treats NUL as
+  //        end-of-input, leaving an unterminated literal/identifier)
+
   public escapeID(s: string): string {
     if (typeof(s)!=='string') throw new Error ("escapeID expects a string");
-    return `"${s.replaceAll(/"/g, '""')}"`;
+    return `"${s.replaceAll(/\u0000/g, '').replaceAll(/"/g, '""')}"`;
   }
 
   public escapeString(s: string): string {
-    return s.replaceAll(/'/g, "''");
+    return s.replaceAll(/\u0000/g, '').
+             replaceAll(/'/g, "''");
   }
 
   //  NOTE  each token gets wrapped in FTS5 double-quotes: bare tokens
@@ -62,7 +67,8 @@ export class SQLiteAdapter extends DialectAdapter {
   //        contents just get tokenized, so `"100%"` still matches
   //        "100% (cover)" via the token `100`)
   public escapeStringForFtSearch(s: string): string {
-    return s.replaceAll(/'/g, "").
+    return s.replaceAll(/\u0000/g, "").
+             replaceAll(/'/g, "").
              replaceAll(/-/g, " ").
              split(/\s+/).
              filter(t => t !== "").
