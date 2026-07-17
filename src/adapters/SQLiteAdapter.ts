@@ -78,25 +78,40 @@ export class SQLiteAdapter extends DialectAdapter {
     return { str: retStr, escape: retEscape };
   }
 
+  /*
+   * choke-points (see DialectAdapter)
+   *
+   *  NOTE  normalization to NFD happens here---before escaping---so
+   *        that `returnOkEscapeCharacter` sees the characters that
+   *        actually end up in the SQL
+   */
+
+  public quoteString(s: string): SQLFragment {
+    return `'${this.escapeString(s.normalize("NFD"))}'`;
+  }
+
+  public quoteForLIKE(s: string, prefix: string, suffix: string): SQLFragment {
+    const { str, escape } = this.escapeForLIKE(s.normalize("NFD"));
+    return withEsc(`'${prefix}${str}${suffix}'`, escape);
+  }
+
 
   /***********************************************************
    * WHERE clause
    */
 
   public getGlobalSearchSql(params: DTAJAXParams): SQLFragment {
-    let { str: finalStr, escape } = this.escapeForLIKE(params.search.value.normalize("NFD"));
+    let searchTerm = params.search.value;
     if (this.config.whitespace?.removeLeading)
-      finalStr = finalStr.replace(/^\s+/, '');
+      searchTerm = searchTerm.replace(/^\s+/, '');
     if (this.config.whitespace?.removeTrailing)
-      finalStr = finalStr.replace(/\s+$/, '');
+      searchTerm = searchTerm.replace(/\s+$/, '');
     const columnsToConcat = params.columns.
       filter(i => i.searchable===true || i.searchable==='true').
       map(i => i.data).
       filter(i => i !== "").
-      map(this.escapeID).
-      map(_ => `${this.escapeID(this.tableName)}.${_}`);
-    const withoutESCAPE = `CONCAT(${columnsToConcat.join(", ")}) LIKE '%${finalStr}%'`;
-    return parenthisize(withEsc(withoutESCAPE, escape));
+      map(i => this.qualifyColumn(i));
+    return parenthisize(`CONCAT(${columnsToConcat.join(", ")}) LIKE ${this.quoteForLIKE(searchTerm, '%', '%')}`);
   };
 
   public getFtGlobalSearchSql(ftTableName: string, params: DTAJAXParams): SQLFragment {
@@ -111,51 +126,45 @@ export class SQLiteAdapter extends DialectAdapter {
 
   public getSBEqualsSql = (crit: SBCriterion): SQLFragment => {
     if (crit.type.match(/^string/))
-      return `(${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} = '${this.escapeString(crit.value1?.normalize("NFD") ?? "")}')`;
+      return `(${this.qualifyColumn(crit.origData)} = ${this.quoteString(crit.value1 ?? "")})`;
     //  TODO  is this really an ELSE condition? Is "string" or "num" exhaustive?
     const num = parseNumberHelper(crit.value1 ?? "");
-    return `(${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} = ${num})`;
+    return `(${this.qualifyColumn(crit.origData)} = ${num})`;
   }
 
   //  NOTE  in SQLite, you can search for a number using a string
   //        but let's have different tests for other DBs (eventually)
   public getSBEmpty(crit: SBCriterion): SQLFragment {
-    return `((${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} IS NULL) OR (${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} = ''))`;
+    return `((${this.qualifyColumn(crit.origData)} IS NULL) OR (${this.qualifyColumn(crit.origData)} = ''))`;
   }
 
-  //  NOTE  normalization must happen _before_ escaping, so that
-  //        `returnOkEscapeCharacter` sees the characters that actually
-  //        end up in the SQL
   public getSBContainsSql(crit: SBCriterion): SQLFragment {
-    let { str: finalStr, escape } = this.escapeForLIKE((crit.value1 ?? "").normalize("NFD"));
-    return parenthisize(withEsc(`${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} LIKE '%${finalStr}%'`, escape));
+    return parenthisize(`${this.qualifyColumn(crit.origData)} LIKE ${this.quoteForLIKE(crit.value1 ?? "", '%', '%')}`);
   }
 
   public getSBStartsWithSql(crit: SBCriterion): SQLFragment {
-    let { str: finalStr, escape } = this.escapeForLIKE((crit.value1 ?? "").normalize("NFD"));
-    return parenthisize(withEsc(`${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} LIKE '${finalStr}%'`, escape));
+    return parenthisize(`${this.qualifyColumn(crit.origData)} LIKE ${this.quoteForLIKE(crit.value1 ?? "", '', '%')}`);
   }
 
   public getSBEndsWithSql(crit: SBCriterion): SQLFragment {
-    let { str: finalStr, escape } = this.escapeForLIKE((crit.value1 ?? "").normalize("NFD"));
-    return parenthisize(withEsc(`${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} LIKE '%${finalStr}'`, escape));
+    return parenthisize(`${this.qualifyColumn(crit.origData)} LIKE ${this.quoteForLIKE(crit.value1 ?? "", '%', '')}`);
   }
 
   //  TODO  no error handling. write tests for it
   public getSBBetweenSql(crit: SBCriterion): SQLFragment {
     const v1 = parseNumberHelper(crit.value1 ?? "");
     const v2 = parseNumberHelper(crit.value2 ?? "");
-    return `(${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} BETWEEN ${v1} AND ${v2})`;
+    return `(${this.qualifyColumn(crit.origData)} BETWEEN ${v1} AND ${v2})`;
   }
 
   public getSBLessThanSql(crit: SBCriterion, orEqualTo=false): SQLFragment {
     const v1 = parseNumberHelper(crit.value1 ?? "");
-    return `(${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} <${orEqualTo ? "=" : ""} ${v1})`;
+    return `(${this.qualifyColumn(crit.origData)} <${orEqualTo ? "=" : ""} ${v1})`;
   }
 
   public getSBGreaterThanSql(crit: SBCriterion, orEqualTo=false): SQLFragment {
     const v1 = parseNumberHelper(crit.value1 ?? "");
-    return `(${this.escapeID(this.tableName)}.${this.escapeID(crit.origData)} >${orEqualTo ? "=" : ""} ${v1})`;
+    return `(${this.qualifyColumn(crit.origData)} >${orEqualTo ? "=" : ""} ${v1})`;
   }
 
 
@@ -167,10 +176,7 @@ export class SQLiteAdapter extends DialectAdapter {
     // configOpts; //  TODO  make NULL (FIRST|LAST) a configurable option
     if (!params.order?.length)
       return '';
-    const columns = params.columns.
-                      map(i => i.data).
-                      map(this.escapeID).
-                      map(_ => `${this.escapeID(this.tableName)}.${_}`);
+    const columns = params.columns.map(i => this.qualifyColumn(i.data));
     const fieldAndAscOrDesc = params.order.
       // toReversed().
       map((i: OrderDirective) => `${columns[i.column]} ${i.dir.toUpperCase()}`);

@@ -48,6 +48,20 @@ export abstract class DialectAdapter {
   abstract escapeString(s: string):   string;
   abstract escapeForLIKE(s: string):  EscapedLIKE;
 
+  /*
+   * choke-points: ALL values interpolated into SQL must go through
+   * `quoteString` (plain string literals) or `quoteForLIKE` (complete
+   * LIKE patterns, including the ESCAPE clause); all column references
+   * must go through `qualifyColumn`
+   */
+
+  abstract quoteString(s: string): SQLFragment;
+  abstract quoteForLIKE(s: string, prefix: string, suffix: string): SQLFragment;
+
+  public qualifyColumn(column: string): SQLFragment {
+    return `${this.escapeID(this.tableName)}.${this.escapeID(column)}`;
+  }
+
 
   /***********************************************************
    * SELECT clause
@@ -63,10 +77,7 @@ export abstract class DialectAdapter {
 
   public getSelectClause(params: DTAJAXParams): SQLFragment {
     if (params.columns === undefined) throw new Error("malformed input");
-    const columns = params.columns.
-                      map(i => i.data).
-                      map(this.escapeID).
-                      map(_ => `${this.escapeID(this.tableName)}.${_}`);
+    const columns = params.columns.map(i => this.qualifyColumn(i.data));
     return `SELECT ${columns.join(", ")}`;
   };
 
@@ -87,7 +98,7 @@ export abstract class DialectAdapter {
    */
 
   public getJoinClause(ftTable: string, rowidKey: string): SQLFragment {
-    return `INNER JOIN ${this.escapeID(ftTable)} ON (${this.escapeID(ftTable)}.rowid = ${this.escapeID(this.tableName)}.${this.escapeID(rowidKey)})`;
+    return `INNER JOIN ${this.escapeID(ftTable)} ON (${this.escapeID(ftTable)}.rowid = ${this.qualifyColumn(rowidKey)})`;
   }
 
 

@@ -196,6 +196,38 @@ describe('sanitization', () => {
 
   });
 
+  describe('quoteString (value choke-point)', () => {
+    it("quotes and escapes", () => {
+      assert.equal(adapter.quoteString("Ol' Dirty"), "'Ol'' Dirty'");
+    });
+    it("empty string", () => {
+      assert.equal(adapter.quoteString(""), "''");
+    });
+  });
+
+  describe('quoteForLIKE (LIKE choke-point)', () => {
+    it("wraps the pattern in quotes with the given affixes", () => {
+      assert.equal(adapter.quoteForLIKE("simple", '%', '%'), "'%simple%'");
+      assert.equal(adapter.quoteForLIKE("simple", '', '%'), "'simple%'");
+      assert.equal(adapter.quoteForLIKE("simple", '%', ''), "'%simple'");
+    });
+    it("appends an ESCAPE clause when wildcards need escaping", () => {
+      assert.equal(adapter.quoteForLIKE("100%", '%', '%'), "'%100\\%%' ESCAPE '\\'");
+    });
+    it("escapes quotes inside the pattern", () => {
+      assert.equal(adapter.quoteForLIKE("Ol'", '%', '%'), "'%Ol''%'");
+    });
+  });
+
+  describe('qualifyColumn (identifier choke-point)', () => {
+    it("qualifies with the (escaped) table name", () => {
+      assert.equal(adapter.qualifyColumn("Song title"), '"main"."Song title"');
+    });
+    it("escapes quotes in the column name", () => {
+      assert.equal(adapter.qualifyColumn(`Tony's "Notes"`), `"main"."Tony's ""Notes"""`);
+    });
+  });
+
   //  TODO  expand on this!!!
   describe('all escaping (DB)', () => {
     it("escaping composes into a well-formed query", () => {
