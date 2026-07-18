@@ -1,0 +1,20 @@
+# What's needed for v0.5.0
+
+Good moment to ask it — the code quality is no longer the blocker. Looking at the README's own definition (0.5.0 = "the version where the don't-use-this warning comes off"), the gap is now less about correctness and more about *contract*. Here's my honest list, roughly ordered:
+
+**1. The trust model needs deciding and documenting — this is the real 0.5.0 blocker.** The library is now injection-*safe* (escaping is solid, property-tested), but it is not authorization-aware, and the distinction matters the moment anyone else uses it: every column name in the generated SQL — SELECT list, searchBuilder `origData`, ORDER BY — comes from the *client's* request. A crafted request can SELECT, filter on, or order by **any column in the table**, including ones the UI never exposes. Filtering on a hidden column leaks its contents bit-by-bit even without selecting it. For your work app that's fine (you control both ends and the data's presumably public bibliographic metadata), but "production-ready for strangers" means either documenting loudly that the target table must contain nothing secret, or adding an `allowedColumns` option to the config and validating `origData`/`data` against it. I'd do the feature — it's small, and it converts the library's biggest caveat into a checkbox.
+
+**2. A handful of known correctness leftovers, all small:**
+- Out-of-range `order[].column` still generates `undefined ASC` — the last client-controlled-garbage path I know of. Should throw. Two lines plus a test.
+- `getOrderByClause` ignores the columns' `orderable` flag, and global search's `searchable` respect isn't mirrored anywhere for searchBuilder — server-side enforcement of what the client claims. Related to #1.
+- `search.regex: 'true'` is silently treated as a literal search, and per-column `columns[].search.value` is silently ignored. Both are legitimate scope cuts — but they need to be *stated* scope cuts, or a consumer flipping those DataTables options gets quiet wrong behavior.
+
+**3. An error contract.** Everything throws bare `Error("couldn't parse number")`-style. A server consumer can't distinguish "malformed client request → respond 400" from "library bug → log and 500". Typed errors (even just two classes: `InvalidParamsError` vs everything else) plus documented throw conditions. This is the difference between a library and a script.
+
+**4. The README — the largest single gap.** Fifteen lines and two warnings currently. 0.5.0 needs real docs: constructor/config, `toSQL` vs `toSQLThroughFtTable` and the FT table prerequisites (external-content FTS5, the rowid key), the `Result` contract including the fusedQuery fallback pattern, and crucially the **assumptions that bit us this session**: the DB must store NFD-normalized text (a user with an NFC database gets mysteriously failed accent searches and no error), SQLite ≥ 3.44 (`CONCAT` — that's late 2023, newer than people assume; window functions need ≥ 3.25), LIKE's ASCII-only case-insensitivity, `=` being case-sensitive, `between` inclusive, the CONCAT cross-column-boundary quirk, read-only scope, object-data-source-only.
+
+**5. Infrastructure table stakes for a published package:** a CI workflow (the suite is fast and hermetic — a GitHub Action is twenty minutes of work), an `engines` field, and a decision on the remaining SQLite-isms in the base class (`True`/`False`, `NULLS LAST`) — not blocking, but if 0.5.0 quietly promises "architecture accommodates other dialects," moving those behind adapter methods makes it true.
+
+**What's *not* missing, in my view:** more tests of the current behavior (the property suite covers the ground), performance work, or Postgres — multi-dialect is a 0.6+ ambition, and shipping SQLite-only with the dialect parameter documented as such is honest.
+
+If I had to compress it: **0.5.0 = the allowlist/validation work (#1, #2) + typed errors (#3) + the README (#4) + CI (#5).** Rough order of a focused day or two, with the README being the part that most needs your voice and decisions rather than mine.

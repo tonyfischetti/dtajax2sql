@@ -1,5 +1,7 @@
 # dtajax2sql
 
+[![forthebadge](https://forthebadge.com/images/badges/no-ragrets.svg)](http://forthebadge.com)
+
 A set of functions to help convert DataTables server-side AJAX calls into
 SQL.
 
