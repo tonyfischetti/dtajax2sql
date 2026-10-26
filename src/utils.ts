@@ -5,10 +5,32 @@ export const negateClause = (clause: SQLFragment): SQLFragment => {
   return `(NOT ${clause})`;
 };
 
+/* a plain object: not null, not an array */
+export const isRecord = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+};
+
 export const parseNumberHelper = (str: string): number => {
   const num = parseInt(str, 10);
   if (isNaN(num)) throw new Error("couldn't parse number");
   return num;
+};
+
+/*
+ * strict counterpart to the above for values that index or page:
+ * accepts a non-negative safe integer as a number (JSON bodies) or as
+ * a canonical decimal string (query strings) --- no `parseInt`
+ * permissiveness ("10 rows" -> 10, "1.5" -> 1), no leading zeros,
+ * no sign
+ */
+export const parseNonNegativeIntegerHelper = (value: unknown,
+                                              what = 'value'): number => {
+  const ok =
+    (typeof value === 'number' && Number.isSafeInteger(value) && value >= 0) ||
+    (typeof value === 'string' && /^(0|[1-9]\d*)$/.test(value) &&
+     Number.isSafeInteger(Number(value)));
+  if (!ok) throw new Error(`${what} must be a non-negative integer`);
+  return Number(value);
 };
 
 // When you have a lot of columns, datatables sends the columns
@@ -61,18 +83,22 @@ export const unflattenBracketKeys = (flat: Record<string, any>): any => {
   return root;
 };
 
-// heals a SearchBuilder tree in place: at EVERY depth, converts
-// criteria that arrived as objects (numeric-keyed, or flattened
-// past qs's depth limit) back into proper arrays
-export const healSearchBuilderTree = (sb: any): void => {
-  if (!sb || typeof sb !== 'object' || !("criteria" in sb) || !sb.criteria)
-    return;
-  if (!Array.isArray(sb.criteria)) {
-    sb.criteria = isFlattenedBracketKeyObject(sb.criteria)
-      ? unflattenBracketKeys(sb.criteria)
-      : convertColumnPropToArray(sb.criteria);
-  }
-  sb.criteria.forEach((c: any) => healSearchBuilderTree(c));
+// heals a SearchBuilder tree: at EVERY depth, criteria that arrived as
+// objects (numeric-keyed, or flattened past qs's depth limit) become
+// proper arrays. Returns a new tree; the input is never modified
+export const healSearchBuilderTree = (sb: unknown): unknown => {
+  if (!isRecord(sb) || !("criteria" in sb))
+    return sb;
+  let criteria = sb['criteria'];
+  //  NOTE  only object-shaped criteria are converted; anything else is
+  //        left alone for the validator to reject with a real message
+  if (isRecord(criteria))
+    criteria = isFlattenedBracketKeyObject(criteria)
+      ? unflattenBracketKeys(criteria)
+      : convertColumnPropToArray(criteria);
+  if (Array.isArray(criteria))
+    criteria = criteria.map(c => healSearchBuilderTree(c));
+  return { ...sb, criteria };
 };
 
 export const withEsc = (base: string, escape: string | undefined) => {

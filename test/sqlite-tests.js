@@ -251,9 +251,18 @@ describe('sanitization', () => {
 
 describe('limits and offsets', () => {
 
+  const capped = new SQLiteAdapter('main', {
+    whitespace: { removeLeading: true, removeTrailing: true },
+    pagination: { maxPageSize: 25 }
+  });
+
   describe('getLimitSql', () => {
     it("should handle simple case", () => {
       assert.equal(adapter.getLimitSql({ length: "20" }), "LIMIT 20");
+    });
+    it("accepts a number too (JSON bodies)", () => {
+      assert.equal(adapter.getLimitSql({ length: 20 }), "LIMIT 20");
+      assert.equal(adapter.getLimitSql({ length: 0 }), "LIMIT 0");
     });
     it("error on missing key", () => {
       assert.throws(() => { adapter.getLimitSql({ draw: "2" }) }, Error);
@@ -261,17 +270,39 @@ describe('limits and offsets', () => {
     it("error if number can't be parsed", () => {
       assert.throws(() => { adapter.getLimitSql({ length: "the moon" }) }, Error);
     });
+    it("rejects negative, fractional, and permissively parsed lengths", () => {
+      for (const length of ['-2', '1.5', '10 rows', '', ' 10', '010', '+1', -2, 1.5, NaN, Infinity, null, true, {}, []])
+        assert.throws(() => adapter.getLimitSql({ length }), /non-negative integer/,
+                      `should have rejected ${JSON.stringify(length) ?? String(length)}`);
+    });
+    it("-1 (DataTables' \"all rows\") is the one negative value allowed: LIMIT -1", () => {
+      assert.equal(adapter.getLimitSql({ length: "-1" }), "LIMIT -1");
+      assert.equal(adapter.getLimitSql({ length: -1 }), "LIMIT -1");
+    });
+    it("enforces a configured maximum page size", () => {
+      assert.equal(capped.getLimitSql({ length: '25' }), 'LIMIT 25');
+      assert.throws(() => capped.getLimitSql({ length: '26' }), /maximum page size/);
+    });
+    it("...and then refuses -1 rather than silently truncating", () => {
+      assert.throws(() => capped.getLimitSql({ length: '-1' }), /maximum page size/);
+      assert.throws(() => capped.getLimitSql({ length: -1 }), /maximum page size/);
+    });
   });
 
   describe('getOffsetSql', () => {
     it("should handle simple case", () => {
       assert.equal(adapter.getOffsetSql({ start: "20" }), "OFFSET 20");
+      assert.equal(adapter.getOffsetSql({ start: 20 }), "OFFSET 20");
     });
     it("error on missing key", () => {
       assert.throws(() => { adapter.getOffsetSql({ draw: "2" }) }, Error);
     });
     it("error if number can't be parsed", () => {
       assert.throws(() => { adapter.getOffsetSql({ length: "the moon" }) }, Error);
+    });
+    it("rejects negative, fractional, and permissively parsed offsets (no -1 exception here)", () => {
+      for (const start of ['-1', '1.5', '10 rows', -1, 1.5])
+        assert.throws(() => adapter.getOffsetSql({ start }), /non-negative integer/);
     });
   });
 
@@ -366,6 +397,24 @@ describe('global search', () => {
     });
   });
 
+});
+
+describe('full-text global search (getFtGlobalSearchSql)', () => {
+  it("quotes the FTS table identifier", () => {
+    const params = { search: { value: 'needle', regex: 'false' } };
+    assert.equal(adapter.getFtGlobalSearchSql('full text "index"', params),
+                 `("full text ""index""" = '"needle"')`);
+  });
+  it("ignores leading and trailing whitespace runs (only tokens matter)", () => {
+    const params = { search: { value: '  needle \t  ', regex: 'false' } };
+    assert.equal(adapter.getFtGlobalSearchSql('songs_fts', params),
+                 `("songs_fts" = '"needle"')`);
+  });
+  it("each token becomes its own quoted FTS5 phrase (apostrophes dropped, hyphens split, quotes doubled)", () => {
+    const params = { search: { value: `ol' dirty-bastard "quoted"`, regex: 'false' } };
+    assert.equal(adapter.getFtGlobalSearchSql('songs_fts', params),
+                 `("songs_fts" = '"ol" "dirty" "bastard" """quoted"""')`);
+  });
 });
 
 describe('Search builder criteria', () => {
@@ -630,9 +679,36 @@ describe('getSearchBuilderSql', () => {
         ],
         "logic": "AND"
       };
-      healSearchBuilderTree(nested);
-      assert.equal(adapter.getSearchBuilderSql(nested), `(((("main"."ObjectID" = 1) AND ("main"."Title" = 'test')) OR ("main"."Department" = 'testdep')) AND ("main"."Title" = 'test'))`);
+      const healed = healSearchBuilderTree(nested);
+      assert.equal(adapter.getSearchBuilderSql(healed), `(((("main"."ObjectID" = 1) AND ("main"."Title" = 'test')) OR ("main"."Department" = 'testdep')) AND ("main"."Title" = 'test'))`);
+      // ...and the input is untouched: the deepest group still holds the flattened keys
+      assert.ok('[0][condition]' in nested.criteria[0].criteria[0].criteria);
     });
+  });
+});
+
+
+describe('healSearchBuilderTree', () => {
+  it("returns a new tree and leaves the input alone", () => {
+    const input = { logic: 'AND', criteria: { 0: { logic: 'OR', criteria: { 0: { type: '' }, 1: { type: '' } } }, 1: { type: '' } } };
+    const before = JSON.stringify(input);
+    const healed = healSearchBuilderTree(input);
+    assert.notStrictEqual(healed, input);
+    assert.ok(Array.isArray(healed.criteria));
+    assert.ok(Array.isArray(healed.criteria[0].criteria));
+    assert.equal(healed.criteria[0].criteria.length, 2);
+    assert.equal(JSON.stringify(input), before);
+  });
+  it("passes through things that aren't groups (criteria, non-objects)", () => {
+    const criterion = { type: '' };
+    assert.strictEqual(healSearchBuilderTree(criterion), criterion);
+    assert.strictEqual(healSearchBuilderTree('nope'), 'nope');
+    assert.strictEqual(healSearchBuilderTree(null), null);
+    assert.strictEqual(healSearchBuilderTree(undefined), undefined);
+  });
+  it("leaves non-object criteria for the validator (no Object.keys surprises)", () => {
+    assert.deepEqual(healSearchBuilderTree({ logic: 'AND', criteria: 'abc' }), { logic: 'AND', criteria: 'abc' });
+    assert.deepEqual(healSearchBuilderTree({ logic: 'AND', criteria: 5 }), { logic: 'AND', criteria: 5 });
   });
 });
 
@@ -674,6 +750,54 @@ describe('unflattenBracketKeys', () => {
       { condition: "null", origData: "Title", type: "string" }
     ]);
   });
+});
+
+
+/*************************************************************************
+  * getOrderByClause
+  */
+
+describe('getOrderByClause', () => {
+
+  describe('direction', () => {
+    it("accepts asc and desc (and emits only the literals)", () => {
+      const params = { columns: [{ data: 'song_id' }], order: [{ column: 0, dir: 'asc' }] };
+      assert.equal(adapter.getOrderByClause(params), 'ORDER BY "main"."song_id" ASC NULLS LAST');
+      params.order[0].dir = 'desc';
+      assert.equal(adapter.getOrderByClause(params), 'ORDER BY "main"."song_id" DESC NULLS LAST');
+    });
+    it("rejects an untrusted direction instead of interpolating it", () => {
+      for (const dir of ['ASC, random()', 'asc; DROP TABLE songs', 'ASC', '', undefined, 1, {}]) {
+        const params = { columns: [{ data: 'song_id' }], order: [{ column: 0, dir }] };
+        assert.throws(() => adapter.getOrderByClause(params), /order direction/);
+      }
+    });
+    it("no order directives -> no ORDER BY clause", () => {
+      assert.equal(adapter.getOrderByClause({ columns: [{ data: 'song_id' }] }), '');
+      assert.equal(adapter.getOrderByClause({ columns: [{ data: 'song_id' }], order: [] }), '');
+    });
+  });
+
+  describe('column index', () => {
+    const twoCols = [{ data: 'song_id' }, { data: 'Song title' }];
+    it("accepts a numeric string (GET) or a number (JSON)", () => {
+      assert.equal(adapter.getOrderByClause({ columns: twoCols, order: [{ column: '1', dir: 'asc' }] }),
+                   'ORDER BY "main"."Song title" ASC NULLS LAST');
+      assert.equal(adapter.getOrderByClause({ columns: twoCols, order: [{ column: 1, dir: 'asc' }] }),
+                   'ORDER BY "main"."Song title" ASC NULLS LAST');
+    });
+    it("several directives", () => {
+      assert.equal(adapter.getOrderByClause({ columns: twoCols, order: [{ column: '1', dir: 'desc' }, { column: 0, dir: 'asc' }] }),
+                   'ORDER BY "main"."Song title" DESC, "main"."song_id" ASC NULLS LAST');
+    });
+    for (const column of [-1, 2, '2', 1.5, '1.5', '01', '1x', '', ' 1', {}, [], null, undefined, Number.MAX_VALUE, NaN, 'constructor']) {
+      it(`rejects an invalid or out-of-range index: ${JSON.stringify(column) ?? String(column)}`, () => {
+        assert.throws(() => adapter.getOrderByClause({ columns: twoCols, order: [{ column, dir: 'asc' }] }),
+                      /order column/);
+      });
+    }
+  });
+
 });
 
 

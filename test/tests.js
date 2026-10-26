@@ -277,6 +277,31 @@ describe('testing against a real (weird) DB', () => {
       assert.equal(DB.prepare(countQuery).get()['filteredCount'], 3);
     });
 
+    it("length -1 (DataTables' \"all rows\", used by export buttons) returns every row in all three queries", () => {
+      const params = {"draw":"3","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"true","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"-1","search":{"value":"","regex":"false"},"order":[{"column":"0","dir":"asc","name":""}],"_":"1729017098493"};
+      const { query, countQuery, fusedQuery } = inst.toSQL(params);
+      assert.equal(DB.prepare(query).all().length, 19);
+      assert.equal(DB.prepare(countQuery).get()["filteredCount"], 19);
+      const fusedRows = DB.prepare(fusedQuery).all();
+      assert.equal(fusedRows.length, 19);
+      fusedRows.forEach(r => assert.equal(r['filteredCount'], 19));
+    });
+
+    it("a configured maxPageSize is enforced end-to-end (and -1 is then refused)", () => {
+      const capped = new Dtajax2sql('songs', 'sqlite', { pagination: { maxPageSize: 5 } });
+      const mk = (length) => ({"draw":"3","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"true","search":{"value":"","regex":"false"}}],"start":"0","length":length,"search":{"value":"","regex":"false"},"_":"1729017098493"});
+      assert.equal(DB.prepare(capped.toSQL(mk("5")).query).all().length, 5);
+      assert.throws(() => capped.toSQL(mk("6")), /maximum page size/);
+      assert.throws(() => capped.toSQL(mk("-1")), /maximum page size/);
+    });
+
+    it("a nonsensical maxPageSize is rejected when the instance is built", () => {
+      for (const bad of [0, -1, 1.5, '10', NaN])
+        assert.throws(() => new Dtajax2sql('songs', 'sqlite', { pagination: { maxPageSize: bad } }), /maxPageSize/);
+      assert.doesNotThrow(() => new Dtajax2sql('songs', 'sqlite', { pagination: { maxPageSize: null } }));
+      assert.doesNotThrow(() => new Dtajax2sql('songs', 'sqlite', { pagination: {} }));
+    });
+
     it("ORDER BY works with two directives", () => {
       const params = {"draw": "14", "columns": [ { "data": "song_id", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } }, { "data": "Song title", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } }, { "data": "Artist name", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } }, { "data": "Tony's \"Notes\"", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } }, { "data": "\u03b3\u03c1'\u03b1`\u03c6[\u03ad]\u03c2", "name": "", "searchable": "true", "orderable": "false", "search": { "value": "", "regex": "false" } } ], "start": "0", "length": "7", "search": { "value": "", "regex": "false" }, "_": "1729017098504", "order": [ { "column": "2", "dir": "desc", "name": "" }, { "column": "1", "dir": "asc", "name": "" } ] };
       const { query } = inst.toSQL(params);

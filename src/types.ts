@@ -146,7 +146,9 @@ export interface SearchBuilder {
  */
 
 export interface OrderDirective {
-  column: number;
+  //  NOTE  an index into `columns`; arrives as a string over GET
+  //        (query string) and as a number over JSON (POST body)
+  column: number | string;
   dir: 'asc' | 'desc';
   name?: string;
 }
@@ -216,8 +218,10 @@ export type OrderSpec = Array<OrderDirective>;
 export interface DTAJAXParams {
   draw: string;
   columns: Array<ColumnObj>;
-  start: string;
-  length: string;
+  //  NOTE  strings over GET (query string), numbers over JSON (POST
+  //        body); `length: -1` means "all rows"
+  start: string | number;
+  length: string | number;
   search: GlobalSearch;
   searchBuilder?: SearchBuilder;
   order?: OrderSpec;
@@ -231,8 +235,46 @@ export interface WhitespaceOpts {
   removeTrailing: boolean;
 }
 
+/**
+ * PaginationOpts
+ *
+ * maxPageSize --- the largest `length` a request may ask for, or
+ *                 `null` for no cap (the default). DataTables sends
+ *                 `length: -1` to mean "all rows" (export buttons do
+ *                 this); that is honoured as `LIMIT -1` when there is
+ *                 no cap, and rejected (never silently truncated) when
+ *                 there is one
+ */
+export interface PaginationOpts {
+  maxPageSize: number | null;
+}
+
+/**
+ * SearchBuilderOpts
+ *
+ * maxDepth    --- how deeply groups may nest (the top level is depth 1)
+ * maxCriteria --- the total number of criteria + groups in one request
+ *
+ * both are generous relative to anything a person builds by hand in
+ * the SearchBuilder UI; they exist so a hand-crafted request can't hand
+ * the database a pathologically large WHERE clause
+ */
+export interface SearchBuilderOpts {
+  maxDepth:    number;
+  maxCriteria: number;
+}
+
 export interface ConfigOpts {
-  whitespace: WhitespaceOpts;
+  whitespace:    WhitespaceOpts;
+  pagination:    PaginationOpts;
+  searchBuilder: SearchBuilderOpts;
+}
+
+/* what the constructor accepts: everything optional, at every level */
+export interface ConfigInput {
+  whitespace?:    Partial<WhitespaceOpts>;
+  pagination?:    Partial<PaginationOpts>;
+  searchBuilder?: Partial<SearchBuilderOpts>;
 }
 
 export interface EscapedLIKE {

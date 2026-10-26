@@ -12,6 +12,7 @@ import {
 import {
   parenthisize,
   parseNumberHelper,
+  parseNonNegativeIntegerHelper,
   withEsc,
 } from '../utils.js';
 
@@ -201,7 +202,21 @@ export class SQLiteAdapter extends DialectAdapter {
     const columns = params.columns.map(i => this.qualifyColumn(i.data));
     const fieldAndAscOrDesc = params.order.
       // toReversed().
-      map((i: OrderDirective) => `${columns[i.column]} ${i.dir.toUpperCase()}`);
+      map((i: OrderDirective) => {
+        //  NOTE  `dir` is client-controlled and used to be interpolated
+        //        as-is (after toUpperCase); only the two literals may
+        //        ever reach the SQL
+        if (i.dir !== 'asc' && i.dir !== 'desc')
+          throw new Error("order direction must be 'asc' or 'desc'");
+        //  NOTE  `column` is an index into `columns` (a string over
+        //        GET, a number over JSON); out of range used to yield
+        //        the literal text `undefined ASC`
+        const columnIndex = parseNonNegativeIntegerHelper(i.column, 'order column');
+        const column = columns[columnIndex];
+        if (column === undefined)
+          throw new Error(`order column ${columnIndex} is outside the columns array`);
+        return `${column} ${i.dir === 'asc' ? 'ASC' : 'DESC'}`;
+      });
     return `ORDER BY ${fieldAndAscOrDesc.join(', ')} NULLS LAST`;
   }
 

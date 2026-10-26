@@ -30,7 +30,10 @@ const DB = new BetterSqlite3("./test/music.db", {
   fileMustExist: true
 });
 
-const inst = new Dtajax2sql('songs', 'sqlite', { });
+//  NOTE  these tests are about SQL semantics, not request limits: the
+//        sbTree generator below can (in principle) produce up to 120
+//        entries, past the default maxCriteria of 100
+const inst = new Dtajax2sql('songs', 'sqlite', { searchBuilder: { maxCriteria: 1000 } });
 
 const STR_COLS = ["Song title", "Artist name", "Tony's \"Notes\"", "γρ'α`φ[έ]ς"];
 const ALL_COLS = ["song_id", ...STR_COLS];

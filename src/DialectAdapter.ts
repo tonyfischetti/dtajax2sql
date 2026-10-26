@@ -11,7 +11,7 @@ import {
 } from './types.js';
 
 import {
-  parseNumberHelper,
+  parseNonNegativeIntegerHelper,
   negateClause
 } from './utils.js';
 
@@ -35,8 +35,8 @@ export abstract class DialectAdapter {
                                 thekey: "length" | "start",
                                 sqlKey: string): SQLFragment {
     if (!(thekey in params))
-      throw new Error(`${thekey} is not a property of ${params}`);
-    const num = parseNumberHelper(params[thekey]);
+      throw new Error(`${thekey} is not a property of the request`);
+    const num = parseNonNegativeIntegerHelper(params[thekey], thekey);
     return `${sqlKey} ${num}`;
   };
 
@@ -108,7 +108,23 @@ export abstract class DialectAdapter {
    */
 
   public getLimitSql(params: DTAJAXParams): SQLFragment {
-    return this.getLimitorOffsetHelper(params, "length", "LIMIT");
+    if (!("length" in params))
+      throw new Error("length is not a property of the request");
+    const maxPageSize = this.config.pagination?.maxPageSize ?? null;
+    //  NOTE  DataTables sends `length: -1` for "all rows" (its export
+    //        and "show all" paths), and SQLite reads `LIMIT -1` the same
+    //        way --- so -1 is the one negative value let through, and
+    //        only when no cap is configured: with a cap, truncating
+    //        silently would be worse than refusing
+    if (params.length === -1 || params.length === '-1') {
+      if (maxPageSize !== null)
+        throw new Error(`length -1 (all rows) is not allowed when a maximum page size (${maxPageSize}) is configured`);
+      return 'LIMIT -1';
+    }
+    const length = parseNonNegativeIntegerHelper(params.length, 'length');
+    if (maxPageSize !== null && length > maxPageSize)
+      throw new Error(`length exceeds the maximum page size of ${maxPageSize}`);
+    return `LIMIT ${length}`;
   }
 
   public getOffsetSql(params: DTAJAXParams): SQLFragment {
