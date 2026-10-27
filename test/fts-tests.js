@@ -92,11 +92,12 @@ describe('toSQLThroughFtTable', () => {
       assert.deepEqual(ftSongIds("ol dirty"), [6]);
       assert.deepEqual(ftSongIds("100 cover"), [17]);
     });
-    it("hyphens act as word separators", () => {
+    it("a hyphenated word is a phrase of its parts", () => {
       assert.deepEqual(ftSongIds("k-the"), [5]);
     });
-    it("apostrophes are stripped", () => {
+    it("apostrophes are harmless (the tokenizer treats them as separators)", () => {
       assert.deepEqual(ftSongIds("keepin'"), [8]);
+      assert.deepEqual(ftSongIds("Ol' Dirty"), [6]);
     });
     it("greek (typed composed/NFC, stored decomposed/NFD)", () => {
       assert.deepEqual(ftSongIds("Δημήτρης".normalize("NFC")), [3]);
@@ -124,6 +125,70 @@ describe('toSQLThroughFtTable', () => {
     });
     it("sql injection attempts are inert (they just... find Bobby Tables)", () => {
       assert.deepEqual(ftSongIds("Robert'); DROP TABLE songs;--"), [10]);
+      assert.equal(DB.prepare(`SELECT COUNT(*) as N FROM songs`).get()["N"], 19);
+    });
+  });
+
+  describe("FTS5 query operators (what 0.3.10 passed through, minus the syntax errors)", () => {
+    it("prefix: a trailing *", () => {
+      assert.deepEqual(ftSongIds("keep*"), [8]);
+      assert.deepEqual(ftSongIds('"keep"*'), [8]);
+      assert.deepEqual(ftSongIds("moon*"), [8, 9, 12, 13, 17, 18]);
+    });
+    it("a leading * is literal (0.3.10: 'unknown special query')", () => {
+      assert.deepEqual(ftSongIds("*69"), [7]);
+    });
+    it("OR / AND / NOT, upper-case only", () => {
+      assert.deepEqual(ftSongIds("bowie OR numan"), [1, 2]);
+      assert.deepEqual(ftSongIds("bowie AND heroes"), [2]);
+      assert.deepEqual(ftSongIds("moondogs NOT made"), [12, 13, 17, 18]);
+      assert.deepEqual(ftSongIds("bowie or numan"), []);           // lower-case: just the word "or"
+    });
+    it("a misplaced operator is just a word (0.3.10: syntax error)", () => {
+      for (const v of ["bowie OR", "OR bowie", "NOT bowie", "bowie OR OR numan", "OR", "AND NOT", "a OR NOT b"])
+        assert.doesNotThrow(() => ftSongIds(v), v);
+      assert.deepEqual(ftSongIds("bowie OR"), []);                  // bowie AND the word "or"
+      assert.deepEqual(ftSongIds("bowie OR OR numan"), [1]);        // (bowie AND "or") OR numan
+    });
+    it("phrases: quoted, and an unterminated quote is closed for you", () => {
+      assert.deepEqual(ftSongIds('"ol dirty"'), [6]);
+      assert.deepEqual(ftSongIds('"dirty ol"'), []);
+      assert.deepEqual(ftSongIds('"ol dirty'), [6]);
+      assert.deepEqual(ftSongIds('"are friends" electric'), [1]);
+    });
+    it("column filters: name:phrase and \"quoted name\":phrase", () => {
+      assert.deepEqual(ftSongIds('"Artist name":bowie'), [2]);
+      assert.deepEqual(ftSongIds('"Song title":keep*'), [8]);
+      assert.deepEqual(ftSongIds('"Song title":^keep*'), [8]);
+      assert.deepEqual(ftSongIds('"Song title":"are friends"'), [1]);
+      assert.deepEqual(ftSongIds('"Artist name":"are friends"'), []);
+    });
+    it("an unknown column is the one thing that still errors at run time (as in 0.3.10)", () => {
+      assert.throws(() => ftSongIds("title:keepin"), /no such column/);
+    });
+    it("things that merely look like column filters stay phrases", () => {
+      assert.deepEqual(ftSongIds("3:16"), []);
+      assert.deepEqual(ftSongIds("re: keepin"), []);                // the word "re:" AND keepin
+      assert.deepEqual(ftSongIds("http://example.com"), []);
+    });
+    it("parentheses group, with the explicit AND that FTS5 requires next to a group", () => {
+      assert.deepEqual(ftSongIds("(bowie OR numan) electric"), [1]);
+      assert.deepEqual(ftSongIds("electric (bowie OR numan)"), [1]);
+      assert.deepEqual(ftSongIds("((bowie OR numan) AND electric) OR moondogs"), [1, 8, 9, 12, 13, 17, 18]);
+    });
+    it("unbalanced or absurdly deep parentheses are just characters", () => {
+      assert.deepEqual(ftSongIds("(bowie OR numan"), [1, 2]);
+      assert.deepEqual(ftSongIds("bowie OR numan)"), [1, 2]);
+      assert.deepEqual(ftSongIds(":-)"), []);
+      assert.deepEqual(ftSongIds('('.repeat(40) + 'bowie' + ')'.repeat(40)), [2]);
+    });
+    it("^ anchors to the first token", () => {
+      assert.deepEqual(ftSongIds("^keepin"), [8]);
+      assert.deepEqual(ftSongIds("^it"), []);
+    });
+    it("hostile input is inert", () => {
+      assert.deepEqual(ftSongIds("' OR 1=1 --"), []);
+      assert.deepEqual(ftSongIds("x'); DROP TABLE songs;--"), []);
       assert.equal(DB.prepare(`SELECT COUNT(*) as N FROM songs`).get()["N"], 19);
     });
   });

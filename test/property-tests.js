@@ -65,7 +65,9 @@ const nastyFrag = fc.constantFrom(
   '%', '_', "'", '"', '\\', '`', ';', '--', '*', '(', ')', '[', ']',
   ' ', '-', '\t', '\n', '\u0000', '\u200b',
   'λ', 'Δημήτρης', '齆', '💯', 'é', 'é', 'ñ', 'ٱللَّٰهُ',
-  'keep', '100', 'the'
+  'keep', '100', 'the',
+  // FTS5 query syntax
+  'OR', 'NOT', 'AND', ':', '^', '"Song title":', 'keep*'
 );
 
 const bmpChar = fc.integer({ min: 0x20, max: 0xFFFF }).
@@ -208,10 +210,20 @@ describe('property: generated SQL always parses', function () {
     fc.assert(fc.property(anyText, (searchValue) => {
       const { query, countQuery, fusedQuery } =
         inst.toSQLThroughFtTable('songs_fts', 'song_id', mkParams(searchValue));
-      DB.prepare(query);
-      DB.prepare(countQuery);
-      DB.prepare(fusedQuery);
-    }), { numRuns: 300 });
+      //  NOTE  FTS5 parses its query expression when the statement RUNS,
+      //        not when it is prepared, so these have to execute. The one
+      //        run-time error the escaper lets through on purpose is an
+      //        unknown column in a `name:phrase` filter (as in 0.3.10),
+      //        and then the query must really contain that filter
+      try {
+        DB.prepare(query).all();
+        DB.prepare(countQuery).get();
+        DB.prepare(fusedQuery).all();
+      } catch (e) {
+        const m = /no such column: (.*)$/.exec(e.message);
+        if (m === null || !countQuery.includes(`"${m[1].replaceAll('"', '""')}":`)) throw e;
+      }
+    }), { numRuns: 500 });
   });
 
   it("any searchBuilder tree (parses AND runs)", () => {

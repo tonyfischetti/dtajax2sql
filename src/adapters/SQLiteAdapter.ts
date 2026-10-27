@@ -16,6 +16,8 @@ import {
   withEsc,
 } from '../utils.js';
 
+import { toFts5Query } from '../fts5.js';
+
 
 export class SQLiteAdapter extends DialectAdapter {
 
@@ -62,19 +64,12 @@ export class SQLiteAdapter extends DialectAdapter {
              replaceAll(/'/g, "''");
   }
 
-  //  NOTE  each token gets wrapped in FTS5 double-quotes: bare tokens
-  //        containing `%`, `*`, etc. are syntax errors in the FTS5
-  //        query language, but quoted phrases never are (their
-  //        contents just get tokenized, so `"100%"` still matches
-  //        "100% (cover)" via the token `100`)
+  //  NOTE  the search string becomes an FTS5 query expression that keeps
+  //        the operators (prefix *, ^, col:, AND/OR/NOT, parentheses) but
+  //        can never be malformed --- see fts5.ts. The result is NOT yet
+  //        a SQL literal; getFtGlobalSearchSql quotes it
   public escapeStringForFtSearch(s: string): string {
-    return s.replaceAll(/\u0000/g, "").
-             replaceAll(/'/g, "").
-             replaceAll(/-/g, " ").
-             split(/\s+/).
-             filter(t => t !== "").
-             map(t => `"${t.replaceAll(/"/g, '""')}"`).
-             join(" ");
+    return toFts5Query(s);
   }
 
   public escapeForLIKE(s: string): EscapedLIKE {
@@ -136,14 +131,14 @@ export class SQLiteAdapter extends DialectAdapter {
   };
 
   public getFtGlobalSearchSql(ftTableName: string, params: DTAJAXParams): SQLFragment {
-    const ftSearchTerm = this.escapeStringForFtSearch(params.search.value.normalize("NFD"));
-    //  NOTE  a term with no tokens at all (e.g. just `-`) can't be
-    //        represented as an FTS5 query (`= ''` is a syntax error);
+    const ftQuery = this.escapeStringForFtSearch(params.search.value);
+    //  NOTE  a search with nothing searchable in it (e.g. just `-`) can't
+    //        be represented as an FTS5 query (`= ''` is a syntax error);
     //        match nothing, consistent with getGlobalSearchSql's
     //        no-searchable-columns case
-    if (ftSearchTerm === '')
+    if (ftQuery === '')
       return parenthisize("False");
-    return parenthisize(`${this.escapeID(ftTableName)} = '${ftSearchTerm}'`);
+    return parenthisize(`${this.escapeID(ftTableName)} = ${this.quoteString(ftQuery)}`);
   };
 
 

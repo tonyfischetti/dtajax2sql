@@ -6,6 +6,7 @@ import {
   unflattenBracketKeys,
   healSearchBuilderTree
 } from '../dist/utils.js';
+import { toFts5Query } from '../dist/fts5.js';
 
 
 /*************************************************************************
@@ -410,10 +411,95 @@ describe('full-text global search (getFtGlobalSearchSql)', () => {
     assert.equal(adapter.getFtGlobalSearchSql('songs_fts', params),
                  `("songs_fts" = '"needle"')`);
   });
-  it("each token becomes its own quoted FTS5 phrase (apostrophes dropped, hyphens split, quotes doubled)", () => {
+  it("the FTS5 expression is SQL-quoted (an apostrophe survives into the phrase, doubled for SQL)", () => {
     const params = { search: { value: `ol' dirty-bastard "quoted"`, regex: 'false' } };
     assert.equal(adapter.getFtGlobalSearchSql('songs_fts', params),
-                 `("songs_fts" = '"ol" "dirty" "bastard" """quoted"""')`);
+                 `("songs_fts" = '"ol''" "dirty-bastard" "quoted"')`);
+  });
+  it("nothing searchable -> matches nothing (never `= ''`)", () => {
+    for (const value of ['-', '%', '""', '* *', '()', '^', ':-)', '   '])
+      assert.equal(adapter.getFtGlobalSearchSql('songs_fts', { search: { value, regex: 'false' } }), '(False)',
+                   `for ${JSON.stringify(value)}`);
+  });
+});
+
+describe('toFts5Query (search box -> FTS5 query expression)', () => {
+  const cases = [
+    // plain words and punctuation: every phrase quoted, junk inside is just tokenizer input
+    ['keepin',                          '"keepin"'],
+    ['ol dirty',                        '"ol" "dirty"'],
+    ['100%',                            '"100%"'],
+    ['R&B',                             '"R&B"'],
+    ['u.s.a',                           '"u.s.a"'],
+    ["keepin'",                         `"keepin'"`],
+    ['jean-paul',                       '"jean-paul"'],
+    ['this \\ that',                    '"this" "that"'],
+    ["Robert'); DROP TABLE songs;--",   `"Robert');" "DROP" "TABLE" "songs;--"`],
+    ['💯',                              '"💯"'],
+    ['ke\u0000ep',                      '"keep"'],
+    // prefix
+    ['keep*',                           '"keep"*'],
+    ['"keep"*',                         '"keep"*'],
+    ['"keepin it"*',                    '"keepin it"*'],
+    ['keep**',                          '"keep"*'],
+    ['keep *',                          '"keep"'],
+    ['*69',                             '"*69"'],
+    ['kaf*ka',                          '"kaf*ka"'],
+    // operators: upper-case, whole word, operand on both sides
+    ['bowie OR numan',                  '"bowie" OR "numan"'],
+    ['bowie or numan',                  '"bowie" "or" "numan"'],
+    ['bowie AND heroes',                '"bowie" AND "heroes"'],
+    ['moondogs NOT made',               '"moondogs" NOT "made"'],
+    ['a NOT b NOT c',                   '"a" NOT "b" NOT "c"'],
+    ['bowie OR',                        '"bowie" "OR"'],
+    ['OR bowie',                        '"OR" "bowie"'],
+    ['NOT bowie',                       '"NOT" "bowie"'],
+    ['bowie OR OR numan',               '"bowie" "OR" OR "numan"'],
+    ['a OR NOT b',                      '"a" "OR" NOT "b"'],
+    ['OR',                              '"OR"'],
+    // column filters
+    ['Title:kafka',                     '"Title":"kafka"'],
+    ['"Song title":keepin',             '"Song title":"keepin"'],
+    ['"Song title":"keepin it"',        '"Song title":"keepin it"'],
+    ['Title:"new york"',                '"Title":"new york"'],
+    ['Title:^kaf*',                     '"Title":^"kaf"*'],
+    ['Title:OR',                        '"Title":"OR"'],
+    ['3:16',                            '"3:16"'],
+    ['re: foo',                         '"re:" "foo"'],
+    ['http://x.y',                      '"http://x.y"'],
+    ['Title:',                          '"Title:"'],
+    ['Title:%',                         '"Title:%"'],       // `%` can't start a phrase, so no filter
+    // first-token anchor
+    ['^keepin',                         '^"keepin"'],
+    ['^"keepin it"',                    '^"keepin it"'],
+    ['2^3',                             '"2^3"'],
+    // grouping (FTS5 needs an explicit AND next to a group)
+    ['(bowie OR numan) electric',       '("bowie" OR "numan") AND "electric"'],
+    ['electric (bowie OR numan)',       '"electric" AND ("bowie" OR "numan")'],
+    ['(a) (b)',                         '("a") AND ("b")'],
+    ['((bowie OR numan) AND electric) OR moondogs', '(("bowie" OR "numan") AND "electric") OR "moondogs"'],
+    ['(bowie OR numan',                 '"(bowie" OR "numan"'],
+    ['bowie OR numan)',                 '"bowie" OR "numan)"'],
+    ['()',                              ''],
+    ['(OR)',                            '"OR"'],
+    ['(bowie OR) numan',                '("bowie" "OR") AND "numan"'],
+    ['a (OR b)',                        '"a" AND ("OR" "b")'],
+    // quotes
+    ['"ol dirty"',                      '"ol dirty"'],
+    ['"ol dirty',                       '"ol dirty"'],
+    ['say ""hi""',                      '"say" "hi"'],
+    ['"a ""quoted"" word"',             '"a ""quoted"" word"'],
+    // NFC in, NFD out
+    ['café',                       '"café"'],
+  ];
+  for (const [input, expected] of cases) {
+    it(`${JSON.stringify(input)} -> ${JSON.stringify(expected)}`, () => {
+      assert.equal(toFts5Query(input), expected);
+    });
+  }
+  it("parentheses nested past the cap are just characters", () => {
+    const deep = '('.repeat(40) + 'bowie' + ')'.repeat(40);
+    assert.equal(toFts5Query(deep), `"${deep}"`);
   });
 });
 
