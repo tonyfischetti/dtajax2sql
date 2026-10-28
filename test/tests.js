@@ -246,6 +246,15 @@ describe('testing against a real (weird) DB', () => {
       assert.equal(DB.prepare(countQuery).get()["filteredCount"], 2);
     });
 
+    it("a bare `{}` searchBuilder (an idle SearchBuilder over JSON) filters nothing", () => {
+      const params = {"draw":"3","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"12","search":{"value":"keep","regex":"false"},"searchBuilder":{},"_":"1729017098493"};
+      const { query, countQuery } = inst.toSQL(params);
+      assert.equal(DB.prepare(query).get()["song_id"], 8);
+      assert.equal(DB.prepare(countQuery).get()["filteredCount"], 1);
+      const ft = inst.toSQLThroughFtTable('songs_fts', 'song_id', params);
+      assert.equal(DB.prepare(ft.countQuery).get()["filteredCount"], 0);   // "keep" is not a whole token
+    });
+
     it("an empty searchBuilder criteria array doesn't break the query", () => {
       const params = {"draw":"3","columns":[{"data":"song_id","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}},{"data":"Song title","name":"","searchable":"true","orderable":"false","search":{"value":"","regex":"false"}}],"start":"0","length":"12","search":{"value":"","regex":"false"},"searchBuilder":{"criteria":[],"logic":"AND"},"_":"1729017098493"};
       const { query, countQuery } = inst.toSQL(params);

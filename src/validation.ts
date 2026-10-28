@@ -29,16 +29,23 @@ const validateSearchBuilderShape = (value: unknown,
     throw new Error(`searchBuilder exceeds the maximum depth of ${maxDepth}`);
   if (!isRecord(value))
     throw new Error("searchBuilder must be an object");
-  if (value['logic'] !== 'AND' && value['logic'] !== 'OR')
-    throw new Error("searchBuilder.logic must be 'AND' or 'OR'");
   const criteria = value['criteria'];
-  //  NOTE  no `criteria` key at all is legitimate: an empty array can't
-  //        be encoded in a query string, so a GET of an empty
-  //        SearchBuilder arrives as `{ logic: 'AND' }` alone
+  //  NOTE  an empty group is legitimate and common, and arrives in
+  //        several shapes: SearchBuilder's getDetails() returns a bare
+  //        `{}` for a group with no criteria (so every JSON request from
+  //        a table with an idle SearchBuilder carries `searchBuilder: {}`),
+  //        an empty array can't be encoded in a query string (so a GET
+  //        arrives as `{ logic: 'AND' }` alone), and `criteria: []` is
+  //        what a hand-built request looks like. None of them filter
+  //        anything, so there is nothing to check --- `logic` included
   if (criteria === undefined)
     return;
   if (!Array.isArray(criteria))
     throw new Error("searchBuilder.criteria must be an array");
+  if (criteria.length === 0)
+    return;
+  if (value['logic'] !== 'AND' && value['logic'] !== 'OR')
+    throw new Error("searchBuilder.logic must be 'AND' or 'OR'");
   criteria.forEach((criterion, index) => {
     counter.value++;
     if (counter.value > maxCriteria)

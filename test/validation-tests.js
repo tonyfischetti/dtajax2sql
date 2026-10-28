@@ -53,6 +53,19 @@ describe('DataTables request validation', () => {
       p.searchBuilder = { logic: 'AND' };
       assert.doesNotThrow(() => inst.toSQL(p));
     });
+    it("a bare `{}` searchBuilder: what SearchBuilder's getDetails() sends over JSON for an idle filter", () => {
+      const p = validParams();
+      p.searchBuilder = {};
+      assert.doesNotThrow(() => inst.toSQL(p));
+      assert.doesNotThrow(() => inst.toSQLThroughFtTable('songs_fts', 'song_id', p));
+    });
+    it("an empty criteria array with no logic, and an empty `{}` group nested inside a real one", () => {
+      const p = validParams();
+      p.searchBuilder = { criteria: [] };
+      assert.doesNotThrow(() => inst.toSQL(p));
+      p.searchBuilder = { criteria: [{}, { condition: '=', data: 'Song ID', origData: 'song_id', type: 'num', value: ['1'], value1: '1' }], logic: 'AND' };
+      assert.doesNotThrow(() => inst.toSQL(p));
+    });
     it("an unfilled SearchBuilder row", () => {
       const p = validParams();
       p.searchBuilder = { criteria: [{ type: '' }], logic: 'AND' };
@@ -83,10 +96,11 @@ describe('DataTables request validation', () => {
       ['missing length',                       p => { delete p.length; return p; },                         /length/],
       ['order as a string',                    p => { p.order = 'nope'; return p; },                        /order must be an array/],
       ['searchBuilder as a string',            p => { p.searchBuilder = 'nope'; return p; },                /searchBuilder must be an object/],
-      ['searchBuilder with bogus logic',       p => { p.searchBuilder = { criteria: [], logic: 'XOR' }; return p; }, /searchBuilder\.logic/],
+      ['searchBuilder with bogus logic',       p => { p.searchBuilder = { criteria: [{ type: '' }], logic: 'XOR' }; return p; }, /searchBuilder\.logic/],
+      ['searchBuilder with criteria but no logic', p => { p.searchBuilder = { criteria: [{ type: '' }] }; return p; }, /searchBuilder\.logic/],
       ['criteria that is not an array',        p => { p.searchBuilder = { criteria: 'x', logic: 'AND' }; return p; }, /criteria must be an array/],
       ['a criterion that is not an object',    p => { p.searchBuilder = { criteria: ['x'], logic: 'AND' }; return p; }, /criterion 0 must be an object/],
-      ['a nested group with bogus logic',      p => { p.searchBuilder = { criteria: [{ criteria: [], logic: 'NAND' }], logic: 'AND' }; return p; }, /searchBuilder\.logic/]
+      ['a nested group with bogus logic',      p => { p.searchBuilder = { criteria: [{ criteria: [{ type: '' }], logic: 'NAND' }], logic: 'AND' }; return p; }, /searchBuilder\.logic/]
     ]) {
       it(name, () => {
         assert.throws(() => inst.toSQL(change(validParams())), message);
