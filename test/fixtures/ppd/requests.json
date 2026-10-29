@@ -1,0 +1,5906 @@
+{
+ "about": "Server-side DataTables requests captured verbatim from the NYPL Prints & Photographs Discovery tool (ppd: Next.js, datatables.net 2.3.8 with SearchBuilder, FixedColumns, Buttons, Select) while its real UI was driven in headless Chrome. Each `request` is the JSON body the browser POSTed, minus the `columns` array, which is identical for every request on a table and stored once under `tables`. `live` is what the server (running dtajax2sql 0.3.10) answered at capture time; `expect` is what the current library must do with the request against the schema in schema.sql.",
+ "capturedOn": "2026-10-29",
+ "tables": {
+  "main": {
+   "primaryKey": "Object_ID",
+   "columns": [
+    {
+     "data": "Object_ID",
+     "name": "",
+     "searchable": "false",
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Department",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Object_Number",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Title",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Display_Name",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Classification",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Role",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "First_Name",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Last_Name",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Medium",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Dated",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Display_Date",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Nationality",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Dimensions",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Catalogue_Raisonne",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Call_Number",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Home_Location",
+     "name": "",
+     "searchable": "false",
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Status_Flag",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Object_Count",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Begin_Date",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "End_Date",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Value",
+     "name": "",
+     "searchable": "false",
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Geo_Search_Value",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Collection",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Series",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Portfolio",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Descriptive_Title",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Folder",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Depicted_Location",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Non_Display_Title",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Book_or_Album_Title",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Link",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Institution",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "After",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Explicit_Artist",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Compiler",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Editor",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Photographer",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Printer",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Printmaker",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Publisher",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Sponsor",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Subject",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Country",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "State",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "County",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "City",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Locus",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Signed",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Inscribed",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Markings",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Credit_Line",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Chat",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Description",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Notes",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Provenance",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Pub_References",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Curatorial_Remarks",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Related_Works",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Public_Access",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Paper_File_Ref",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "User_Number1",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Object_State",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Hist_Attributions",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Bibliography",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Edition",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Paper_Support",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Is_Template",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Date_Remarks",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    }
+   ]
+  },
+  "constituents": {
+   "primaryKey": "Constituent_ID",
+   "columns": [
+    {
+     "data": "Constituent_ID",
+     "name": "",
+     "searchable": "false",
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Display_Name",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Display_Date",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Name_Title",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "First_Name",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Last_Name",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Suffix",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Institution",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Begin_Date",
+     "name": "",
+     "searchable": "false",
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "End_Date",
+     "name": "",
+     "searchable": "false",
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Nationality",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Alt_Names",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    }
+   ]
+  },
+  "exhibitions": {
+   "primaryKey": "Exhibition_ID",
+   "columns": [
+    {
+     "data": "Exhibition_ID",
+     "name": "",
+     "searchable": "false",
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Department",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Title",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Abbreviation",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Boiler_Text",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Begin_Year",
+     "name": "",
+     "searchable": "false",
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "End_Year",
+     "name": "",
+     "searchable": "false",
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Display_Date",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Remarks",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Project_Number",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Citation",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Organization_Credit_Line",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Sponsor_Credit_Line",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Sub_Title",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    },
+    {
+     "data": "Is_In_House",
+     "name": "",
+     "searchable": true,
+     "orderable": true,
+     "search": {
+      "value": "",
+      "regex": false,
+      "fixed": []
+     }
+    }
+   ]
+  }
+ },
+ "requests": [
+  {
+   "id": 1,
+   "label": "initial load",
+   "table": "main",
+   "request": {
+    "draw": 1,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 2,
+   "label": "initial load",
+   "table": "main",
+   "request": {
+    "draw": 1,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 3,
+   "label": "classic search \"kafka\"",
+   "table": "main",
+   "request": {
+    "draw": 2,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "kafka",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 16,
+    "error": null
+   }
+  },
+  {
+   "id": 4,
+   "label": "classic search \"Kafka, Franz\"",
+   "table": "main",
+   "request": {
+    "draw": 3,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "Kafka, Franz",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 2,
+    "error": null
+   }
+  },
+  {
+   "id": 5,
+   "label": "classic search \"100%\"",
+   "table": "main",
+   "request": {
+    "draw": 4,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "100%",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 65,
+    "error": null
+   }
+  },
+  {
+   "id": 6,
+   "label": "classic search \"R&B\"",
+   "table": "main",
+   "request": {
+    "draw": 5,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "R&B",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 0,
+    "error": null
+   }
+  },
+  {
+   "id": 7,
+   "label": "classic search \"o'keeffe\"",
+   "table": "main",
+   "request": {
+    "draw": 6,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "o'keeffe",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 12,
+    "error": null
+   }
+  },
+  {
+   "id": 8,
+   "label": "classic search \"jean-paul\"",
+   "table": "main",
+   "request": {
+    "draw": 7,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "jean-paul",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 19,
+    "error": null
+   }
+  },
+  {
+   "id": 9,
+   "label": "classic search \"José Guadalupe Posada\"",
+   "table": "main",
+   "request": {
+    "draw": 8,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "José Guadalupe Posada",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 770,
+    "error": null
+   }
+  },
+  {
+   "id": 10,
+   "label": "classic search \"Käthe Kollwitz\"",
+   "table": "main",
+   "request": {
+    "draw": 9,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "Käthe Kollwitz",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 64,
+    "error": null
+   }
+  },
+  {
+   "id": 11,
+   "label": "classic search \"%\"",
+   "table": "main",
+   "request": {
+    "draw": 10,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "%",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 225252,
+    "error": null
+   }
+  },
+  {
+   "id": 12,
+   "label": "classic search \"_\"",
+   "table": "main",
+   "request": {
+    "draw": 11,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "_",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 47292,
+    "error": null
+   }
+  },
+  {
+   "id": 13,
+   "label": "classic search \"\\\"\"",
+   "table": "main",
+   "request": {
+    "draw": 12,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "\"",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 36371,
+    "error": null
+   }
+  },
+  {
+   "id": 14,
+   "label": "classic search \"\\\\\"",
+   "table": "main",
+   "request": {
+    "draw": 13,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "\\",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 6,
+    "error": null
+   }
+  },
+  {
+   "id": 15,
+   "label": "classic search \";\"",
+   "table": "main",
+   "request": {
+    "draw": 14,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": ";",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 40528,
+    "error": null
+   }
+  },
+  {
+   "id": 16,
+   "label": "classic search \"' OR 1=1 --\"",
+   "table": "main",
+   "request": {
+    "draw": 15,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "' OR 1=1 --",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 0,
+    "error": null
+   }
+  },
+  {
+   "id": 17,
+   "label": "classic search \"  kafka  \"",
+   "table": "main",
+   "request": {
+    "draw": 16,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "  kafka  ",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 5,
+    "error": null
+   }
+  },
+  {
+   "id": 18,
+   "label": "classic search \"kafka \"",
+   "table": "main",
+   "request": {
+    "draw": 17,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "kafka ",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 16,
+    "error": null
+   }
+  },
+  {
+   "id": 19,
+   "label": "classic search \" kafka\"",
+   "table": "main",
+   "request": {
+    "draw": 18,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": " kafka",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 16,
+    "error": null
+   }
+  },
+  {
+   "id": 20,
+   "label": "classic search \"kafka  franz\"",
+   "table": "main",
+   "request": {
+    "draw": 19,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "kafka  franz",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 0,
+    "error": null
+   }
+  },
+  {
+   "id": 21,
+   "label": "classic search \"\\tkafka\"",
+   "table": "main",
+   "request": {
+    "draw": 20,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "\tkafka",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 16,
+    "error": null
+   }
+  },
+  {
+   "id": 22,
+   "label": "classic search \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
+   "table": "main",
+   "request": {
+    "draw": 21,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 0,
+    "error": null
+   }
+  },
+  {
+   "id": 23,
+   "label": "classic search \"🎨\"",
+   "table": "main",
+   "request": {
+    "draw": 22,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "🎨",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 0,
+    "error": null
+   }
+  },
+  {
+   "id": 24,
+   "label": "classic search \"kafka franz\"",
+   "table": "main",
+   "request": {
+    "draw": 23,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "kafka franz",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 0,
+    "error": null
+   }
+  },
+  {
+   "id": 25,
+   "label": "classic search \"Title:kafka\"",
+   "table": "main",
+   "request": {
+    "draw": 24,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "Title:kafka",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 0,
+    "error": null
+   }
+  },
+  {
+   "id": 26,
+   "label": "classic search cleared",
+   "table": "main",
+   "request": {
+    "draw": 25,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 27,
+   "label": "search \"kafka\" then switch to ftglobal",
+   "table": "main",
+   "request": {
+    "draw": 26,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "kafka",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 16,
+    "error": null
+   }
+  },
+  {
+   "id": 28,
+   "label": "switch mode to ftglobal with \"kafka\"",
+   "table": "main",
+   "request": {
+    "draw": 27,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "kafka",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 12,
+    "error": null
+   }
+  },
+  {
+   "id": 29,
+   "label": "ftglobal search \"kaf*\"",
+   "table": "main",
+   "request": {
+    "draw": 28,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "kaf*",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 69,
+    "error": null
+   }
+  },
+  {
+   "id": 30,
+   "label": "ftglobal search \"kafka OR proust\"",
+   "table": "main",
+   "request": {
+    "draw": 29,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "kafka OR proust",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 18,
+    "error": null
+   }
+  },
+  {
+   "id": 31,
+   "label": "ftglobal search \"\\\"franz kafka\\\"\"",
+   "table": "main",
+   "request": {
+    "draw": 30,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "\"franz kafka\"",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 9,
+    "error": null
+   }
+  },
+  {
+   "id": 32,
+   "label": "ftglobal search \"Title:kafka\"",
+   "table": "main",
+   "request": {
+    "draw": 31,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "Title:kafka",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 5,
+    "error": null
+   }
+  },
+  {
+   "id": 33,
+   "label": "ftglobal search \"Display_Name:goya\"",
+   "table": "main",
+   "request": {
+    "draw": 32,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "Display_Name:goya",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 10,
+    "error": null
+   }
+  },
+  {
+   "id": 34,
+   "label": "ftglobal search \"(kafka OR proust) NOT trial\"",
+   "table": "main",
+   "request": {
+    "draw": 33,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "(kafka OR proust) NOT trial",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 18,
+    "error": null
+   }
+  },
+  {
+   "id": 35,
+   "label": "ftglobal search \"NOT kafka\"",
+   "table": "main",
+   "request": {
+    "draw": 34,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "NOT kafka",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 500,
+    "error": "There's a syntax error in your enhanced search!"
+   }
+  },
+  {
+   "id": 36,
+   "label": "ftglobal search \"kafka AND\"",
+   "table": "main",
+   "request": {
+    "draw": 35,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "kafka AND",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 500,
+    "error": "There's a syntax error in your enhanced search!"
+   }
+  },
+  {
+   "id": 37,
+   "label": "ftglobal search \"100%\"",
+   "table": "main",
+   "request": {
+    "draw": 36,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "100%",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 500,
+    "error": "There's a syntax error in your enhanced search!"
+   }
+  },
+  {
+   "id": 38,
+   "label": "ftglobal search \"R&B\"",
+   "table": "main",
+   "request": {
+    "draw": 37,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "R&B",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 500,
+    "error": "There's a syntax error in your enhanced search!"
+   }
+  },
+  {
+   "id": 39,
+   "label": "ftglobal search \"o'keeffe\"",
+   "table": "main",
+   "request": {
+    "draw": 38,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "o'keeffe",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 0,
+    "error": null
+   }
+  },
+  {
+   "id": 40,
+   "label": "ftglobal search \"jean-paul\"",
+   "table": "main",
+   "request": {
+    "draw": 39,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "jean-paul",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 77,
+    "error": null
+   }
+  },
+  {
+   "id": 41,
+   "label": "ftglobal search \"*69\"",
+   "table": "main",
+   "request": {
+    "draw": 40,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "*69",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 500,
+    "error": "unknown special query: 69"
+   }
+  },
+  {
+   "id": 42,
+   "label": "ftglobal search \"kafka-\"",
+   "table": "main",
+   "request": {
+    "draw": 41,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "kafka-",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 12,
+    "error": null
+   }
+  },
+  {
+   "id": 43,
+   "label": "ftglobal search \"\\\"unterminated\"",
+   "table": "main",
+   "request": {
+    "draw": 42,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "\"unterminated",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 500,
+    "error": "unterminated string"
+   }
+  },
+  {
+   "id": 44,
+   "label": "ftglobal search \"goya^\"",
+   "table": "main",
+   "request": {
+    "draw": 43,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "goya^",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 500,
+    "error": "There's a syntax error in your enhanced search!"
+   }
+  },
+  {
+   "id": 45,
+   "label": "ftglobal search \"^goya\"",
+   "table": "main",
+   "request": {
+    "draw": 44,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "^goya",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 12,
+    "error": null
+   }
+  },
+  {
+   "id": 46,
+   "label": "ftglobal search \"Foo:bar\"",
+   "table": "main",
+   "request": {
+    "draw": 45,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "Foo:bar",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "no-such-column",
+   "live": {
+    "status": 500,
+    "error": "It looks like you're trying to search for a column that's not included in the enhanced search modes."
+   }
+  },
+  {
+   "id": 47,
+   "label": "ftglobal search \"kafka franz\"",
+   "table": "main",
+   "request": {
+    "draw": 46,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "kafka franz",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 9,
+    "error": null
+   }
+  },
+  {
+   "id": 48,
+   "label": "ftglobal search \" kafka \"",
+   "table": "main",
+   "request": {
+    "draw": 47,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": " kafka ",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 12,
+    "error": null
+   }
+  },
+  {
+   "id": 49,
+   "label": "ftglobal search \"José Guadalupe Posada\"",
+   "table": "main",
+   "request": {
+    "draw": 48,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "José Guadalupe Posada",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 707,
+    "error": null
+   }
+  },
+  {
+   "id": 50,
+   "label": "ftglobal search \"\"",
+   "table": "main",
+   "request": {
+    "draw": 49,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 51,
+   "label": "switch mode to fttitles (empty search)",
+   "table": "main",
+   "request": {
+    "draw": 50,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "fttitles"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 52,
+   "label": "fttitles search \"kafka\"",
+   "table": "main",
+   "request": {
+    "draw": 51,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "kafka",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "fttitles"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 5,
+    "error": null
+   }
+  },
+  {
+   "id": 53,
+   "label": "fttitles search \"*69\"",
+   "table": "main",
+   "request": {
+    "draw": 52,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "*69",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "fttitles"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 500,
+    "error": "unknown special query: 69"
+   }
+  },
+  {
+   "id": 54,
+   "label": "fttitles search \"Title:kafka\"",
+   "table": "main",
+   "request": {
+    "draw": 53,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "Title:kafka",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "fttitles"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 5,
+    "error": null
+   }
+  },
+  {
+   "id": 55,
+   "label": "fttitles search \"Display_Name:goya\"",
+   "table": "main",
+   "request": {
+    "draw": 54,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "Display_Name:goya",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "fttitles"
+   },
+   "expect": "no-such-column",
+   "live": {
+    "status": 500,
+    "error": "It looks like you're trying to search for a column that's not included in the enhanced search modes."
+   }
+  },
+  {
+   "id": 56,
+   "label": "fttitles search \"\\\"the trial\\\"\"",
+   "table": "main",
+   "request": {
+    "draw": 55,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "\"the trial\"",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "fttitles"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 11,
+    "error": null
+   }
+  },
+  {
+   "id": 57,
+   "label": "switch mode to ftconstituents with \"the trial\"",
+   "table": "main",
+   "request": {
+    "draw": 56,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "\"the trial\"",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftconstituents"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 0,
+    "error": null
+   }
+  },
+  {
+   "id": 58,
+   "label": "ftconstituents search \"goya\"",
+   "table": "main",
+   "request": {
+    "draw": 57,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "goya",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftconstituents"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 12,
+    "error": null
+   }
+  },
+  {
+   "id": 59,
+   "label": "ftconstituents search \"Display_Name:goya\"",
+   "table": "main",
+   "request": {
+    "draw": 58,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "Display_Name:goya",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftconstituents"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 10,
+    "error": null
+   }
+  },
+  {
+   "id": 60,
+   "label": "ftconstituents search \"Title:kafka\"",
+   "table": "main",
+   "request": {
+    "draw": 59,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "Title:kafka",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftconstituents"
+   },
+   "expect": "no-such-column",
+   "live": {
+    "status": 500,
+    "error": "It looks like you're trying to search for a column that's not included in the enhanced search modes."
+   }
+  },
+  {
+   "id": 61,
+   "label": "ftconstituents search \"go*\"",
+   "table": "main",
+   "request": {
+    "draw": 60,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "go*",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftconstituents"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 3300,
+    "error": null
+   }
+  },
+  {
+   "id": 62,
+   "label": "ftconstituents search \"posada OR goya\"",
+   "table": "main",
+   "request": {
+    "draw": 61,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "posada OR goya",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "ftconstituents"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 718,
+    "error": null
+   }
+  },
+  {
+   "id": 63,
+   "label": "switch mode back to classic with \"posada OR goya\"",
+   "table": "main",
+   "request": {
+    "draw": 62,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "posada OR goya",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 0,
+    "error": null
+   }
+  },
+  {
+   "id": 64,
+   "label": "classic search cleared",
+   "table": "main",
+   "request": {
+    "draw": 63,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 65,
+   "label": "sort Title asc",
+   "table": "main",
+   "request": {
+    "draw": 64,
+    "order": [
+     {
+      "column": 3,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 66,
+   "label": "sort Title desc",
+   "table": "main",
+   "request": {
+    "draw": 65,
+    "order": [
+     {
+      "column": 3,
+      "dir": "desc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 67,
+   "label": "shift-click Dept. (multi-sort)",
+   "table": "main",
+   "request": {
+    "draw": 66,
+    "order": [
+     {
+      "column": 3,
+      "dir": "desc",
+      "name": ""
+     },
+     {
+      "column": 1,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 68,
+   "label": "shift-click Dept. again (desc)",
+   "table": "main",
+   "request": {
+    "draw": 67,
+    "order": [
+     {
+      "column": 3,
+      "dir": "desc",
+      "name": ""
+     },
+     {
+      "column": 1,
+      "dir": "desc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 69,
+   "label": "sort Display Name asc (single)",
+   "table": "main",
+   "request": {
+    "draw": 68,
+    "order": [
+     {
+      "column": 4,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 70,
+   "label": "sort OID asc (back to default)",
+   "table": "main",
+   "request": {
+    "draw": 69,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 71,
+   "label": "page length 25",
+   "table": "main",
+   "request": {
+    "draw": 70,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 25,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 72,
+   "label": "page length 100",
+   "table": "main",
+   "request": {
+    "draw": 71,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 100,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 73,
+   "label": "page length 1000",
+   "table": "main",
+   "request": {
+    "draw": 72,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 1000,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 74,
+   "label": "page length 10000",
+   "table": "main",
+   "request": {
+    "draw": 73,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10000,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "error": null
+   }
+  },
+  {
+   "id": 75,
+   "label": "page length 10",
+   "table": "main",
+   "request": {
+    "draw": 74,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 76,
+   "label": "paging: next",
+   "table": "main",
+   "request": {
+    "draw": 75,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 10,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 77,
+   "label": "paging: next again",
+   "table": "main",
+   "request": {
+    "draw": 76,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 20,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 78,
+   "label": "paging: page 5",
+   "table": "main",
+   "request": {
+    "draw": 77,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 40,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 79,
+   "label": "paging: last",
+   "table": "main",
+   "request": {
+    "draw": 78,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 448100,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 80,
+   "label": "paging: previous",
+   "table": "main",
+   "request": {
+    "draw": 79,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 448090,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 81,
+   "label": "paging: first",
+   "table": "main",
+   "request": {
+    "draw": 80,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 82,
+   "label": "search \"kafka\" then page 2",
+   "table": "main",
+   "request": {
+    "draw": 81,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "kafka",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 16,
+    "error": null
+   }
+  },
+  {
+   "id": 83,
+   "label": "paging: page 2 of \"kafka\"",
+   "table": "main",
+   "request": {
+    "draw": 82,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 10,
+    "length": 10,
+    "search": {
+     "value": "kafka",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 16,
+    "error": null
+   }
+  },
+  {
+   "id": 84,
+   "label": "search cleared",
+   "table": "main",
+   "request": {
+    "draw": 83,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 85,
+   "label": "SB: Title contains kafka",
+   "table": "main",
+   "request": {
+    "draw": 84,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "condition": "contains",
+       "data": "Title",
+       "origData": "Title",
+       "type": "string",
+       "value": [
+        "kafka"
+       ],
+       "value1": "kafka"
+      }
+     ],
+     "logic": "AND"
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 5,
+    "error": null
+   }
+  },
+  {
+   "id": 86,
+   "label": "SB: + Display Name starts with \"Kafka\"",
+   "table": "main",
+   "request": {
+    "draw": 85,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "condition": "contains",
+       "data": "Title",
+       "origData": "Title",
+       "type": "string",
+       "value": [
+        "kafka"
+       ],
+       "value1": "kafka"
+      },
+      {
+       "condition": "starts",
+       "data": "Display Name",
+       "origData": "Display_Name",
+       "type": "string-utf8",
+       "value": [
+        "Kafka"
+       ],
+       "value1": "Kafka"
+      }
+     ],
+     "logic": "AND"
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 0,
+    "error": null
+   }
+  },
+  {
+   "id": 87,
+   "label": "SB: toggle logic to OR",
+   "table": "main",
+   "request": {
+    "draw": 86,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "condition": "contains",
+       "data": "Title",
+       "origData": "Title",
+       "type": "string",
+       "value": [
+        "kafka"
+       ],
+       "value1": "kafka"
+      },
+      {
+       "condition": "starts",
+       "data": "Display Name",
+       "origData": "Display_Name",
+       "type": "string-utf8",
+       "value": [
+        "Kafka"
+       ],
+       "value1": "Kafka"
+      }
+     ],
+     "logic": "OR"
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 5,
+    "error": null
+   }
+  },
+  {
+   "id": 88,
+   "label": "SB: + Begin Date between 1900 and 1950 (numeric)",
+   "table": "main",
+   "request": {
+    "draw": 87,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "condition": "contains",
+       "data": "Title",
+       "origData": "Title",
+       "type": "string",
+       "value": [
+        "kafka"
+       ],
+       "value1": "kafka"
+      },
+      {
+       "condition": "starts",
+       "data": "Display Name",
+       "origData": "Display_Name",
+       "type": "string-utf8",
+       "value": [
+        "Kafka"
+       ],
+       "value1": "Kafka"
+      },
+      {
+       "condition": "between",
+       "data": "Begin Date",
+       "origData": "Begin_Date",
+       "type": "num",
+       "value": [
+        "1900",
+        "1950"
+       ],
+       "value1": "1900",
+       "value2": "1950"
+      }
+     ],
+     "logic": "OR"
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 129018,
+    "error": null
+   }
+  },
+  {
+   "id": 89,
+   "label": "SB: + Medium ends with \"print\"",
+   "table": "main",
+   "request": {
+    "draw": 88,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "condition": "contains",
+       "data": "Title",
+       "origData": "Title",
+       "type": "string",
+       "value": [
+        "kafka"
+       ],
+       "value1": "kafka"
+      },
+      {
+       "condition": "starts",
+       "data": "Display Name",
+       "origData": "Display_Name",
+       "type": "string-utf8",
+       "value": [
+        "Kafka"
+       ],
+       "value1": "Kafka"
+      },
+      {
+       "condition": "between",
+       "data": "Begin Date",
+       "origData": "Begin_Date",
+       "type": "num",
+       "value": [
+        "1900",
+        "1950"
+       ],
+       "value1": "1900",
+       "value2": "1950"
+      },
+      {
+       "condition": "ends",
+       "data": "Medium",
+       "origData": "Medium",
+       "type": "string",
+       "value": [
+        "print"
+       ],
+       "value1": "print"
+      }
+     ],
+     "logic": "OR"
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 270499,
+    "error": null
+   }
+  },
+  {
+   "id": 90,
+   "label": "SB: + Classification not contains \"photo\"",
+   "table": "main",
+   "request": {
+    "draw": 89,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "condition": "contains",
+       "data": "Title",
+       "origData": "Title",
+       "type": "string",
+       "value": [
+        "kafka"
+       ],
+       "value1": "kafka"
+      },
+      {
+       "condition": "starts",
+       "data": "Display Name",
+       "origData": "Display_Name",
+       "type": "string-utf8",
+       "value": [
+        "Kafka"
+       ],
+       "value1": "Kafka"
+      },
+      {
+       "condition": "between",
+       "data": "Begin Date",
+       "origData": "Begin_Date",
+       "type": "num",
+       "value": [
+        "1900",
+        "1950"
+       ],
+       "value1": "1900",
+       "value2": "1950"
+      },
+      {
+       "condition": "ends",
+       "data": "Medium",
+       "origData": "Medium",
+       "type": "string",
+       "value": [
+        "print"
+       ],
+       "value1": "print"
+      },
+      {
+       "condition": "!contains",
+       "data": "Classification",
+       "origData": "Classification",
+       "type": "string",
+       "value": [
+        "photo"
+       ],
+       "value1": "photo"
+      }
+     ],
+     "logic": "OR"
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 438322,
+    "error": null
+   }
+  },
+  {
+   "id": 91,
+   "label": "SB: global search \"goya\" on top of 5 criteria",
+   "table": "main",
+   "request": {
+    "draw": 90,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "goya",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "condition": "contains",
+       "data": "Title",
+       "origData": "Title",
+       "type": "string",
+       "value": [
+        "kafka"
+       ],
+       "value1": "kafka"
+      },
+      {
+       "condition": "starts",
+       "data": "Display Name",
+       "origData": "Display_Name",
+       "type": "string-utf8",
+       "value": [
+        "Kafka"
+       ],
+       "value1": "Kafka"
+      },
+      {
+       "condition": "between",
+       "data": "Begin Date",
+       "origData": "Begin_Date",
+       "type": "num",
+       "value": [
+        "1900",
+        "1950"
+       ],
+       "value1": "1900",
+       "value2": "1950"
+      },
+      {
+       "condition": "ends",
+       "data": "Medium",
+       "origData": "Medium",
+       "type": "string",
+       "value": [
+        "print"
+       ],
+       "value1": "print"
+      },
+      {
+       "condition": "!contains",
+       "data": "Classification",
+       "origData": "Classification",
+       "type": "string",
+       "value": [
+        "photo"
+       ],
+       "value1": "photo"
+      }
+     ],
+     "logic": "OR"
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 40,
+    "error": null
+   }
+  },
+  {
+   "id": 92,
+   "label": "SB: sort Title desc on top",
+   "table": "main",
+   "request": {
+    "draw": 91,
+    "order": [
+     {
+      "column": 3,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "goya",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "condition": "contains",
+       "data": "Title",
+       "origData": "Title",
+       "type": "string",
+       "value": [
+        "kafka"
+       ],
+       "value1": "kafka"
+      },
+      {
+       "condition": "starts",
+       "data": "Display Name",
+       "origData": "Display_Name",
+       "type": "string-utf8",
+       "value": [
+        "Kafka"
+       ],
+       "value1": "Kafka"
+      },
+      {
+       "condition": "between",
+       "data": "Begin Date",
+       "origData": "Begin_Date",
+       "type": "num",
+       "value": [
+        "1900",
+        "1950"
+       ],
+       "value1": "1900",
+       "value2": "1950"
+      },
+      {
+       "condition": "ends",
+       "data": "Medium",
+       "origData": "Medium",
+       "type": "string",
+       "value": [
+        "print"
+       ],
+       "value1": "print"
+      },
+      {
+       "condition": "!contains",
+       "data": "Classification",
+       "origData": "Classification",
+       "type": "string",
+       "value": [
+        "photo"
+       ],
+       "value1": "photo"
+      }
+     ],
+     "logic": "OR"
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 40,
+    "error": null
+   }
+  },
+  {
+   "id": 93,
+   "label": "SB: page length 25 on top",
+   "table": "main",
+   "request": {
+    "draw": 92,
+    "order": [
+     {
+      "column": 3,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 25,
+    "search": {
+     "value": "goya",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "condition": "contains",
+       "data": "Title",
+       "origData": "Title",
+       "type": "string",
+       "value": [
+        "kafka"
+       ],
+       "value1": "kafka"
+      },
+      {
+       "condition": "starts",
+       "data": "Display Name",
+       "origData": "Display_Name",
+       "type": "string-utf8",
+       "value": [
+        "Kafka"
+       ],
+       "value1": "Kafka"
+      },
+      {
+       "condition": "between",
+       "data": "Begin Date",
+       "origData": "Begin_Date",
+       "type": "num",
+       "value": [
+        "1900",
+        "1950"
+       ],
+       "value1": "1900",
+       "value2": "1950"
+      },
+      {
+       "condition": "ends",
+       "data": "Medium",
+       "origData": "Medium",
+       "type": "string",
+       "value": [
+        "print"
+       ],
+       "value1": "print"
+      },
+      {
+       "condition": "!contains",
+       "data": "Classification",
+       "origData": "Classification",
+       "type": "string",
+       "value": [
+        "photo"
+       ],
+       "value1": "photo"
+      }
+     ],
+     "logic": "OR"
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 40,
+    "error": null
+   }
+  },
+  {
+   "id": 94,
+   "label": "SB: switch to ftglobal with criteria + \"goya\"",
+   "table": "main",
+   "request": {
+    "draw": 93,
+    "order": [
+     {
+      "column": 3,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 25,
+    "search": {
+     "value": "goya",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "condition": "contains",
+       "data": "Title",
+       "origData": "Title",
+       "type": "string",
+       "value": [
+        "kafka"
+       ],
+       "value1": "kafka"
+      },
+      {
+       "condition": "starts",
+       "data": "Display Name",
+       "origData": "Display_Name",
+       "type": "string-utf8",
+       "value": [
+        "Kafka"
+       ],
+       "value1": "Kafka"
+      },
+      {
+       "condition": "between",
+       "data": "Begin Date",
+       "origData": "Begin_Date",
+       "type": "num",
+       "value": [
+        "1900",
+        "1950"
+       ],
+       "value1": "1900",
+       "value2": "1950"
+      },
+      {
+       "condition": "ends",
+       "data": "Medium",
+       "origData": "Medium",
+       "type": "string",
+       "value": [
+        "print"
+       ],
+       "value1": "print"
+      },
+      {
+       "condition": "!contains",
+       "data": "Classification",
+       "origData": "Classification",
+       "type": "string",
+       "value": [
+        "photo"
+       ],
+       "value1": "photo"
+      }
+     ],
+     "logic": "OR"
+    },
+    "globalSearchMode": "ftglobal"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 20,
+    "error": null
+   }
+  },
+  {
+   "id": 95,
+   "label": "SB: back to classic",
+   "table": "main",
+   "request": {
+    "draw": 94,
+    "order": [
+     {
+      "column": 3,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 25,
+    "search": {
+     "value": "goya",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "condition": "contains",
+       "data": "Title",
+       "origData": "Title",
+       "type": "string",
+       "value": [
+        "kafka"
+       ],
+       "value1": "kafka"
+      },
+      {
+       "condition": "starts",
+       "data": "Display Name",
+       "origData": "Display_Name",
+       "type": "string-utf8",
+       "value": [
+        "Kafka"
+       ],
+       "value1": "Kafka"
+      },
+      {
+       "condition": "between",
+       "data": "Begin Date",
+       "origData": "Begin_Date",
+       "type": "num",
+       "value": [
+        "1900",
+        "1950"
+       ],
+       "value1": "1900",
+       "value2": "1950"
+      },
+      {
+       "condition": "ends",
+       "data": "Medium",
+       "origData": "Medium",
+       "type": "string",
+       "value": [
+        "print"
+       ],
+       "value1": "print"
+      },
+      {
+       "condition": "!contains",
+       "data": "Classification",
+       "origData": "Classification",
+       "type": "string",
+       "value": [
+        "photo"
+       ],
+       "value1": "photo"
+      }
+     ],
+     "logic": "OR"
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 40,
+    "error": null
+   }
+  },
+  {
+   "id": 96,
+   "label": "SB: delete the first criterion",
+   "table": "main",
+   "request": {
+    "draw": 95,
+    "order": [
+     {
+      "column": 3,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 25,
+    "search": {
+     "value": "goya",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "condition": "starts",
+       "data": "Display Name",
+       "origData": "Display_Name",
+       "type": "string-utf8",
+       "value": [
+        "Kafka"
+       ],
+       "value1": "Kafka"
+      },
+      {
+       "condition": "between",
+       "data": "Begin Date",
+       "origData": "Begin_Date",
+       "type": "num",
+       "value": [
+        "1900",
+        "1950"
+       ],
+       "value1": "1900",
+       "value2": "1950"
+      },
+      {
+       "condition": "ends",
+       "data": "Medium",
+       "origData": "Medium",
+       "type": "string",
+       "value": [
+        "print"
+       ],
+       "value1": "print"
+      },
+      {
+       "condition": "!contains",
+       "data": "Classification",
+       "origData": "Classification",
+       "type": "string",
+       "value": [
+        "photo"
+       ],
+       "value1": "photo"
+      }
+     ],
+     "logic": "OR"
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 40,
+    "error": null
+   }
+  },
+  {
+   "id": 97,
+   "label": "SB: add a condition inside the sub-group (Country contains \"France\")",
+   "table": "main",
+   "request": {
+    "draw": 96,
+    "order": [
+     {
+      "column": 3,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 25,
+    "search": {
+     "value": "goya",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "criteria": [
+        {
+         "condition": "starts",
+         "data": "Display Name",
+         "origData": "Display_Name",
+         "type": "string-utf8",
+         "value": [
+          "Kafka"
+         ],
+         "value1": "Kafka"
+        },
+        {
+         "condition": "contains",
+         "data": "Country",
+         "origData": "Country",
+         "type": "string",
+         "value": [
+          "France"
+         ],
+         "value1": "France"
+        }
+       ],
+       "logic": "AND"
+      },
+      {
+       "condition": "between",
+       "data": "Begin Date",
+       "origData": "Begin_Date",
+       "type": "num",
+       "value": [
+        "1900",
+        "1950"
+       ],
+       "value1": "1900",
+       "value2": "1950"
+      },
+      {
+       "condition": "ends",
+       "data": "Medium",
+       "origData": "Medium",
+       "type": "string",
+       "value": [
+        "print"
+       ],
+       "value1": "print"
+      },
+      {
+       "condition": "!contains",
+       "data": "Classification",
+       "origData": "Classification",
+       "type": "string",
+       "value": [
+        "photo"
+       ],
+       "value1": "photo"
+      }
+     ],
+     "logic": "OR"
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 40,
+    "error": null
+   }
+  },
+  {
+   "id": 98,
+   "label": "SB: toggle the sub-group logic to OR",
+   "table": "main",
+   "request": {
+    "draw": 97,
+    "order": [
+     {
+      "column": 3,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 25,
+    "search": {
+     "value": "goya",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "criteria": [
+        {
+         "condition": "starts",
+         "data": "Display Name",
+         "origData": "Display_Name",
+         "type": "string-utf8",
+         "value": [
+          "Kafka"
+         ],
+         "value1": "Kafka"
+        },
+        {
+         "condition": "contains",
+         "data": "Country",
+         "origData": "Country",
+         "type": "string",
+         "value": [
+          "France"
+         ],
+         "value1": "France"
+        }
+       ],
+       "logic": "OR"
+      },
+      {
+       "condition": "between",
+       "data": "Begin Date",
+       "origData": "Begin_Date",
+       "type": "num",
+       "value": [
+        "1900",
+        "1950"
+       ],
+       "value1": "1900",
+       "value2": "1950"
+      },
+      {
+       "condition": "ends",
+       "data": "Medium",
+       "origData": "Medium",
+       "type": "string",
+       "value": [
+        "print"
+       ],
+       "value1": "print"
+      },
+      {
+       "condition": "!contains",
+       "data": "Classification",
+       "origData": "Classification",
+       "type": "string",
+       "value": [
+        "photo"
+       ],
+       "value1": "photo"
+      }
+     ],
+     "logic": "OR"
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 40,
+    "error": null
+   }
+  },
+  {
+   "id": 99,
+   "label": "SB: unfilled row present, global search \"posada\"",
+   "table": "main",
+   "request": {
+    "draw": 98,
+    "order": [
+     {
+      "column": 3,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 25,
+    "search": {
+     "value": "posada",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "criteria": [
+        {
+         "condition": "starts",
+         "data": "Display Name",
+         "origData": "Display_Name",
+         "type": "string-utf8",
+         "value": [
+          "Kafka"
+         ],
+         "value1": "Kafka"
+        },
+        {
+         "condition": "contains",
+         "data": "Country",
+         "origData": "Country",
+         "type": "string",
+         "value": [
+          "France"
+         ],
+         "value1": "France"
+        }
+       ],
+       "logic": "OR"
+      },
+      {
+       "condition": "between",
+       "data": "Begin Date",
+       "origData": "Begin_Date",
+       "type": "num",
+       "value": [
+        "1900",
+        "1950"
+       ],
+       "value1": "1900",
+       "value2": "1950"
+      },
+      {
+       "condition": "ends",
+       "data": "Medium",
+       "origData": "Medium",
+       "type": "string",
+       "value": [
+        "print"
+       ],
+       "value1": "print"
+      },
+      {
+       "condition": "!contains",
+       "data": "Classification",
+       "origData": "Classification",
+       "type": "string",
+       "value": [
+        "photo"
+       ],
+       "value1": "photo"
+      },
+      {
+       "type": "",
+       "value": []
+      }
+     ],
+     "logic": "OR"
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 782,
+    "error": null
+   }
+  },
+  {
+   "id": 100,
+   "label": "SB: Dated is null",
+   "table": "main",
+   "request": {
+    "draw": 99,
+    "order": [
+     {
+      "column": 3,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 25,
+    "search": {
+     "value": "posada",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "criteria": [
+        {
+         "condition": "starts",
+         "data": "Display Name",
+         "origData": "Display_Name",
+         "type": "string-utf8",
+         "value": [
+          "Kafka"
+         ],
+         "value1": "Kafka"
+        },
+        {
+         "condition": "contains",
+         "data": "Country",
+         "origData": "Country",
+         "type": "string",
+         "value": [
+          "France"
+         ],
+         "value1": "France"
+        }
+       ],
+       "logic": "OR"
+      },
+      {
+       "condition": "between",
+       "data": "Begin Date",
+       "origData": "Begin_Date",
+       "type": "num",
+       "value": [
+        "1900",
+        "1950"
+       ],
+       "value1": "1900",
+       "value2": "1950"
+      },
+      {
+       "condition": "ends",
+       "data": "Medium",
+       "origData": "Medium",
+       "type": "string",
+       "value": [
+        "print"
+       ],
+       "value1": "print"
+      },
+      {
+       "condition": "!contains",
+       "data": "Classification",
+       "origData": "Classification",
+       "type": "string",
+       "value": [
+        "photo"
+       ],
+       "value1": "photo"
+      },
+      {
+       "type": "",
+       "value": []
+      },
+      {
+       "condition": "null",
+       "data": "Dated",
+       "origData": "Dated",
+       "type": "string",
+       "value": []
+      }
+     ],
+     "logic": "OR"
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 782,
+    "error": null
+   }
+  },
+  {
+   "id": 101,
+   "label": "SB: clear all",
+   "table": "main",
+   "request": {
+    "draw": 100,
+    "order": [
+     {
+      "column": 3,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 25,
+    "search": {
+     "value": "posada",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 782,
+    "error": null
+   }
+  },
+  {
+   "id": 102,
+   "label": "search cleared after SB clear",
+   "table": "main",
+   "request": {
+    "draw": 101,
+    "order": [
+     {
+      "column": 3,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 25,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 103,
+   "label": "SB: Object Count = 1 (numeric equals)",
+   "table": "main",
+   "request": {
+    "draw": 102,
+    "order": [
+     {
+      "column": 3,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 25,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "condition": "=",
+       "data": "Object Count",
+       "origData": "Object_Count",
+       "type": "num",
+       "value": [
+        "1"
+       ],
+       "value1": "1"
+      }
+     ],
+     "logic": "AND"
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 439600,
+    "error": null
+   }
+  },
+  {
+   "id": 104,
+   "label": "SB: + Begin Date > 1900 (numeric)",
+   "table": "main",
+   "request": {
+    "draw": 103,
+    "order": [
+     {
+      "column": 3,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 25,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "condition": "=",
+       "data": "Object Count",
+       "origData": "Object_Count",
+       "type": "num",
+       "value": [
+        "1"
+       ],
+       "value1": "1"
+      },
+      {
+       "condition": ">",
+       "data": "Begin Date",
+       "origData": "Begin_Date",
+       "type": "num",
+       "value": [
+        "1900"
+       ],
+       "value1": "1900"
+      }
+     ],
+     "logic": "AND"
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 162238,
+    "error": null
+   }
+  },
+  {
+   "id": 105,
+   "label": "SB: + Value contains \"5\" (typed as string by DataTables)",
+   "table": "main",
+   "request": {
+    "draw": 104,
+    "order": [
+     {
+      "column": 3,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 25,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "condition": "=",
+       "data": "Object Count",
+       "origData": "Object_Count",
+       "type": "num",
+       "value": [
+        "1"
+       ],
+       "value1": "1"
+      },
+      {
+       "condition": ">",
+       "data": "Begin Date",
+       "origData": "Begin_Date",
+       "type": "num",
+       "value": [
+        "1900"
+       ],
+       "value1": "1900"
+      },
+      {
+       "condition": "contains",
+       "data": "Value",
+       "origData": "Value",
+       "type": "string",
+       "value": [
+        "5"
+       ],
+       "value1": "5"
+      }
+     ],
+     "logic": "AND"
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 6773,
+    "error": null
+   }
+  },
+  {
+   "id": 106,
+   "label": "SB: + Title = exact (string equals via select?)",
+   "table": "main",
+   "request": {
+    "draw": 105,
+    "order": [
+     {
+      "column": 3,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 25,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "condition": "=",
+       "data": "Object Count",
+       "origData": "Object_Count",
+       "type": "num",
+       "value": [
+        "1"
+       ],
+       "value1": "1"
+      },
+      {
+       "condition": ">",
+       "data": "Begin Date",
+       "origData": "Begin_Date",
+       "type": "num",
+       "value": [
+        "1900"
+       ],
+       "value1": "1900"
+      },
+      {
+       "condition": "contains",
+       "data": "Value",
+       "origData": "Value",
+       "type": "string",
+       "value": [
+        "5"
+       ],
+       "value1": "5"
+      },
+      {
+       "condition": "=",
+       "data": "Title",
+       "origData": "Title",
+       "type": "string-utf8",
+       "value": [
+        "Self-Portrait"
+       ],
+       "value1": "Self-Portrait"
+      }
+     ],
+     "logic": "AND"
+    },
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 1,
+    "error": null
+   }
+  },
+  {
+   "id": 107,
+   "label": "SB: clear all (2)",
+   "table": "main",
+   "request": {
+    "draw": 106,
+    "order": [
+     {
+      "column": 3,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 25,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {},
+    "globalSearchMode": "classic"
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 448106,
+    "error": null
+   }
+  },
+  {
+   "id": 108,
+   "label": "constituents: initial load",
+   "table": "constituents",
+   "request": {
+    "draw": 1,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    }
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 186620,
+    "error": null
+   }
+  },
+  {
+   "id": 109,
+   "label": "constituents: initial load",
+   "table": "constituents",
+   "request": {
+    "draw": 1,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    }
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 186620,
+    "error": null
+   }
+  },
+  {
+   "id": 110,
+   "label": "constituents: paging next",
+   "table": "constituents",
+   "request": {
+    "draw": 2,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 10,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {}
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 186620,
+    "error": null
+   }
+  },
+  {
+   "id": 111,
+   "label": "constituents: paging last",
+   "table": "constituents",
+   "request": {
+    "draw": 3,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 186610,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {}
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 186620,
+    "error": null
+   }
+  },
+  {
+   "id": 112,
+   "label": "constituents: page length 100",
+   "table": "constituents",
+   "request": {
+    "draw": 4,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 186600,
+    "length": 100,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {}
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 186620,
+    "error": null
+   }
+  },
+  {
+   "id": 113,
+   "label": "constituents: search \"goya\"",
+   "table": "constituents",
+   "request": {
+    "draw": 5,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 100,
+    "search": {
+     "value": "goya",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {}
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 6,
+    "error": null
+   }
+  },
+  {
+   "id": 114,
+   "label": "constituents: search \"o'keeffe\"",
+   "table": "constituents",
+   "request": {
+    "draw": 6,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 100,
+    "search": {
+     "value": "o'keeffe",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {}
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 1,
+    "error": null
+   }
+  },
+  {
+   "id": 115,
+   "label": "constituents: sort Display Name asc",
+   "table": "constituents",
+   "request": {
+    "draw": 7,
+    "order": [
+     {
+      "column": 1,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 100,
+    "search": {
+     "value": "o'keeffe",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {}
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 1,
+    "error": null
+   }
+  },
+  {
+   "id": 116,
+   "label": "constituents: sort Display Name desc",
+   "table": "constituents",
+   "request": {
+    "draw": 8,
+    "order": [
+     {
+      "column": 1,
+      "dir": "desc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 100,
+    "search": {
+     "value": "o'keeffe",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {}
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 1,
+    "error": null
+   }
+  },
+  {
+   "id": 117,
+   "label": "constituents: SB Display Name contains \"a\"",
+   "table": "constituents",
+   "request": {
+    "draw": 9,
+    "order": [
+     {
+      "column": 1,
+      "dir": "desc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 100,
+    "search": {
+     "value": "o'keeffe",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "condition": "contains",
+       "data": "Display Name",
+       "origData": "Display_Name",
+       "type": "string",
+       "value": [
+        "a"
+       ],
+       "value1": "a"
+      }
+     ],
+     "logic": "AND"
+    }
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 1,
+    "error": null
+   }
+  },
+  {
+   "id": 118,
+   "label": "constituents: SB clear all",
+   "table": "constituents",
+   "request": {
+    "draw": 10,
+    "order": [
+     {
+      "column": 1,
+      "dir": "desc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 100,
+    "search": {
+     "value": "o'keeffe",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {}
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 1,
+    "error": null
+   }
+  },
+  {
+   "id": 119,
+   "label": "constituents: search cleared",
+   "table": "constituents",
+   "request": {
+    "draw": 11,
+    "order": [
+     {
+      "column": 1,
+      "dir": "desc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 100,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {}
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 186620,
+    "error": null
+   }
+  },
+  {
+   "id": 120,
+   "label": "exhibitions: initial load",
+   "table": "exhibitions",
+   "request": {
+    "draw": 1,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    }
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 2487,
+    "error": null
+   }
+  },
+  {
+   "id": 121,
+   "label": "exhibitions: initial load",
+   "table": "exhibitions",
+   "request": {
+    "draw": 1,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    }
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 2487,
+    "error": null
+   }
+  },
+  {
+   "id": 122,
+   "label": "exhibitions: paging next",
+   "table": "exhibitions",
+   "request": {
+    "draw": 2,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 10,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {}
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 2487,
+    "error": null
+   }
+  },
+  {
+   "id": 123,
+   "label": "exhibitions: paging last",
+   "table": "exhibitions",
+   "request": {
+    "draw": 3,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 2480,
+    "length": 10,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {}
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 2487,
+    "error": null
+   }
+  },
+  {
+   "id": 124,
+   "label": "exhibitions: page length 100",
+   "table": "exhibitions",
+   "request": {
+    "draw": 4,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 2400,
+    "length": 100,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {}
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 2487,
+    "error": null
+   }
+  },
+  {
+   "id": 125,
+   "label": "exhibitions: search \"goya\"",
+   "table": "exhibitions",
+   "request": {
+    "draw": 5,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 100,
+    "search": {
+     "value": "goya",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {}
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 16,
+    "error": null
+   }
+  },
+  {
+   "id": 126,
+   "label": "exhibitions: search \"o'keeffe\"",
+   "table": "exhibitions",
+   "request": {
+    "draw": 6,
+    "order": [
+     {
+      "column": 0,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 100,
+    "search": {
+     "value": "o'keeffe",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {}
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 0,
+    "error": null
+   }
+  },
+  {
+   "id": 127,
+   "label": "exhibitions: sort Title asc",
+   "table": "exhibitions",
+   "request": {
+    "draw": 7,
+    "order": [
+     {
+      "column": 2,
+      "dir": "asc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 100,
+    "search": {
+     "value": "o'keeffe",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {}
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 0,
+    "error": null
+   }
+  },
+  {
+   "id": 128,
+   "label": "exhibitions: sort Title desc",
+   "table": "exhibitions",
+   "request": {
+    "draw": 8,
+    "order": [
+     {
+      "column": 2,
+      "dir": "desc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 100,
+    "search": {
+     "value": "o'keeffe",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {}
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 0,
+    "error": null
+   }
+  },
+  {
+   "id": 129,
+   "label": "exhibitions: SB Title contains \"a\"",
+   "table": "exhibitions",
+   "request": {
+    "draw": 9,
+    "order": [
+     {
+      "column": 2,
+      "dir": "desc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 100,
+    "search": {
+     "value": "o'keeffe",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {
+     "criteria": [
+      {
+       "condition": "contains",
+       "data": "Title",
+       "origData": "Title",
+       "type": "string-utf8",
+       "value": [
+        "a"
+       ],
+       "value1": "a"
+      }
+     ],
+     "logic": "AND"
+    }
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 0,
+    "error": null
+   }
+  },
+  {
+   "id": 130,
+   "label": "exhibitions: SB clear all",
+   "table": "exhibitions",
+   "request": {
+    "draw": 10,
+    "order": [
+     {
+      "column": 2,
+      "dir": "desc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 100,
+    "search": {
+     "value": "o'keeffe",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {}
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 0,
+    "error": null
+   }
+  },
+  {
+   "id": 131,
+   "label": "exhibitions: search cleared",
+   "table": "exhibitions",
+   "request": {
+    "draw": 11,
+    "order": [
+     {
+      "column": 2,
+      "dir": "desc",
+      "name": ""
+     }
+    ],
+    "start": 0,
+    "length": 100,
+    "search": {
+     "value": "",
+     "regex": false,
+     "fixed": []
+    },
+    "searchBuilder": {}
+   },
+   "expect": "ok",
+   "live": {
+    "status": 200,
+    "recordsFiltered": 2487,
+    "error": null
+   }
+  }
+ ]
+}
